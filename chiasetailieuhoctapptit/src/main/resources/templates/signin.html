@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head('Studucu - Đăng nhập')"></head>
+
+<body class="signin-page">
+  <main class="main">
+    <section class="signin-section">
+      <div class="signin-container">
+        <div class="signin-box">
+          <div class="signin-header">
+            <h2 class="signin-title">Login</h2>
+            <p class="signin-subtitle">Login with Email by Posts and Telecommunications Institute of Technology</p>
+          </div>
+
+          <div class="signin-form">
+            <div class="social-signin">
+              <button id="google-signin" class="google-signin-btn">
+                <i class="fab fa-google"></i> Login by Google
+              </button>
+            </div>
+          </div>
+
+          <div class="signin-footer">
+            <p><a href="/">Quay lại trang chủ</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <link th:href="@{/css/signin.css}" rel="stylesheet">
+</body>
+</html>

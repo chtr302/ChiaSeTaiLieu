@@ -1,0 +1,132 @@
+.gradient-bg {
+  background: white;
+  padding: 6rem 5rem;
+}
+.logo {
+  height: 100px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+.logo:hover {
+  transform: scale(1.05);
+}
+.hero-container {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 2rem;
+  line-height: 2.7rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+}
+
+.search-container {
+  max-width: 40rem;
+  margin: 0 auto 2.5rem auto;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+  border-color: #3b82f6;
+}
+
+.search-button {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #2563eb;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: #1d4ed8;
+}
+
+.categories-container {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.category-tag {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  transition: background-color 0.3s;
+}
+
+.category-blue {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.category-blue:hover {
+  background-color: #bfdbfe;
+}
+
+.category-green {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.category-green:hover {
+  background-color: #bbf7d0;
+}
+
+.category-purple {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.category-purple:hover {
+  background-color: #e9d5ff;  /* bg-purple-200 */
+}
+
+.category-yellow {
+  background-color: #fef9c3;  /* bg-yellow-100 */
+  color: #854d0e;  /* text-yellow-800 */
+}
+
+.category-yellow:hover {
+  background-color: #fef08a;  /* bg-yellow-200 */
+}
+
+.category-red {
+  background-color: #fee2e2;  /* bg-red-100 */
+  color: #991b1b;  /* text-red-800 */
+}
+
+.category-red:hover {
+  background-color: #fecaca;  /* bg-red-200 */
+}

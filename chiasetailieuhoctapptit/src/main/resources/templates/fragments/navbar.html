@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <nav th:fragment="navbar" class="bg-white shadow-md">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-between items-center h-28">
+                <div class="flex items-center">
+                    <img th:src="@{/img/logo.png}" alt="PTIT Logo" href="/" class="logo">
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Home</a>
+                    <a href="/documents" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Documents</a>
+                    <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Library</a>
+                    <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Team</a>
+                    <a href="/signin">
+                        <button class="ml-4 bg-indigo-600 px-4 py-2 rounded-md text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none">
+                            Sign In
+                        </button>
+                    </a>
+                </div>  
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head('Studucu - Documents')"></head>
+
+<body class="documents-page">
+
+  <main class="main">
+    <section class="documents-section">
+      <div class="documents-container">
+        <div class="sidebar" id="sidebar">
+          <div class="sidebar-padding"></div>
+          <div class="sidebar-content">
+            <div class="sidebar-header">
+              <div class="user-profile">
+                <img class="avatar" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile">
+                <div class="user-info">
+                  <p class="username">Username</p>
+                  <p class="user-role"><i class="fas fa-school"></i>Branch Manager</p>
+                </div>
+              </div>
+            </div>
+            <h2 class="sidebar-title">Categories</h2>
+            <ul class="sidebar-menu">
+              <li class="sidebar-item">
+                <a href="/">
+                    <i class="fas fa-home"></i> Home
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <i class="fas fa-book"></i> Courses
+              </li>
+              <li class="sidebar-item">
+                <i class="fas fa-folder-open"></i> Library
+              </li>
+              <li class="sidebar-item">
+                <i class="fas fa-clock"></i> Recents
+              </li>
+            </ul>
+          </div>
+          <div class="sidebar-footer">
+            <button id="upload-btn" class="upload-button">
+              <i class="fas fa-cloud-upload-alt"></i> Upload Document
+            </button>
+          </div>
+        </div>
+      
+        <div class="main-content">
+          <div class="content-header">
+            <div class="search-area">
+              <button id="menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+              </button>
+              <div class="search-bar">
+                <input type="text" placeholder="Search for documents, courses, or topics..." class="search-input document-search">
+                <i class="fas fa-search search-icon"></i>
+              </div>
+            </div>
+          </div>
+      
+          <div class="content-container">
+            <div class="document-section">
+              <div class="section-header">
+                <h2 class="section-title">Continue reading</h2>
+              </div>
+              <div class="document-grid">
+                <div class="document-card">
+                  <img src="https://via.placeholder.com/300x400?text=Document+Preview" alt="Document Preview" class="document-image">
+                  <div class="document-details">
+                    <p class="document-title">BÀI TẬP UML - UML</p>
+                    <p class="document-category">KIẾN THỨC TẠO LẬP VĂN BẢN</p>
+                    <div class="document-stats">
+                      <span class="views"><i class="fas fa-eye"></i> 5.2K</span>
+                      <div class="vote-buttons">
+                        <button class="upvote-btn"><i class="fas fa-arrow-up"></i></button>
+                        <span class="vote-count">128</span>
+                        <button class="downvote-btn"><i class="fas fa-arrow-down"></i></button>
+                      </div>
+                      <span class="comments"><i class="fas fa-comment"></i> 24</span>
+                    </div>
+                    <button class="save-btn">Save</button>
+                  </div>
+                </div>
+                
+                <div class="document-card">
+                  <img src="https://via.placeholder.com/300x400?text=Document+Preview" alt="Document Preview" class="document-image">
+                  <div class="document-details">
+                    <p class="document-title">BÀI TẬP UML - UML</p>
+                    <p class="document-category">KIẾN THỨC TẠO LẬP VĂN BẢN</p>
+                    <div class="document-stats">
+                      <span class="views"><i class="fas fa-eye"></i> 5.2K</span>
+                      <div class="vote-buttons">
+                        <button class="upvote-btn"><i class="fas fa-arrow-up"></i></button>
+                        <span class="vote-count">128</span>
+                        <button class="downvote-btn"><i class="fas fa-arrow-down"></i></button>
+                      </div>
+                      <span class="comments"><i class="fas fa-comment"></i> 24</span>
+                    </div>
+                    <button class="save-btn">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <div class="document-section">
+              <div class="section-header">
+                <h2 class="section-title">Courses</h2>
+              </div>
+              <div class="courses-grid">
+                <div class="course-card">
+                  <div class="course-icon">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <div class="course-info">
+                    <h4 class="course-title">Computer Science</h4>
+                    <p class="course-count">1,245 documents</p>
+                  </div>
+                </div>
+                <div class="course-card">
+                  <div class="course-icon">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <div class="course-info">
+                    <h4 class="course-title">Mathematics</h4>
+                    <p class="course-count">892 documents</p>
+                  </div>
+                </div>
+                <div class="course-card">
+                  <div class="course-icon">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <div class="course-info">
+                    <h4 class="course-title">Physics</h4>
+                    <p class="course-count">673 documents</p>
+                  </div>
+                </div>
+                <div class="course-card">
+                  <div class="course-icon">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <div class="course-info">
+                    <h4 class="course-title">Engineering</h4>
+                    <p class="course-count">1,020 documents</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+      
+            <div class="document-section">
+              <div class="section-header">
+                <h2 class="section-title">Most Viewed Documents</h2>
+              </div>
+              <div class="document-grid">
+                <div class="document-card">
+                  <img src="https://via.placeholder.com/300x400?text=Document+Preview" alt="Document Preview" class="document-image">
+                  <div class="document-details">
+                    <p class="document-title">Advanced Algorithms</p>
+                    <p class="document-category">KIẾN THỨC TẠO LẬP VĂN BẢN</p>
+                    <div class="document-stats">
+                      <span class="views"><i class="fas fa-eye"></i> 5.2K</span>
+                      <div class="vote-buttons">
+                        <button class="upvote-btn"><i class="fas fa-arrow-up"></i></button>
+                        <span class="vote-count">128</span>
+                        <button class="downvote-btn"><i class="fas fa-arrow-down"></i></button>
+                      </div>
+                      <span class="comments"><i class="fas fa-comment"></i> 24</span>
+                    </div>
+                    <button class="save-btn">Save</button>
+                  </div>
+                </div>
+                <div class="document-card">
+                  <img src="https://via.placeholder.com/300x400?text=Document+Preview" alt="Document Preview" class="document-image">
+                  <div class="document-details">
+                    <p class="document-title">Data Structures Guide</p>
+                    <p class="document-category">KIẾN THỨC TẠO LẬP VĂN BẢN</p>
+                    <div class="document-stats">
+                      <span class="views"><i class="fas fa-eye"></i> 5.2K</span>
+                      <div class="vote-buttons">
+                        <button class="upvote-btn"><i class="fas fa-arrow-up"></i></button>
+                        <span class="vote-count">128</span>
+                        <button class="downvote-btn"><i class="fas fa-arrow-down"></i></button>
+                      </div>
+                      <span class="comments"><i class="fas fa-comment"></i> 24</span>
+                    </div>
+                    <button class="save-btn">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="upload-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">Upload Document</h3>
+        <button id="close-modal" class="modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="file-upload">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p class="upload-title">Drag & drop or click to upload</p>
+          <p class="upload-description">Supported formats: PDF, TXT, MD, PY, etc.</p>
+          <input type="file" id="file-input" class="file-input">
+        </div>
+        <div class="form-section">
+          <div class="form-group">
+            <label class="form-label">Category <span class="required">*</span></label>
+            <select class="form-control">
+              <option>Select a category</option>
+              <option>Courses</option>
+              <option>Notes</option>
+              <option>Assignments</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tags</label>
+            <input type="text" placeholder="e.g. python, ai, notes" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description <span class="required">*</span></label>
+            <textarea rows="4" placeholder="Describe your document" class="form-control"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-upload" class="btn-cancel">Cancel</button>
+          <button id="save-upload" class="btn-save"><i class="fas fa-save"></i> Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <link th:href="@{/css/documents.css}" rel="stylesheet">
+</body>
+</html>
