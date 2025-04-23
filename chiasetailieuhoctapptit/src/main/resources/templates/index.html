@@ -4,12 +4,15 @@
 <head th:replace="fragments/head :: head('Document sharing platform of the Posts and Telecommunications Institute of Technology - Home')"></head>
 
 <body class="index-page">
-  <div th:replace="fragments/navbar :: navbar"></div>
+  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
 
   <main class="main">
     <section class="gradient-bg">
       <div class="hero-container">
         <h2 class="hero-title">Document sharing platform of the<br>Posts and Telecommunications Institute of Technology</h2>
+        <div th:if="${sinhVien != null}" class="welcome-message">
+          <p>Xin chào <span th:text="${sinhVien.hoVaTen}">Guest</span>!</p>
+        </div>
         <div class="search-container">
           <input type="text" placeholder="Tìm tài liệu..." class="search-input">
           <button class="search-button">

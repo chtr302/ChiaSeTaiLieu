@@ -1,35 +1,56 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments/head :: head('Studucu - Đăng nhập')"></head>
+<head th:replace="fragments/head :: head('Studucu - Đăng nhập')">
+  <!-- Thêm Font Awesome nếu chưa có -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
 
 <body class="signin-page">
-  <main class="main">
-    <section class="signin-section">
-      <div class="signin-container">
-        <div class="signin-box">
+  <main class="signin-container">
+    <div class="signin-wrapper">
+      <div class="signin-image">
+        <div class="image-overlay">
+          <div class="image-content">
+            <div class="school-logo">
+              <img src="img/logo.png" alt="Logo PTIT" class="logo-img">
+            </div>
+            <h2>Chào mừng đến với</h2>
+            <p>Nền tảng chia sẻ tài liệu học tập của</p>
+            <p>Học viện Công nghệ Bưu chính viễn thông Cơ sở tại TP.Hồ Chí Minh</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="signin-form-container">
+        <div class="signin-form-wrapper">
           <div class="signin-header">
-            <h2 class="signin-title">Login</h2>
-            <p class="signin-subtitle">Login with Email by Posts and Telecommunications Institute of Technology</p>
+            <h1 class="signin-title">Đăng nhập</h1>
+            <p class="signin-subtitle">Đăng nhập bằng tài khoản Google để chia sẻ và tải tài liệu học tập</p>
+          </div>
+
+          <div th:if="${param.error}" class="alert alert-danger">
+            <p>Không thể đăng nhập. Vui lòng thử lại.</p>
           </div>
 
           <div class="signin-form">
             <div class="social-signin">
-              <button id="google-signin" class="google-signin-btn">
-                <i class="fab fa-google"></i> Login by Google
-              </button>
+              <a href="/oauth2/authorization/google" class="google-signin-btn">
+                <i class="fab fa-google"></i> Đăng nhập bằng Google
+              </a>
             </div>
-          </div>
-
-          <div class="signin-footer">
-            <p><a href="/">Quay lại trang chủ</a></p>
+            
+            <div class="signin-footer">
+              <p><a href="/" class="back-link">Quay lại trang chủ</a></p>
+            </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   </main>
 
   <div th:replace="fragments/scripts :: scripts"></div>
   <link th:href="@{/css/signin.css}" rel="stylesheet">
+
 </body>
 </html>
