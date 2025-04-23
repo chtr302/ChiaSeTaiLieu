@@ -110,23 +110,31 @@
 }
 
 .category-purple:hover {
-  background-color: #e9d5ff;  /* bg-purple-200 */
+  background-color: #e9d5ff;
 }
 
 .category-yellow {
-  background-color: #fef9c3;  /* bg-yellow-100 */
-  color: #854d0e;  /* text-yellow-800 */
+  background-color: #fef9c3;
+  color: #854d0e;
 }
 
 .category-yellow:hover {
-  background-color: #fef08a;  /* bg-yellow-200 */
+  background-color: #fef08a;
 }
 
 .category-red {
-  background-color: #fee2e2;  /* bg-red-100 */
-  color: #991b1b;  /* text-red-800 */
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
 .category-red:hover {
-  background-color: #fecaca;  /* bg-red-200 */
+  background-color: #fecaca;
+}
+.welcome-message {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: black;
+  font-weight: 500;
 }
