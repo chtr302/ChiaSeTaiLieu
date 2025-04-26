@@ -164,3 +164,9 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     margin: 0 auto;
 }
+.custom-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  vertical-align: middle;
+}

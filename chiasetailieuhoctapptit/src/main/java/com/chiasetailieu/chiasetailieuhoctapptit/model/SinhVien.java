@@ -34,7 +34,7 @@ public class SinhVien {
         this.lastLogin = LocalDate.now();
     }
     public SinhVien(String maSV, String hoVaTen, String email, String hinhAnh){
-        this.maSV = maSV;
+        this.maSV = maSV.toUpperCase();
         this.hoVaTen = hoVaTen;
         this.email = email;
         this.hinhAnh = hinhAnh;

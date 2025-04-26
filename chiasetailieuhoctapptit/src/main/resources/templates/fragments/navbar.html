@@ -7,20 +7,11 @@
                 </a>
             </div>
             <div class="hidden md:flex items-center space-x-4">
-                <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Home</a>
+                <a href="/index" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Home</a>
                 <a href="/documents" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Documents</a>
                 <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Library</a>
                 <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-blue-600">Team</a>
                 
-                <div th:if="${sinhVien == null}">
-                    <a href="/signin">
-                        <button class="ml-4 bg-indigo-600 px-4 py-2 rounded-md text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none">
-                            Sign In
-                        </button>
-                    </a>
-                </div>
-                
-                <!-- Khi đã đăng nhập -->
                 <div th:if="${sinhVien != null}" class="flex items-center ml-4">
                     <img th:src="${sinhVien.hinhAnh}" alt="Profile" class="w-8 h-8 rounded-full mr-2">
                     <span th:text="${sinhVien.hoVaTen}" class="text-sm font-medium mr-4"></span>

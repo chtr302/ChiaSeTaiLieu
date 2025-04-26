@@ -2,7 +2,6 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="fragments/head :: head('Studucu - Đăng nhập')">
-  <!-- Thêm Font Awesome nếu chưa có -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -15,9 +14,9 @@
             <div class="school-logo">
               <img src="img/logo.png" alt="Logo PTIT" class="logo-img">
             </div>
-            <h2>Chào mừng đến với</h2>
-            <p>Nền tảng chia sẻ tài liệu học tập của</p>
-            <p>Học viện Công nghệ Bưu chính viễn thông Cơ sở tại TP.Hồ Chí Minh</p>
+            <h2>Welcome</h2>
+            <p>The document-sharing website for students of the</p>
+            <p>Posts and Telecommunications Institute of Technology</p>
           </div>
         </div>
       </div>
@@ -25,23 +24,15 @@
       <div class="signin-form-container">
         <div class="signin-form-wrapper">
           <div class="signin-header">
-            <h1 class="signin-title">Đăng nhập</h1>
-            <p class="signin-subtitle">Đăng nhập bằng tài khoản Google để chia sẻ và tải tài liệu học tập</p>
-          </div>
-
-          <div th:if="${param.error}" class="alert alert-danger">
-            <p>Không thể đăng nhập. Vui lòng thử lại.</p>
+            <h1 class="signin-title">SIGNIN</h1>
+            <p class="signin-subtitle">Sigin with email of Posts and Telecommunications Institute of Technology</p>
           </div>
 
           <div class="signin-form">
             <div class="social-signin">
               <a href="/oauth2/authorization/google" class="google-signin-btn">
-                <i class="fab fa-google"></i> Đăng nhập bằng Google
+                <img src="/img/google.png" alt="Custom Icon" class="custom-icon"> Sign in with Google
               </a>
-            </div>
-            
-            <div class="signin-footer">
-              <p><a href="/" class="back-link">Quay lại trang chủ</a></p>
             </div>
           </div>
         </div>
