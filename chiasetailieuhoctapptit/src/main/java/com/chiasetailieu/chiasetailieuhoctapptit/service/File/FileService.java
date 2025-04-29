@@ -1,21 +1,23 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.service;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.chiasetailieu.chiasetailieuhoctapptit.model.File;
-import com.chiasetailieu.chiasetailieuhoctapptit.repository.FileRepo;
-
-import jakarta.annotation.PostConstruct;
+package com.chiasetailieu.chiasetailieuhoctapptit.service.File;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.chiasetailieu.chiasetailieuhoctapptit.model.FileModel.File;
+import com.chiasetailieu.chiasetailieuhoctapptit.repository.FileRepository.FileRepo;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.ThumbnailService;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class FileService {
@@ -36,7 +38,6 @@ public class FileService {
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-            System.out.println("Đã khởi tạo thư mục upload: " + uploadPath.toAbsolutePath());
         } catch (IOException e) {
             throw new RuntimeException("Không thể tạo thư mục upload", e);
         }
@@ -63,19 +64,14 @@ public class FileService {
         fileEntity.setDinhDang(fileExtension);
         fileEntity.setKichThuoc(file.getSize());
         
-        // Tạo thumbnail nếu là PDF
         if (fileExtension.equalsIgnoreCase("pdf")) {
             try {
                 String thumbnailName = thumbnailService.generatePdfThumbnail(targetLocation.toString());
                 fileEntity.setThumbnail(thumbnailName);
-                System.out.println("Đã tạo thumbnail cho PDF: " + thumbnailName);
             } catch (Exception e) {
-                System.err.println("Lỗi khi tạo thumbnail: " + e.getMessage());
-                e.printStackTrace();
                 fileEntity.setThumbnail("default-pdf.png");
             }
         } else {
-            // Đặt thumbnail mặc định cho các loại file khác
             fileEntity.setThumbnail("default.png");
         }
         
@@ -88,5 +84,9 @@ public class FileService {
         int dotIndex = filename.lastIndexOf('.');
         if (dotIndex < 0) return "";
         return filename.substring(dotIndex + 1);
+    }
+
+    public List<File> getFileById(int id){
+        return fileRepo.findByMaFile(id);
     }
 }

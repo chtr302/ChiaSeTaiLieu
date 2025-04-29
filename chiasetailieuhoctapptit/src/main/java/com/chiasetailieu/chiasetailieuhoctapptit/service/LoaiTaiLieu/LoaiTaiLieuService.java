@@ -1,4 +1,4 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.service;
+package com.chiasetailieu.chiasetailieuhoctapptit.service.LoaiTaiLieu;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.chiasetailieu.chiasetailieuhoctapptit.model.LoaiTaiLieu;
-import com.chiasetailieu.chiasetailieuhoctapptit.repository.LoaiTaiLieuRepo;
+import com.chiasetailieu.chiasetailieuhoctapptit.model.LoaiTaiLieuModel.LoaiTaiLieu;
+import com.chiasetailieu.chiasetailieuhoctapptit.repository.LoaiTaiLieuRepository.LoaiTaiLieuRepo;
 
 @Service
 public class LoaiTaiLieuService {

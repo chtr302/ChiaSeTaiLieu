@@ -1,4 +1,4 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.service;
+package com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVien;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -8,8 +8,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVien;
-import com.chiasetailieu.chiasetailieuhoctapptit.repository.SinhVienRepo;
+import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel.SinhVien;
+import com.chiasetailieu.chiasetailieuhoctapptit.repository.SinhVienRepository.SinhVienRepo;
 
 @Service
 public class SinhVienService {
@@ -37,5 +37,8 @@ public class SinhVienService {
     }
     public Optional<SinhVien> findByEmail (String email){
         return sinhVienRepo.findByEmail(email);
+    }
+    public SinhVien getSinhVienbyMaSinhVien(String id){
+        return sinhVienRepo.findByMaSV(id);
     }
 }

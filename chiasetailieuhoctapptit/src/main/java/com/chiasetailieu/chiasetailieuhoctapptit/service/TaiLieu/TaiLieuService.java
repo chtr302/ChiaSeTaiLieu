@@ -1,15 +1,14 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.service;
+package com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-// import com.chiasetailieu.chiasetailieuhoctapptit.model.File;
-import com.chiasetailieu.chiasetailieuhoctapptit.model.TaiLieu;
-import com.chiasetailieu.chiasetailieuhoctapptit.repository.TaiLieuRepo;
-
-import java.time.LocalDate;
-import java.util.List;
+import com.chiasetailieu.chiasetailieuhoctapptit.model.TaiLieuModel.TaiLieu;
+import com.chiasetailieu.chiasetailieuhoctapptit.repository.TaiLieuRepository.TaiLieuRepo;
 // import java.util.Optional;
 
 @Service
@@ -18,9 +17,6 @@ public class TaiLieuService {
     @Autowired
     private TaiLieuRepo taiLieuRepo;
     
-    /**
-     * Lưu thông tin tài liệu vào database
-     */
     @Transactional
     public TaiLieu saveTaiLieu(TaiLieu taiLieu) {
         // Thiết lập các giá trị mặc định nếu chưa có
@@ -40,10 +36,18 @@ public class TaiLieuService {
         return taiLieuRepo.save(taiLieu);
     }
     
-    /**
-     * Lấy tất cả tài liệu
-     */
+
     public List<TaiLieu> getAllTaiLieu() {
         return taiLieuRepo.findAll();
+    }
+    @Transactional
+    public void incrementViewCount(long id){
+        TaiLieu taiLieu = taiLieuRepo.findById(id).orElse(null);
+        if (taiLieu != null){
+            Integer currentViews = taiLieu.getLuotXem();
+            if (currentViews == null){currentViews=0;}
+            taiLieu.setLuotXem(currentViews + 1);
+            taiLieuRepo.save(taiLieu);
+        }
     }
 }
