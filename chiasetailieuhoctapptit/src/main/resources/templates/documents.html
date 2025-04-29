@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-  <script th:src="@{/js/uploads.js}"></script>
 <head th:replace="fragments/head :: head('Studucu - Documents')"></head>
 <body class="documents-page">
   <!-- Thêm div hiển thị thông báo từ server -->
@@ -141,7 +140,7 @@
                       </div>
                       <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc.soLuongBL}">24</span></span>
                     </div>
-                    <button class="view-btn">Xem</button>
+                    <a th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
                     <button class="save-btn">Lưu</button>
                   </div>
                 </div>
@@ -169,6 +168,7 @@
                     <h3 class="course-name" th:text="${course.tenMon}">Course Name</h3>
                     <p class="course-info">
                       <span class="course-code" th:text="${course.maMon}">CSE123</span>
+                      <span class="course-code" th:text="${course.taiLieu}">CSE123</span>
                     </p>
                   </div>
                 </div>
@@ -178,7 +178,6 @@
             <!-- Featured Tab -->
             <div class="tab-content hidden" id="featured">
               <div class="document-grid full-width">
-                <!-- Thêm th:if kiểm tra null để tránh lỗi -->
                 <p th:if="${mostViewedDocuments == null}" class="empty-message">No featured documents available.</p>
                 
                 <div class="document-card" th:if="${mostViewedDocuments != null}" th:each="doc : ${mostViewedDocuments}">
@@ -237,14 +236,13 @@
       <div class="modal-body">
         <form id="upload-form" th:action="@{/documents/upload}" method="post" enctype="multipart/form-data">
           <div class="file-upload">
+            <input type="file" id="file-input" name="file" class="file-input" accept=".pdf" required>
             <div class="upload-default">
               <i class="fas fa-cloud-upload-alt"></i>
-              <p class="upload-title">Drag & drop or click to upload</p>
-              <p class="upload-description">Supported formats: PDF only</p>
+              <p class="upload-title">Nhấp vào đây hoặc kéo thả file PDF</p>
+              <p class="upload-description">Chỉ chấp nhận định dạng PDF (tối đa 50MB)</p>
             </div>
             <div class="file-preview" id="file-preview" style="display: none;"></div>
-            <!-- Đảm bảo file input nằm ở cuối để nó nhận được sự kiện click từ vùng upload -->
-            <input type="file" id="file-input" name="file" class="file-input" required>
           </div>
           <div class="form-section">
             <div class="form-group">
@@ -283,54 +281,6 @@
             <button type="submit" id="save-upload" class="btn-save"><i class="fas fa-save"></i> Upload</button>
           </div>
         </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Preview Modal -->
-  <div id="preview-modal" class="modal-overlay">
-    <div class="modal-container preview-container">
-      <div class="modal-header">
-        <h3 class="modal-title">Document Preview</h3>
-        <button id="close-preview" class="modal-close"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="modal-body preview-body">
-        <div class="document-preview">
-          <iframe id="preview-frame" src="" frameborder="0"></iframe>
-        </div>
-        <div class="preview-sidebar">
-          <div class="document-info-panel">
-            <h4 id="preview-title">Document Title</h4>
-            <p id="preview-description">Document description goes here...</p>
-            
-            <div class="document-meta-info">
-              <p><strong>Uploaded by:</strong> <span id="preview-uploader">Username</span></p>
-              <p><strong>Upload date:</strong> <span id="preview-date">01/04/2024</span></p>
-              <p><strong>Category:</strong> <span id="preview-category">Category</span></p>
-              <p><strong>Course:</strong> <span id="preview-course">Course Name</span></p>
-              <p><strong>File size:</strong> <span id="preview-size">2.4 MB</span></p>
-              <p><strong>Downloads:</strong> <span id="preview-downloads">342</span></p>
-            </div>
-            
-            <div class="document-actions">
-              <button class="download-btn"><i class="fas fa-download"></i> Download</button>
-              <button class="save-btn"><i class="fas fa-bookmark"></i> Save</button>
-              <button class="share-btn"><i class="fas fa-share-alt"></i> Share</button>
-            </div>
-          </div>
-          
-          <div class="document-comments">
-            <h4>Comments</h4>
-            <div class="comments-list">
-              <!-- Comments will be loaded here -->
-            </div>
-            
-            <div class="comment-form">
-              <textarea placeholder="Add a comment..."></textarea>
-              <button class="post-comment-btn">Post</button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
