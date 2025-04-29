@@ -1,190 +1,236 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Document.js loaded');
+    // Display success/error messages if present
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
     
-    // Modal upload functionality
-    const uploadBtn = document.getElementById('upload-btn');
-    const uploadModal = document.getElementById('upload-modal');
-    const closeModal = document.getElementById('close-modal');
-    const cancelUpload = document.getElementById('cancel-upload');
-    const fileInput = document.getElementById('file-input');
-    const filePreview = document.getElementById('file-preview');
-    const uploadForm = document.getElementById('upload-form');
-
-    // Kiểm tra xem các phần tử có tồn tại không để tránh lỗi
-    if (uploadBtn) {
-        uploadBtn.addEventListener('click', function() {
-            console.log('Upload button clicked');
-            if (uploadModal) {
-                uploadModal.style.display = 'flex';
-            }
-        });
+    if (successMessage && successMessage.textContent.trim() !== '') {
+        showNotification(successMessage.textContent, 'success');
     }
     
-    if (closeModal) {
-        closeModal.addEventListener('click', function() {
-            console.log('Close modal clicked');
-            if (uploadModal) {
-                uploadModal.style.display = 'none';
-            }
-        });
+    if (errorMessage && errorMessage.textContent.trim() !== '') {
+        showNotification(errorMessage.textContent, 'error');
     }
     
-    if (cancelUpload) {
-        cancelUpload.addEventListener('click', function() {
-            console.log('Cancel upload clicked');
-            if (uploadModal) {
-                uploadModal.style.display = 'none';
-            }
-        });
-    }
-
     // Tab switching functionality
+    initTabSwitching();
+    
+    // Upload document functionality
+    initUploadModal();
+    
+    // File upload handling with drag and drop
+    initFileUploadHandling();
+});
+
+// Tab switching functionality
+function initTabSwitching() {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     
     tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const target = this.dataset.target;
-            
-            // Toggle active classes
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons and tabs
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.add('hidden'));
             
-            this.classList.add('active');
-            document.getElementById(target).classList.remove('hidden');
-        });
-    });
-
-    // Menu toggle for responsive sidebar
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.getElementById('sidebar');
-    
-    if (menuToggle && sidebar) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
-        });
-    }
-
-    // Display notification from server
-    function showNotification(message, type) {
-        console.log(`Showing ${type} notification: ${message}`);
-        
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.style.position = 'fixed';
-        notification.style.top = '20px';
-        notification.style.right = '20px';
-        notification.style.padding = '15px 20px';
-        notification.style.backgroundColor = type === 'success' ? '#10b981' : '#ef4444';
-        notification.style.color = 'white';
-        notification.style.borderRadius = '6px';
-        notification.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-        notification.style.zIndex = '1000';
-        notification.style.opacity = '0';
-        notification.style.transition = 'opacity 0.3s';
-        
-        notification.innerHTML = message;
-        
-        document.body.appendChild(notification);
-        
-        // Show notification
-        setTimeout(() => {
-            notification.style.opacity = '1';
-        }, 10);
-        
-        // Hide notification after 5 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        }, 5000);
-    }
-
-    // Check for success or error messages
-    const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
-    
-    if (successMessage && successMessage.textContent) {
-        showNotification(successMessage.textContent, 'success');
-    }
-    
-    if (errorMessage && errorMessage.textContent) {
-        showNotification(errorMessage.textContent, 'error');
-    }
-    
-    // File upload handling
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Validate file type
-                if (file.type !== 'application/pdf') {
-                    alert('Chỉ chấp nhận file PDF');
-                    fileInput.value = '';
-                    return;
-                }
-                
-                // Validate file size (max 50MB)
-                if (file.size > 50 * 1024 * 1024) {
-                    alert('Kích thước file không được vượt quá 50MB');
-                    fileInput.value = '';
-                    return;
-                }
-                
-                // Show file preview
-                if (filePreview) {
-                    filePreview.innerHTML = `
-                        <div class="file-details">
-                            <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
-                            <div class="file-info">
-                                <p class="file-name">${file.name}</p>
-                                <p class="file-size">${formatFileSize(file.size)}</p>
-                            </div>
-                            <button class="remove-file"><i class="fas fa-times"></i></button>
-                        </div>
-                    `;
-                    
-                    // Add event listener to remove button
-                    const removeBtn = filePreview.querySelector('.remove-file');
-                    if (removeBtn) {
-                        removeBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            fileInput.value = '';
-                            filePreview.innerHTML = '';
-                        });
-                    }
-                }
+            // Add active class to clicked button
+            button.classList.add('active');
+            
+            // Show corresponding tab content
+            const targetTab = button.dataset.target;
+            const tabContent = document.getElementById(targetTab);
+            if (tabContent) {
+                tabContent.classList.remove('hidden');
+                tabContent.classList.add('active');
             }
         });
+    });
+}
+
+// Upload modal functionality
+function initUploadModal() {
+    const uploadBtn = document.getElementById('upload-btn');
+    const uploadModal = document.getElementById('upload-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const cancelUploadBtn = document.getElementById('cancel-upload');
+    
+    // Open modal
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', () => {
+            uploadModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        });
     }
     
-    // Format file size
-    function formatFileSize(bytes) {
-        if (bytes < 1024) return bytes + ' bytes';
-        else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
-        else return (bytes / 1048576).toFixed(2) + ' MB';
-    }
+    // Close modal
+    const closeModal = () => {
+        uploadModal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Enable scrolling
+        resetUploadForm();
+    };
+    
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', closeModal);
+    
+    // Close modal when clicking outside
+    uploadModal.addEventListener('click', (event) => {
+        if (event.target === uploadModal) {
+            closeModal();
+        }
+    });
+}
 
-    // Fixes specifically for the upload modal issue
-    if (uploadBtn && uploadModal) {
-        uploadBtn.onclick = function() {
-            console.log("Upload button clicked via onclick");
-            uploadModal.style.display = 'flex';
-        };
+// File upload handling with drag and drop
+function initFileUploadHandling() {
+    const fileInput = document.getElementById('file-input');
+    const uploadDefault = document.querySelector('.upload-default');
+    const filePreview = document.getElementById('file-preview');
+    const uploadForm = document.getElementById('upload-form');
+    const dropZone = document.querySelector('.file-upload');
+    
+    if (!fileInput || !uploadDefault || !filePreview || !dropZone) return;
+    
+    // Handle file selection via input
+    fileInput.addEventListener('change', handleFileSelection);
+    
+    // Handle drag and drop
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
     }
-});
-
-// Add global click handler to debug
-document.addEventListener('click', function(e) {
-    if (e.target.id === 'upload-btn' || e.target.closest('#upload-btn')) {
-        console.log('Upload button clicked via global handler');
-        const modal = document.getElementById('upload-modal');
-        if (modal) {
-            modal.style.display = 'flex';
+    
+    // Highlight drop zone when file is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.classList.add('highlight');
+        }, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.classList.remove('highlight');
+        }, false);
+    });
+    
+    // Handle dropped files
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelection();
+        }
+    }, false);
+    
+    // Handle file selection (for both drag-drop and input click)
+    function handleFileSelection() {
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            
+            // Validate file type (PDF only)
+            if (file.type !== 'application/pdf') {
+                showNotification('Chỉ chấp nhận file PDF!', 'error');
+                resetFileInput();
+                return;
+            }
+            
+            // Validate file size (max 50MB)
+            if (file.size > 50 * 1024 * 1024) {
+                showNotification('Kích thước file tối đa là 50MB!', 'error');
+                resetFileInput();
+                return;
+            }
+            
+            // Show file preview
+            uploadDefault.style.display = 'none';
+            filePreview.style.display = 'block';
+            filePreview.innerHTML = `
+                <div class="preview-file">
+                    <i class="fas fa-file-pdf"></i>
+                    <div class="file-info">
+                        <p class="file-name">${file.name}</p>
+                        <p class="file-size">${formatFileSize(file.size)}</p>
+                    </div>
+                    <button type="button" class="remove-file"><i class="fas fa-times"></i></button>
+                </div>
+            `;
+            
+            // Add event listener to remove file button
+            document.querySelector('.remove-file').addEventListener('click', resetFileInput);
         }
     }
-});
+    
+    // Reset file input
+    function resetFileInput() {
+        fileInput.value = '';
+        uploadDefault.style.display = 'block';
+        filePreview.style.display = 'none';
+        filePreview.innerHTML = '';
+    }
+    
+    // Reset entire upload form
+    function resetUploadForm() {
+        uploadForm.reset();
+        resetFileInput();
+    }
+    
+    // Handle form submission
+    uploadForm.addEventListener('submit', (event) => {
+        // Form validation is handled by HTML5 required attributes
+        // You can add additional validation here if needed
+    });
+}
+
+// Helper function to format file size
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+// Display notification
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-icon">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                           type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+        </div>
+        <div class="notification-message">${message}</div>
+        <button class="notification-close"><i class="fas fa-times"></i></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Show notification with animation
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    // Auto-hide notification after 5 seconds
+    const hideTimeout = setTimeout(() => {
+        hideNotification(notification);
+    }, 5000);
+    
+    // Add close button functionality
+    notification.querySelector('.notification-close').addEventListener('click', () => {
+        clearTimeout(hideTimeout);
+        hideNotification(notification);
+    });
+}
+
+// Hide notification
+function hideNotification(notification) {
+    notification.classList.remove('show');
+    notification.classList.add('hide');
+    
+    // Remove notification from DOM after animation completes
+    setTimeout(() => {
+        notification.remove();
+    }, 300);
+}

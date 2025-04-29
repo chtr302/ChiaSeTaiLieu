@@ -273,6 +273,7 @@ body.documents-page {
   cursor: pointer;
   position: relative;
   white-space: nowrap;
+  transition: color 0.3s, font-weight 0.3s;
 }
 
 .tab-btn:hover {
@@ -292,6 +293,7 @@ body.documents-page {
   right: 0;
   height: 2px;
   background-color: #3b82f6;
+  transition: background-color 0.3s;
 }
 
 .filter-dropdown {
@@ -378,7 +380,7 @@ body.documents-page {
 .content-container {
   padding: 24px;
   background-color: #f9fafb;
-  min-height: 500px;
+  min-height: 70vh;
 }
 
 .tab-content {
@@ -386,7 +388,11 @@ body.documents-page {
 }
 
 .tab-content.active {
-  display: block;
+  display: block !important; 
+}
+
+.tab-content.hidden {
+  display: none;
 }
 
 /* Documents Grid */
@@ -635,10 +641,6 @@ body.documents-page {
   z-index: 50;
 }
 
-.modal-overlay.active {
-  display: flex;
-}
-
 .modal-container {
   background-color: white;
   border-radius: 8px;
@@ -692,24 +694,31 @@ body.documents-page {
 
 /* File Upload */
 .file-upload {
-  border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  padding: 32px 16px;
-  text-align: center;
-  margin-bottom: 24px;
   position: relative;
+  border: 2px dashed #ccc;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .file-upload:hover {
   border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.file-upload.highlight {
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
 }
 
 .upload-default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  pointer-events: none;
 }
 
 .upload-default i {
@@ -732,11 +741,49 @@ body.documents-page {
 }
 
 .file-preview {
-  display: none;
+  padding: 15px;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 6px;
 }
 
-.file-preview.active {
-  display: block;
+.preview-file {
+  display: flex;
+  align-items: center;
+}
+
+.preview-file i {
+  font-size: 36px;
+  color: #e74c3c;
+  margin-right: 15px;
+}
+
+.file-info {
+  flex: 1;
+  text-align: left;
+}
+
+.file-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+  word-break: break-all;
+}
+
+.file-size {
+  color: #666;
+  font-size: 14px;
+}
+
+.remove-file {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.remove-file:hover {
+  color: #e74c3c;
 }
 
 .file-input {
@@ -746,6 +793,7 @@ body.documents-page {
   cursor: pointer;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 
 /* Form Section */
@@ -998,31 +1046,116 @@ body.documents-page {
   background-color: #2563eb;
 }
 
-/* Notification messages */
-#successMessage, #errorMessage {
+/* Notification System */
+.notification {
   position: fixed;
-  top: 80px;
+  top: 20px;
   right: 20px;
-  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  background-color: white;
   border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 15px 20px;
+  min-width: 300px;
+  max-width: 500px;
+  z-index: 10000;
+  transform: translateX(110%);
+  transition: transform 0.3s ease;
+  opacity: 0.95;
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.notification.hide {
+  transform: translateX(110%);
+}
+
+.notification-icon {
+  margin-right: 15px;
+  font-size: 20px;
+}
+
+.notification.success .notification-icon {
+  color: #2ecc71;
+}
+
+.notification.error .notification-icon {
+  color: #e74c3c;
+}
+
+.notification.info .notification-icon {
+  color: #3498db;
+}
+
+.notification-message {
+  flex: 1;
   font-size: 14px;
-  color: white;
-  z-index: 1000;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  animation: fadeInOut 5s forwards;
+  line-height: 1.4;
 }
 
-#successMessage {
-  background-color: #10b981;
+.notification-close {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  margin-left: 15px;
+  padding: 0;
+  font-size: 16px;
+  transition: color 0.2s;
 }
 
-#errorMessage {
-  background-color: #ef4444;
+.notification-close:hover {
+  color: #333;
 }
 
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(-20px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-20px); }
+/* Hidden elements */
+#successMessage, #errorMessage {
+  display: none;
+}
+
+/* Animation for menu toggle */
+@keyframes slidein {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideout {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+/* Animation for notifications */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-20px); }
+}
+
+/* Mobile optimizations */
+@media (max-width: 576px) {
+  .document-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+  
+  .notification {
+    min-width: auto;
+    width: calc(100% - 40px);
+    max-width: none;
+  }
+  
+  .document-tabs {
+    gap: 5px;
+    padding-bottom: 5px;
+  }
+  
+  .tab-btn {
+    padding: 0 12px;
+  }
 }
