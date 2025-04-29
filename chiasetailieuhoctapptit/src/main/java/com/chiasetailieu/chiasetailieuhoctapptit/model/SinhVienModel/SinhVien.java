@@ -1,4 +1,4 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.model;
+package com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel;
 
 import java.time.LocalDate;
 

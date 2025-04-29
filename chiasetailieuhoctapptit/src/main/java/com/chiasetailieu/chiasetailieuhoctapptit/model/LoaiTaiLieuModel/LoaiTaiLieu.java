@@ -1,4 +1,4 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.model;
+package com.chiasetailieu.chiasetailieuhoctapptit.model.LoaiTaiLieuModel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

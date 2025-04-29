@@ -1,6 +1,9 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.model;
+package com.chiasetailieu.chiasetailieuhoctapptit.model.TaiLieuModel;
 
 import java.time.LocalDate;
+
+import com.chiasetailieu.chiasetailieuhoctapptit.model.FileModel.File;
+import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel.SinhVien;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +20,7 @@ public class TaiLieu {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="MaTaiLieu")
-    private int maTaiLieu;
+    private long maTaiLieu;
 
     @Column(name="TieuDe")
     private String tieuDe;
@@ -41,7 +44,7 @@ public class TaiLieu {
     private String maMonHoc;
 
     @Column(name = "MaLoai")
-    private Integer maLoai;
+    private String maLoai;
 
     @Column(name = "MaSinhVien")
     private String maSinhVien;
@@ -64,11 +67,11 @@ public class TaiLieu {
         this.ngayDang = LocalDate.now();
     }
 
-    public int getMaTaiLieu() {
+    public long getMaTaiLieu() {
         return maTaiLieu;
     }
 
-    public void setMaTaiLieu(int maTaiLieu) {
+    public void setMaTaiLieu(long maTaiLieu) {
         this.maTaiLieu = maTaiLieu;
     }
 
@@ -128,11 +131,11 @@ public class TaiLieu {
         this.maMonHoc = maMonHoc;
     }
 
-    public Integer getMaLoai() {
+    public String getMaLoai() {
         return maLoai;
     }
 
-    public void setMaLoai(Integer maLoai) {
+    public void setMaLoai(String maLoai) {
         this.maLoai = maLoai;
     }
 

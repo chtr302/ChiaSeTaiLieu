@@ -1,4 +1,4 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.model;
+package com.chiasetailieu.chiasetailieuhoctapptit.model.TaiLieuModel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,6 +34,9 @@ public class TaiLieuView {
     @Column(name = "Thumbnail")
     private String thumbnail;
 
+    @Column(name = "DuongDanFile")
+    private String duongDanFile;
+
     public long getMaTaiLieu() {
         return maTaiLieu;
     }
@@ -64,5 +67,8 @@ public class TaiLieuView {
 
     public String getThumbnail() {
         return thumbnail;
+    }
+    public String getDuongDanFile(){
+        return duongDanFile;
     }
 }

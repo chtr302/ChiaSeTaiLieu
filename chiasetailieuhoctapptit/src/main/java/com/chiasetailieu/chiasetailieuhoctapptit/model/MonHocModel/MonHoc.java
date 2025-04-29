@@ -1,4 +1,4 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.model;
+package com.chiasetailieu.chiasetailieuhoctapptit.model.MonHocModel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="MonHoc")
+@Table(name="vw_MonHoc")
 public class MonHoc {
     @Id
     @Column(name="MaMon")
@@ -14,6 +14,9 @@ public class MonHoc {
 
     @Column(name="TenMon")
     private String tenMon;
+
+    @Column(name="TaiLieu")
+    private long taiLieu;
 
     public MonHoc(){}
     public MonHoc(String maMon, String tenMon){
@@ -35,6 +38,14 @@ public class MonHoc {
 
     public void setTenMon(String tenMon) {
         this.tenMon = tenMon;
+    }
+
+    public long getTaiLieu() {
+        return taiLieu;
+    }
+
+    public void setTaiLieu(long taiLieu) {
+        this.taiLieu = taiLieu;
     }
 
 }

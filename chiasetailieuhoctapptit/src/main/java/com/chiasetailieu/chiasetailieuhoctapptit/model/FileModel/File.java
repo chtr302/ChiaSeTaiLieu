@@ -1,4 +1,4 @@
-package com.chiasetailieu.chiasetailieuhoctapptit.model;
+package com.chiasetailieu.chiasetailieuhoctapptit.model.FileModel;
 
 import java.time.LocalDate;
 
