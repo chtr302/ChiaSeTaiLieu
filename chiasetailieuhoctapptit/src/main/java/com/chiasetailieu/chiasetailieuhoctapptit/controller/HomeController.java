@@ -7,8 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVien;
-import com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVienService;
+import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel.SinhVien;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVien.SinhVienService;
 
 @Controller
 public class HomeController {
