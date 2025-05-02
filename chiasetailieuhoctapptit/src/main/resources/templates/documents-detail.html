@@ -5,6 +5,7 @@
   <!-- Thông báo -->
   <div th:if="${successMessage}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
   <div th:if="${errorMessage}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>
+  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
   
   <main class="main">
     <section class="document-detail-section">

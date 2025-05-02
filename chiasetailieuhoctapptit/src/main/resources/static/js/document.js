@@ -52,6 +52,7 @@ function initUploadModal() {
     const uploadModal = document.getElementById('upload-modal');
     const closeModalBtn = document.getElementById('close-modal');
     const cancelUploadBtn = document.getElementById('cancel-upload');
+    const uploadForm = document.getElementById('upload-form');
     
     // Open modal
     if (uploadBtn) {
@@ -88,10 +89,18 @@ function initFileUploadHandling() {
     const dropZone = document.querySelector('.file-upload');
     
     if (!fileInput || !uploadDefault || !filePreview || !dropZone) return;
-    
-    // Handle file selection via input
-    fileInput.addEventListener('change', handleFileSelection);
-    
+
+    // Ngăn chặn việc click lan truyền và chỉ trigger một lần
+    dropZone.addEventListener('click', (e) => {
+        if (e.target === fileInput || fileInput.contains(e.target)) return;
+        if (e.target.closest('.remove-file')) return;
+        e.preventDefault();
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change',handleFileSelection);
+
+
     // Handle drag and drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
@@ -115,21 +124,29 @@ function initFileUploadHandling() {
         }, false);
     });
     
-    // Handle dropped files
+    // Handle dropped files with debounce
     dropZone.addEventListener('drop', (e) => {
         const dt = e.dataTransfer;
         const files = dt.files;
-        
         if (files.length > 0) {
-            fileInput.files = files;
-            handleFileSelection();
+            fileInput.files = files; t
+            handleFileSelection();   
         }
     }, false);
     
     // Handle file selection (for both drag-drop and input click)
     function handleFileSelection() {
+        const fileInput = document.getElementById('file-input');
+        const uploadDefault = document.querySelector('.upload-default');
+        const filePreview = document.getElementById('file-preview');
+        
         if (fileInput.files && fileInput.files[0]) {
             const file = fileInput.files[0];
+            
+            // Prevent multiple triggers by checking if preview is already shown
+            if (filePreview.style.display === 'block') {
+                return;
+            }
             
             // Validate file type (PDF only)
             if (file.type !== 'application/pdf') {
@@ -159,8 +176,11 @@ function initFileUploadHandling() {
                 </div>
             `;
             
-            // Add event listener to remove file button
-            document.querySelector('.remove-file').addEventListener('click', resetFileInput);
+            // Add event listener to remove file button once
+            const removeButton = document.querySelector('.remove-file');
+            if (removeButton) {
+                removeButton.addEventListener('click', resetFileInput, { once: true });
+            }
         }
     }
     

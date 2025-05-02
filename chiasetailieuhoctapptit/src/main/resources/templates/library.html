@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('Studucu - Library')"></head>
+<body class="library">
+    <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
+    <div class="main">
+        <main class="main-content">
+            <section class="user-header-section">
+                <img th:if="${sinhVien != null}" th:src="${sinhVien.hinhAnh}" th:alt="${sinhVien.hoVaTen}" class="user-avatar-medium">
+                <img th:unless="${sinhVien != null}" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Default avatar" class="user-avatar-medium">
+                <div class="user-details">
+                    <h2 class="user-name" th:text="${sinhVien != null ? sinhVien.hoVaTen : 'Guest'}">Username</h2>
+                    <p class="user-major">
+                        <i class="fas fa-university icon-major"></i>
+                        <span>Ngành Công nghệ thông tin</span>
+                    </p>
+                    <div class="user-follow-stats">
+                        <div class="follow-item">
+                            <span class="follow-count">0</span>
+                            <span class="follow-label">Followers</span>
+                        </div>
+                        <div class="follow-item">
+                            <span class="follow-count">0</span>
+                            <span class="follow-label">Following</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="statistics-section">
+                <div class="stats-container">
+                    <div class="stat-card uploads-card">
+                        <div class="stat-card-header">
+                            <i class="fas fa-file-alt icon-uploads"></i>
+                            <h3>My Uploads</h3>
+                        </div>
+                        <div class="stat-card-values">
+                            <div class="stat-item">
+                                <span class="stat-number" th:text="${uploadCount}">3</span>
+                                <span class="stat-label">Uploads</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">0</span>
+                                <span class="stat-label">Upvotes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">0</span>
+                                <span class="stat-label">Comments</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card impact-card">
+                        <div class="stat-card-header">
+                            <i class="fas fa-heart icon-impact"></i>
+                            <h3>Impact</h3>
+                        </div>
+                        <div class="stat-card-values impact-values">
+                            <div class="stat-item">
+                                <span class="stat-number">0</span>
+                                <span class="stat-label">Students Helped</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="documents-section card">
+                <div class="library-header">
+                    <h2 class="library-title">My Library <span class="library-count">(89 documents)</span></h2>
+                    <div class="library-filters">
+                        <select class="filter-select">
+                            <option>All Subjects</option>
+                            <option>Economics</option>
+                            <option>Marketing</option>
+                            <option>Finance</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>Sort by: Recently Added</option>
+                            <option>Sort by: Oldest</option>
+                            <option>Sort by: Title</option>
+                        </select>
+                        <button class="btn btn-primary">Filter</button>
+                    </div>
+                </div>
+
+                <div class="document-card" th:each="doc : ${Documents}">
+                    <img th:if="${doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
+                         alt="Document Preview" class="document-image">
+                    <img th:if="${doc.thumbnail == null}" src="/img/default-document.png" 
+                         alt="Document Preview" class="document-image">
+  
+                    <div class="document-details">
+                      <p class="document-title" th:text="${doc.tieuDe}">Document Title</p>
+                      <p class="document-category" th:text="${doc.tenMon}">Category</p>
+                      <p class="document-category" th:text="${doc.tenLoai}">Category</p>
+                      <div class="document-stats">
+                        <span class="views"><i class="fas fa-eye"></i> <span th:text="${doc.luotXem}">5.2K</span></span>
+                        <div class="vote-buttons">
+                          <button class="upvote-btn"><i class="fas fa-arrow-up"></i></button>
+                          <span class="vote-count" th:text="${doc.danhGia}">128</span>
+                          <button class="downvote-btn"><i class="fas fa-arrow-down"></i></button>
+                        </div>
+                        <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc.soLuongBL}">24</span></span>
+                      </div>
+                      <a th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
+                      <button class="save-btn">Lưu</button>
+                    </div>
+                  </div>
+
+                <div class="load-more-container">
+                    <button class="btn btn-secondary">Load more</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div th:replace="fragments/scripts :: scripts"></div>
+    <script th:src="@{/css/library.css}"></script>
+    <script th:src="@{/js/library.js}"></script>
+</body>
+</html>
