@@ -5,7 +5,7 @@
   <!-- Thêm div hiển thị thông báo từ server -->
   <div th:if="${successMessage}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
   <div th:if="${errorMessage}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>  
-  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
+  <!-- <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div> -->
   <main class="main">
     <section class="documents-section">
       <div class="documents-container">
@@ -175,10 +175,10 @@
               <div th:each="course : ${danhSachMonHoc}" class="course-item bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
                   <div class="p-5">
                       <h3 class="text-lg font-semibold text-center text-gray-800 mb-2" th:text="${course.tenMon}">Course Name</h3>
-                      <p class="text-gray-600 text-sm text-center mb-3" th:text="${course.soLuongTaiLieu}">Number documents</p>
-                      <button class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition view-course-btn"
-                              th:data-course="${courses.TaiLieu}"> View Documents
-                      </button>
+                      <p class="text-gray-600 text-sm text-center mb-3" th:text="${course.taiLieu}">Number documents</p>
+                      <!-- <button class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition view-course-btn"
+                              th:data-course="${courses.taiLieu}"> View Documents
+                      </button> -->
                   </div>
               </div>
               </div>
