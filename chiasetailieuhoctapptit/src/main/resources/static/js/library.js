@@ -1,88 +1,56 @@
-document.addEventListener('DOMContentLoaded', function() {
-    loadDocuments();
-    initializeFilters();
-    
-    // Load more button functionality
-    const loadMoreBtn = document.querySelector('.load-more-container .btn-secondary');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', loadMoreDocuments);
-    }
-});
+document.addEventListener('DOMContentLoaded', () => {
+    // Tab functionality
+    const tabButtons = document.querySelectorAll('.tab-button'); // Use the specific class for tabs
 
-function loadDocuments() {
-    const documentGrid = document.querySelector('.document-grid');
-    if (!documentGrid) return;
+    tabButtons.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove 'active' class from all tabs
+            tabButtons.forEach(t => {
+                t.classList.remove('active');
+                // Optionally reset hover styles if needed, though CSS handles this usually
+            });
 
-    // We'll populate this with data from the server later
-    const documents = [
-        {
-            type: 'pdf',
-            title: 'Introduction to Economics',
-            description: 'Lecture notes covering basic economic principles',
-            pages: 12
-        },
-        {
-            type: 'word',
-            title: 'Marketing Strategy',
-            description: 'Case studies and analysis of successful campaigns',
-            pages: 24
-        },
-        // Add more sample documents as needed
-    ];
-
-    documents.forEach(doc => {
-        const card = createDocumentCard(doc);
-        documentGrid.appendChild(card);
+            // Add 'active' class to the clicked tab
+            tab.classList.add('active');
+        });
     });
-}
 
-function createDocumentCard(doc) {
-    const card = document.createElement('div');
-    card.className = 'document-card';
+    // Add any other JavaScript functionality here if needed
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
     
-    const iconClass = getIconClass(doc.type);
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetId = tab.getAttribute('data-tab');
+                const targetContent = document.getElementById(targetId);
     
-    card.innerHTML = `
-        <div class="doc-preview ${doc.type}-preview">
-            <i class="fas ${iconClass}"></i>
-        </div>
-        <h3 class="doc-title">${doc.title}</h3>
-        <p class="doc-description">${doc.description}</p>
-        <div class="doc-footer">
-            <span class="doc-pages">${doc.pages} pages</span>
-            <button class="doc-view-btn">View details</button>
-        </div>
-    `;
+                // Remove active class from all tabs and content
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => {
+                    tc.classList.remove('active');
+                    tc.style.display = 'none'; // Hide content
+                });
     
-    return card;
-}
-
-function getIconClass(type) {
-    const iconMap = {
-        'pdf': 'fa-file-pdf',
-        'word': 'fa-file-word',
-        'excel': 'fa-file-excel',
-        'ppt': 'fa-file-powerpoint',
-        'text': 'fa-file-alt'
-    };
-    return iconMap[type] || 'fa-file';
-}
-
-function initializeFilters() {
-    const filterBtn = document.querySelector('.btn-primary');
-    if (filterBtn) {
-        filterBtn.addEventListener('click', applyFilters);
-    }
-}
-
-function applyFilters() {
-    const subject = document.querySelector('.filter-select:first-child').value;
-    const sortBy = document.querySelector('.filter-select:last-child').value;
-    // We'll implement filtering logic here later
-    console.log('Filtering by:', subject, 'Sort by:', sortBy);
-}
-
-function loadMoreDocuments() {
-    // We'll implement load more functionality here later
-    console.log('Loading more documents...');
-}
+                // Add active class to the clicked tab and corresponding content
+                tab.classList.add('active');
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    targetContent.style.display = 'block'; // Show content
+                } else {
+                    console.warn(`Content for tab '${targetId}' not found.`);
+                }
+            });
+        });
+    
+        // Optional: Ensure the initially active tab's content is visible
+        const initialActiveTab = document.querySelector('.tab-button.active');
+        if (initialActiveTab) {
+            const initialTargetId = initialActiveTab.getAttribute('data-tab');
+            const initialTargetContent = document.getElementById(initialTargetId);
+            if (initialTargetContent) {
+                 initialTargetContent.style.display = 'block';
+            }
+        }
+    });
+});
