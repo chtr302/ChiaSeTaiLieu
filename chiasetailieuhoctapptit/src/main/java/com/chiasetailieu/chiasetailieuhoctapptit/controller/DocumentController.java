@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -263,5 +264,399 @@ public class DocumentController {
         }
     }
 
+    @GetMapping("/all")
+    public String showAllDocuments(
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "sort", defaultValue = "newest") String sort,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "course", required = false) String course,
+            @RequestParam(value = "semester", required = false) String semester,
+            Model model) {
+        
+        if (principal == null) {
+            return "redirect:/signin";
+        }
+        
+        try {
+            SinhVien sinhVien = sinhVienService.saveOrUpdateSinhVien(principal);
+            model.addAttribute("sinhVien", sinhVien);
+            
+            List<MonHoc> danhSachMonHoc = monHocService.getAllMonHoc();
+            model.addAttribute("danhSachMonHoc", danhSachMonHoc);
+
+            List<LoaiTaiLieu> loaiTaiLieu = loaiTaiLieuService.getLoaiTaiLieu();
+            model.addAttribute("loaiTaiLieu", loaiTaiLieu);
+            
+            // Get all documents with filters
+            List<TaiLieuView> allDocuments = taiLieuViewService.getTaiLieu();
+            
+            // Apply filters
+            if (type != null && !type.isEmpty()) {
+                allDocuments = allDocuments.stream()
+                    .filter(doc -> doc.getTenLoai().equals(type))
+                    .toList();
+            }
+            
+            if (course != null && !course.isEmpty()) {
+                allDocuments = allDocuments.stream()
+                    .filter(doc -> doc.getTenMon().equals(course))
+                    .toList();
+            }
+            
+            // Apply sorting - based on available fields in TaiLieuView
+            switch (sort) {
+                case "views":
+                    allDocuments = allDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getLuotXem(), a.getLuotXem()))
+                        .toList();
+                    break;
+                case "rating":
+                    allDocuments = allDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getDanhGia(), a.getDanhGia()))
+                        .toList();
+                    break;
+                default:
+                    // Default is by ID (newest assuming IDs are sequential)
+                    allDocuments = allDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getMaTaiLieu(), a.getMaTaiLieu()))
+                        .toList();
+                    break;
+            }
+            
+            // Pagination
+            int pageSize = 16; // Number of documents per page
+            int totalDocuments = allDocuments.size();
+            int totalPages = (int) Math.ceil((double) totalDocuments / pageSize);
+            
+            // Ensure page is within valid range
+            if (page < 1) page = 1;
+            if (page > totalPages && totalPages > 0) page = totalPages;
+            
+            // Get documents for current page
+            int startIdx = (page - 1) * pageSize;
+            int endIdx = Math.min(startIdx + pageSize, totalDocuments);
+            
+            List<TaiLieuView> currentPageDocuments = 
+                (startIdx < totalDocuments) ? allDocuments.subList(startIdx, endIdx) : List.of();
+            
+            // Add to model
+            model.addAttribute("Documents", currentPageDocuments);
+            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("selectedSort", sort);
+            model.addAttribute("selectedType", type);
+            model.addAttribute("selectedCourse", course);
+            model.addAttribute("selectedSemester", semester);
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải trang all documents: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return "all-documents";
+    }
+
+    @GetMapping("/courses")
+    public String showCourses(
+            @AuthenticationPrincipal OidcUser principal,
+            Model model) {
+        
+        if (principal == null) {
+            return "redirect:/signin";
+        }
+        
+        try {
+            SinhVien sinhVien = sinhVienService.saveOrUpdateSinhVien(principal);
+            model.addAttribute("sinhVien", sinhVien);
+            
+            List<MonHoc> danhSachMonHoc = monHocService.getAllMonHoc();
+            model.addAttribute("danhSachMonHoc", danhSachMonHoc);
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải trang courses: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return "courses";
+    }
     
+    @GetMapping("/categories")
+    public String showCategories(
+            @AuthenticationPrincipal OidcUser principal,
+            Model model) {
+        
+        if (principal == null) {
+            return "redirect:/signin";
+        }
+        
+        try {
+            SinhVien sinhVien = sinhVienService.saveOrUpdateSinhVien(principal);
+            model.addAttribute("sinhVien", sinhVien);
+            
+            List<LoaiTaiLieu> loaiTaiLieu = loaiTaiLieuService.getLoaiTaiLieu();
+            model.addAttribute("loaiTaiLieu", loaiTaiLieu);
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải trang categories: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return "categories";
+    }
+    
+    @GetMapping("/most-viewed")
+    public String showMostViewed(
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model) {
+        
+        if (principal == null) {
+            return "redirect:/signin";
+        }
+        
+        try {
+            SinhVien sinhVien = sinhVienService.saveOrUpdateSinhVien(principal);
+            model.addAttribute("sinhVien", sinhVien);
+            
+            List<MonHoc> danhSachMonHoc = monHocService.getAllMonHoc();
+            model.addAttribute("danhSachMonHoc", danhSachMonHoc);
+
+            List<LoaiTaiLieu> loaiTaiLieu = loaiTaiLieuService.getLoaiTaiLieu();
+            model.addAttribute("loaiTaiLieu", loaiTaiLieu);
+            
+            // Get all documents and sort by view count
+            List<TaiLieuView> allDocuments = taiLieuViewService.getTaiLieu().stream()
+                .sorted((a, b) -> Long.compare(b.getLuotXem(), a.getLuotXem()))
+                .toList();
+            
+            // Pagination
+            int pageSize = 16; // Number of documents per page
+            int totalDocuments = allDocuments.size();
+            int totalPages = (int) Math.ceil((double) totalDocuments / pageSize);
+            
+            // Ensure page is within valid range
+            if (page < 1) page = 1;
+            if (page > totalPages && totalPages > 0) page = totalPages;
+            
+            // Get documents for current page
+            int startIdx = (page - 1) * pageSize;
+            int endIdx = Math.min(startIdx + pageSize, totalDocuments);
+            
+            List<TaiLieuView> currentPageDocuments = 
+                (startIdx < totalDocuments) ? allDocuments.subList(startIdx, endIdx) : List.of();
+            
+            // Add to model
+            model.addAttribute("Documents", currentPageDocuments);
+            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("currentPage", page);
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải trang most viewed: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return "most-viewed";
+    }
+    
+    @GetMapping("/course/{courseId}")
+    public String showCourseDocuments(
+            @PathVariable("courseId") String courseId,
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "sort", defaultValue = "newest") String sort,
+            @RequestParam(value = "type", required = false) String type,
+            Model model) {
+        
+        if (principal == null) {
+            return "redirect:/signin";
+        }
+        
+        try {
+            SinhVien sinhVien = sinhVienService.saveOrUpdateSinhVien(principal);
+            model.addAttribute("sinhVien", sinhVien);
+            
+            // Get course information
+            Optional<MonHoc> courseOptional = monHocService.getMonHocByMa(courseId);
+            if (courseOptional.isEmpty()) {
+                return "redirect:/documents/courses?error=course_not_found";
+            }
+            MonHoc course = courseOptional.get();
+            model.addAttribute("course", course);
+            
+            // Add course-related data
+            model.addAttribute("isFollowing", false); // This would be based on user data
+            
+            List<LoaiTaiLieu> loaiTaiLieu = loaiTaiLieuService.getLoaiTaiLieu();
+            model.addAttribute("loaiTaiLieu", loaiTaiLieu);
+            
+            // Get documents for this course
+            List<TaiLieuView> allDocuments = taiLieuViewService.getTaiLieu();
+            List<TaiLieuView> courseDocuments = allDocuments.stream()
+                .filter(doc -> doc.getTenMon().equals(course.getTenMon()))
+                .toList();
+            
+            // Apply type filter if provided
+            if (type != null && !type.isEmpty()) {
+                courseDocuments = courseDocuments.stream()
+                    .filter(doc -> doc.getTenLoai().equals(type))
+                    .toList();
+            }
+            
+            // Apply sorting
+            switch (sort) {
+                case "views":
+                    courseDocuments = courseDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getLuotXem(), a.getLuotXem()))
+                        .toList();
+                    break;
+                case "rating":
+                    courseDocuments = courseDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getDanhGia(), a.getDanhGia()))
+                        .toList();
+                    break;
+                default:
+                    // Default is by ID (newest)
+                    courseDocuments = courseDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getMaTaiLieu(), a.getMaTaiLieu()))
+                        .toList();
+                    break;
+            }
+            
+            // Pagination
+            int pageSize = 16; // Number of documents per page
+            int totalDocuments = courseDocuments.size();
+            int totalPages = (int) Math.ceil((double) totalDocuments / pageSize);
+            
+            // Ensure page is within valid range
+            if (page < 1) page = 1;
+            if (page > totalPages && totalPages > 0) page = totalPages;
+            
+            // Get documents for current page
+            int startIdx = (page - 1) * pageSize;
+            int endIdx = Math.min(startIdx + pageSize, totalDocuments);
+            
+            List<TaiLieuView> currentPageDocuments = 
+                (startIdx < totalDocuments) ? courseDocuments.subList(startIdx, endIdx) : List.of();
+            
+            // Add to model
+            model.addAttribute("Documents", currentPageDocuments);
+            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("selectedSort", sort);
+            model.addAttribute("selectedType", type);
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải trang course documents: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/documents/courses?error=error_loading_course";
+        }
+        
+        return "course-documents";
+    }
+    
+    @GetMapping("/category/{categoryId}")
+    public String showCategoryDocuments(
+            @PathVariable("categoryId") String categoryId,
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "sort", defaultValue = "newest") String sort,
+            @RequestParam(value = "course", required = false) String course,
+            Model model) {
+        
+        if (principal == null) {
+            return "redirect:/signin";
+        }
+        
+        try {
+            SinhVien sinhVien = sinhVienService.saveOrUpdateSinhVien(principal);
+            model.addAttribute("sinhVien", sinhVien);
+            
+            // Get category information
+            Optional<LoaiTaiLieu> categoryOptional = loaiTaiLieuService.getLoaiTaiLieuByMa(categoryId);
+            if (categoryOptional.isEmpty()) {
+                return "redirect:/documents/categories?error=category_not_found";
+            }
+            LoaiTaiLieu category = categoryOptional.get();
+            model.addAttribute("category", category);
+            
+            List<MonHoc> danhSachMonHoc = monHocService.getAllMonHoc();
+            model.addAttribute("danhSachMonHoc", danhSachMonHoc);
+            
+            // Add isFollowing attribute for the category (similar to course)
+            model.addAttribute("isFollowing", false);
+            
+            // Get documents for this category
+            List<TaiLieuView> allDocuments = taiLieuViewService.getTaiLieu();
+            List<TaiLieuView> categoryDocuments = allDocuments.stream()
+                .filter(doc -> doc.getTenLoai().equals(category.getTenLoai()))
+                .toList();
+            
+            // Apply course filter if provided 
+            if (course != null && !course.isEmpty()) {
+                final String courseId = course;
+                // Find the corresponding course name
+                Optional<MonHoc> monHoc = danhSachMonHoc.stream()
+                    .filter(mon -> mon.getMaMon().equals(courseId))
+                    .findFirst();
+                
+                if (monHoc.isPresent()) {
+                    final String tenMon = monHoc.get().getTenMon();
+                    categoryDocuments = categoryDocuments.stream()
+                        .filter(doc -> doc.getTenMon().equals(tenMon))
+                        .toList();
+                }
+            }
+            
+            // Apply sorting
+            switch (sort) {
+                case "views":
+                    categoryDocuments = categoryDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getLuotXem(), a.getLuotXem()))
+                        .toList();
+                    break;
+                case "rating":
+                    categoryDocuments = categoryDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getDanhGia(), a.getDanhGia()))
+                        .toList();
+                    break;
+                default:
+                    // Default is by ID (newest)
+                    categoryDocuments = categoryDocuments.stream()
+                        .sorted((a, b) -> Long.compare(b.getMaTaiLieu(), a.getMaTaiLieu()))
+                        .toList();
+                    break;
+            }
+            
+            // Pagination
+            int pageSize = 16; // Number of documents per page
+            int totalDocuments = categoryDocuments.size();
+            int totalPages = (int) Math.ceil((double) totalDocuments / pageSize);
+            
+            // Ensure page is within valid range
+            if (page < 1) page = 1;
+            if (page > totalPages && totalPages > 0) page = totalPages;
+            
+            // Get documents for current page
+            int startIdx = (page - 1) * pageSize;
+            int endIdx = Math.min(startIdx + pageSize, totalDocuments);
+            
+            List<TaiLieuView> currentPageDocuments = 
+                (startIdx < totalDocuments) ? categoryDocuments.subList(startIdx, endIdx) : List.of();
+            
+            // Add to model
+            model.addAttribute("Documents", currentPageDocuments);
+            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("selectedSort", sort);
+            model.addAttribute("selectedCourse", course);
+            
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải trang category documents: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/documents/categories?error=error_loading_category";
+        }
+        
+        return "category-documents";
+    }
 }

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('Course List - All Courses')"></head>
+<body class="documents-page">
+  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
+  <main class="main">
+    <section class="documents-section">
+      <div class="documents-container">
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-header">
+            <div class="search-area">
+              <button id="menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+              </button>
+              <div class="search-bar">
+                <input type="text" placeholder="Search for courses..." class="search-input document-search">
+                <i class="fas fa-search search-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Container -->
+          <div class="content-container">
+            <div class="courses-grid-full">
+              <div th:each="course : ${danhSachMonHoc}" class="course-item" th:data-course-id="${course.maMon}">
+                <div class="course-content">
+                  <div class="course-icon">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <h3 class="course-name" th:text="${course.tenMon}">Course Name</h3>
+                  <p class="course-doc-count" th:text="${course.taiLieu + ' documents'}">10 documents</p>
+                  <a th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
+                </div>
+              </div>
+              
+              <!-- Empty state -->
+              <div th:if="${#lists.isEmpty(danhSachMonHoc)}" class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-book"></i>
+                </div>
+                <h3 class="empty-title">No courses found</h3>
+                <p class="empty-message">There are no courses available yet.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <link th:href="@{/css/documents.css}" rel="stylesheet">
+  <script th:src="@{/js/document.js}"></script>
+  <style>
+    .courses-grid-full {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 24px;
+    }
+    
+    .course-item {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    
+    .course-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .course-content {
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .course-icon {
+      width: 60px;
+      height: 60px;
+      background-color: #e0f2fe;
+      color: #3b82f6;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 24px;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    
+    .course-item:hover .course-icon {
+      background-color: #3b82f6;
+      color: white;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Search functionality
+      const searchInput = document.querySelector('.course-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchValue = this.value.toLowerCase();
+          const courseItems = document.querySelectorAll('.course-item');
+          
+          courseItems.forEach(item => {
+            const courseName = item.querySelector('.course-name').textContent.toLowerCase();
+            if (courseName.includes(searchValue)) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('Document Categories - All Categories')"></head>
+<body class="documents-page">
+  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
+  <main class="main">
+    <section class="documents-section">
+      <div class="documents-container">
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-header">
+            <div class="search-area">
+              <button id="menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+              </button>
+              <div class="search-bar">
+                <input type="text" placeholder="Search for categories..." class="search-input document-search">
+                <i class="fas fa-search search-icon"></i>
+              </div>
+            </div>
+          </div>
+
+          
+          <!-- Content Container -->
+          <div class="content-container">
+            <div class="categories-grid-full">
+              <div th:each="category : ${loaiTaiLieu}" class="category-item" th:data-category-id="${category.maLoai}">
+                <div class="category-content">
+                  <div class="category-icon">
+                    <i class="fas fa-folder"></i>
+                  </div>
+                  <h3 class="category-name" th:text="${category.tenLoai}">Category Name</h3>
+                  <a th:href="@{'/documents/category/' + ${category.maLoai}}" class="category-link">View Documents</a>
+                </div>
+              </div>
+              
+              <!-- Empty state -->
+              <div th:if="${#lists.isEmpty(loaiTaiLieu)}" class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-folder"></i>
+                </div>
+                <h3 class="empty-title">No categories found</h3>
+                <p class="empty-message">There are no document categories available yet.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <link th:href="@{/css/documents.css}" rel="stylesheet">
+  <script th:src="@{/js/document.js}"></script>
+  <style>
+    .categories-grid-full {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 24px;
+    }
+    
+    .category-item {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    
+    .category-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .category-content {
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .category-icon {
+      width: 60px;
+      height: 60px;
+      background-color: #fef3c7;
+      color: #d97706;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 24px;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    
+    .category-item:hover .category-icon {
+      background-color: #d97706;
+      color: white;
+    }
+    
+    .category-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0 0 15px;
+    }
+    
+    .category-link {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #f3f4f6;
+      color: #4b5563;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    
+    .category-link:hover {
+      background-color: #d97706;
+      color: white;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Search functionality
+      const searchInput = document.querySelector('.category-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchValue = this.value.toLowerCase();
+          const categoryItems = document.querySelectorAll('.category-item');
+          
+          categoryItems.forEach(item => {
+            const categoryName = item.querySelector('.category-name').textContent.toLowerCase();
+            if (categoryName.includes(searchValue)) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html> 

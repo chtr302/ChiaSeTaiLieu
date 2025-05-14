@@ -10,9 +10,20 @@ body.documents-page {
 }
 
 .main {
-  padding-top: 70px; /* Ensure content isn't hidden by fixed header */
+  overflow: auto;
 }
 
+/* Header */
+nav {
+  position: fixed;  /* Đảm bảo header luôn cố định ở trên cùng */
+  top: 0;           /* Đặt header ở đầu trang */
+  left: 0;
+  width: 100%;      /* Đảm bảo header chiếm toàn bộ chiều rộng */
+  z-index: 20;      /* Đảm bảo header nằm trên các phần tử khác */
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tạo bóng cho header */
+  padding: 0 20px;  /* Thêm padding cho header */
+}
 /* Layout */
 .documents-section {
   display: flex;
@@ -28,16 +39,20 @@ body.documents-page {
 
 /* Sidebar */
 .sidebar {
+  position: fixed; /* Giữ sidebar cố định */
+  top: 80px;
+  left: 0;
   width: 260px;
-  border-right: 1px solid #e5e7eb;
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  height: calc(100vh - 70px);
-  position: sticky;
-  top: 70px;
+  height: calc(100vh - 70px); /* Chiều cao bằng toàn bộ chiều cao màn hình trừ chiều cao của header */
   z-index: 10;
+  background-color: white;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
   transition: transform 0.3s ease;
+}
+.main-content {
+  margin-left: 260px;
+  width: calc(100% - 260px);
 }
 
 @media (max-width: 768px) {
@@ -55,6 +70,7 @@ body.documents-page {
 
   .main-content {
     width: 100%;
+    margin-left: 0;
   }
 }
 
@@ -75,8 +91,21 @@ body.documents-page {
 }
 
 .user-profile {
+  margin-bottom: 16px;
+}
+
+.user-profile-link {
   display: flex;
   align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.user-profile-link:hover {
+  background-color: #f3f4f6;
 }
 
 .avatar {
@@ -112,7 +141,7 @@ body.documents-page {
 }
 
 .sidebar-item {
-  padding: 10px 12px;
+  padding: 0;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
@@ -120,9 +149,25 @@ body.documents-page {
   margin-bottom: 4px;
 }
 
-.sidebar-item:hover {
+.sidebar-item a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.sidebar-item:hover a {
   background-color: #f3f4f6;
   color: #3b82f6;
+}
+
+.sidebar-item.active a {
+  background-color: #ebf5ff;
+  color: #3b82f6;
+  font-weight: 500;
 }
 
 .sidebar-item i {
@@ -131,16 +176,80 @@ body.documents-page {
   text-align: center;
 }
 
-.sidebar-item a {
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  align-items: center;
+.dropdown-icon {
+  margin-left: auto;
+  font-size: 12px;
+  transition: transform 0.2s;
 }
 
-.sidebar-footer {
-  padding: 16px;
-  border-top: 1px solid #e5e7eb;
+.sidebar-item.dropdown.open .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.dropdown-content {
+  display: none;
+  padding: 5px 0 5px 36px;
+  font-size: 13px;
+  background-color: #f9fafb;
+  border-radius: 0 0 6px 6px;
+}
+
+.sidebar-item.dropdown.open .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #6b7280;
+  border-radius: 4px;
+}
+
+.dropdown-content a:hover {
+  background-color: #f3f4f6;
+  color: #3b82f6;
+}
+
+.dropdown-content a i {
+  margin-right: 8px;
+  width: 14px;
+  text-align: center;
+}
+
+.dropdown-content .recent-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dropdown-content .recent-item:last-child {
+  border-bottom: none;
+}
+
+.recent-item-icon {
+  margin-right: 8px;
+  width: 16px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.recent-item-details {
+  flex: 1;
+}
+
+.recent-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 4px 0;
+  color: #374151;
+}
+
+.recent-item-time {
+  font-size: 11px;
+  color: #9ca3af;
 }
 
 .upload-button {
@@ -167,23 +276,8 @@ body.documents-page {
   margin-right: 8px;
 }
 
+
 /* Main content */
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Ensure the search bar stays fixed at the top when scrolling */
-.content-header {
-  position: sticky;
-  top: 0; /* Adjusted from 70px to 0 to stick right below the main navbar */
-  z-index: 10;
-  background-color: white;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-
 .search-area {
   display: flex;
   align-items: center;
@@ -255,7 +349,6 @@ body.documents-page {
   position: sticky; /* Make tabs sticky */
   top: 69px; /* Stick below the header (adjust based on header height) */
   z-index: 9; /* Lower than header */
-
 }
 
 .document-tabs {
@@ -364,31 +457,12 @@ body.documents-page {
   font-size: 14px;
 }
 
-.apply-filter-btn {
-  width: 100%;
-  padding: 8px;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: background-color 0.2s;
-}
-
-.apply-filter-btn:hover {
-  background-color: #2563eb;
-}
-
 /* Content Container */
 .content-container {
   padding: 24px;
   background-color: #f9fafb;
   min-height: calc(100vh - 70px - 69px - 56px); /* Adjust min-height considering sticky elements */
 }
-
 
 .tab-content.active {
   /* display: block;  -- JS likely handles this by removing/adding 'hidden' */
@@ -406,35 +480,37 @@ body.documents-page {
 /* Documents Grid */
 .document-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
 }
 
+/* Card Styling */
 .document-card {
-  background-color: white;
+  padding: 12px;
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb; /* Added subtle border */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  background-color: #fff;
+  font-size: 0.85rem;
+  height: auto;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .document-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1); /* Slightly enhanced shadow */
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
 }
 
+/* Thumbnail */
 .document-image {
   width: 100%;
-  height: 160px;
-  object-fit: contain; /* Changed from cover to contain */
-  background-color: #f9fafb; /* Added background color */
-  border-bottom: 1px solid #e5e7eb;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
 }
 
+/* Content */
 .document-details {
-  padding: 16px;
+  padding: 0.5rem;
 }
 
 .document-title {
@@ -443,14 +519,14 @@ body.documents-page {
   color: #1f2937;
   margin: 0 0 8px 0;
   line-height: 1.3;
-  height: 42px; /* Fixed height for 2 lines */
+  height: 42px;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -moz-box;
 }
-
 
 .document-category {
   font-size: 13px;
@@ -459,20 +535,27 @@ body.documents-page {
   display: block;
 }
 
-.document-stats {
+/* Stats Row */
+.document-stats-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 16px;
+  margin: 10px 0 16px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.views i {
-  margin-right: 4px;
-  color: #9ca3af;
+/* Vote Section with Oval Frame */
+.vote-oval {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f9fafb;
+  padding: 6px 12px;
+  border-radius: 9999px; /* fully rounded (oval) */
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-
 .vote-buttons {
   display: flex;
   align-items: center;
@@ -484,6 +567,7 @@ body.documents-page {
   border: none;
   padding: 4px;
   cursor: pointer;
+  font-size: 14px;
   color: #6b7280;
   transition: color 0.2s;
 }
@@ -497,23 +581,35 @@ body.documents-page {
 }
 
 .vote-count {
-  font-weight: 500;
-  margin: 0 2px;
+  font-weight: 600;
+  color: #374151;
+  min-width: 24px;
+  text-align: center;
 }
 
-.comments {
+/* Views & Comments */
+.view-comment-group {
   display: flex;
-  align-items: center;
-  cursor: pointer;
+  gap: 14px;
+  font-size: 13px;
+  color: #6b7280;
 }
 
+.views i,
 .comments i {
   margin-right: 4px;
   color: #9ca3af;
 }
+/* Buttons */
+.document-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
 
-.document-card .view-btn, .document-card .save-btn {
-  width: 48%;
+.document-card .view-btn,
+.document-card .save-btn {
+  width: 100%;
   padding: 8px 0;
   border: none;
   border-radius: 6px;
@@ -521,23 +617,21 @@ body.documents-page {
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
+  text-align: center;
 }
 
-/* Add specific class for 'View' button if it's an anchor tag */
+/* View Button (Anchor) */
 .document-card a.view-btn {
-  display: inline-block; /* Ensure anchor behaves like a button */
-  text-align: center;   /* Center text within the anchor */
-  text-decoration: none; /* Remove underline */
+  text-decoration: none;
   background-color: #3b82f6;
   color: white;
-  margin-right: 4%;
 }
 
 .document-card a.view-btn:hover {
   background-color: #2563eb;
 }
 
-
+/* Save Button */
 .document-card .save-btn {
   background-color: #f3f4f6;
   color: #374151;
@@ -548,6 +642,54 @@ body.documents-page {
   background-color: #e5e7eb;
 }
 
+/* Voted State (optional if using JS to toggle .active) */
+.upvote-btn.active {
+  color: #059669;
+}
+
+.downvote-btn.active {
+  color: #dc2626;
+}
+.document-category p {
+  margin: 2px 0;
+  display: flex;
+  align-items: center;
+}
+
+.document-category i {
+  margin-right: 6px;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .document-grid {
+    grid-template-columns: 1fr;
+    padding: 0 12px;
+  }
+
+  .document-image {
+    height: 100px;
+  }
+
+  .document-title {
+    font-size: 15px;
+  }
+
+  .document-stats-row {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .view-comment-group {
+    gap: 10px;
+  }
+  
+  .document-buttons {
+    flex-direction: row;
+  }
+}
 /* Courses Container */
 .courses-container {
   padding: 16px 0;
@@ -584,7 +726,6 @@ body.documents-page {
   display: flex;
   gap: 10px; /* Add gap between course code and document count */
 }
-
 
 .course-code {
   font-size: 13px;
@@ -630,10 +771,13 @@ body.documents-page {
   background-color: #f3f4f6;
 }
 
-.page-btn.active {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+.page-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-btn.disabled:hover {
+  background-color: transparent;
 }
 
 .page-numbers {
@@ -641,17 +785,58 @@ body.documents-page {
   align-items: center;
 }
 
+.page-number {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: none;
+  border: 1px solid #d1d5db;
+  margin: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #374151;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.page-number:hover {
+  background-color: #f3f4f6;
+}
+
+.page-number.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  cursor: default;
+}
+
 .page-ellipsis {
   margin: 0 4px;
   color: #6b7280;
 }
 
-/* Empty message */
-.empty-message {
-  padding: 24px;
+/* No Documents Message */
+.no-documents {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
   text-align: center;
   color: #6b7280;
+}
+
+.no-documents i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: #9ca3af;
+}
+
+.no-documents p {
   font-size: 16px;
+  margin: 0;
 }
 
 /* Upload Modal */
@@ -1194,4 +1379,454 @@ body.documents-page {
 }
 .type-badge:hover {
   transform: scale(1.05);
+}
+
+/* Section headers */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0 20px;
+  padding: 0 20px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.see-more-btn {
+  display: flex;
+  align-items: center;
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.see-more-btn:hover {
+  color: #2563eb;
+}
+
+.see-more-btn i {
+  margin-left: 6px;
+  font-size: 12px;
+}
+
+/* Courses grid */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.course-item {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.course-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.course-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.course-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #e0f2fe;
+  color: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  font-size: 24px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.course-item:hover .course-icon {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.course-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px;
+}
+
+.course-doc-count {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 15px;
+}
+
+.course-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.course-link:hover {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Categories grid */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.category-item {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.category-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.category-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.category-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #fef3c7;
+  color: #d97706;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  font-size: 24px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.category-item:hover .category-icon {
+  background-color: #d97706;
+  color: white;
+}
+
+.category-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 15px;
+}
+
+.category-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.category-link:hover {
+  background-color: #d97706;
+  color: white;
+}
+
+/* Filter Section */
+.filter-section {
+  padding: 20px 24px;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.filter-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.filter-group {
+  margin-bottom: 0;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #4b5563;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.filter-actions {
+  display: flex;
+  flex-direction: row; /* mặc định là row */
+  align-items: center;
+  gap: 8px; /* khoảng cách giữa Reset và Apply */
+}
+.apply-filter-btn {
+  padding: 10px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.apply-filter-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+.reset-filter-btn {
+  padding: 10px 16px;
+  background-color: #f3f4f6; /* Màu nền sáng */
+  color: #1f2937; /* Màu chữ xám đậm */
+  border: 1px solid #d1d5db; /* Viền nhẹ */
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px; /* Tạo khoảng cách với nút Apply */
+}
+
+.reset-filter-btn:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    margin-bottom: 12px;
+  }
+}
+
+/* Breadcrumb styles */
+.breadcrumb {
+  padding: 12px 24px;
+  font-size: 14px;
+  color: #6b7280;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.breadcrumb a {
+  color: #3b82f6;
+  text-decoration: none;
+  margin-right: 4px;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Course header section */
+.course-header-section {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.course-header-content {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.course-icon.large {
+  width: 80px;
+  height: 80px;
+  background-color: #e0f2fe;
+  color: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-right: 24px;
+  flex-shrink: 0;
+}
+
+.course-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.course-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+.course-details {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.document-count, .quiz-count, .student-count {
+  display: flex;
+  align-items: center;
+}
+
+.document-count i, .quiz-count i, .student-count i {
+  margin-right: 6px;
+  color: #3b82f6;
+}
+
+.course-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.follow-btn, .following-btn, .prepare-exam-btn, .share-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border: none;
+}
+
+.follow-btn i, .following-btn i, .prepare-exam-btn i, .share-btn i {
+  margin-right: 8px;
+}
+
+.follow-btn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.follow-btn:hover {
+  background-color: #2563eb;
+}
+
+.following-btn {
+  background-color: #e0f2fe;
+  color: #3b82f6;
+}
+
+.following-btn:hover {
+  background-color: #dbeafe;
+}
+
+.prepare-exam-btn {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.prepare-exam-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.share-btn {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.share-btn:hover {
+  background-color: #e5e7eb;
+}
+
+@media (max-width: 768px) {
+  .course-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .course-icon.large {
+    margin-bottom: 16px;
+  }
+  
+  .course-actions {
+    margin-top: 20px;
+    width: 100%;
+    justify-content: space-between;
+  }
 }
