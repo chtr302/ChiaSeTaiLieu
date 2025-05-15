@@ -10,41 +10,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if (errorMessage && errorMessage.textContent.trim() !== '') {
         showNotification(errorMessage.textContent, 'error');
     }
-    
-    // Tab switching functionality
+
     initTabSwitching();
-    
-    // Upload document functionality
+
     initUploadModal();
-    
-    // File upload handling with drag and drop
+
     initFileUploadHandling();
 
-    // Initialize pagination on page load
     renderPage(currentPage);
 
-    // Initialize 'By Course' tab functionality
     initCourseTabFunctionality();
 });
 
-// Tab switching functionality
 function initTabSwitching() {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
 
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Remove active class from all buttons and tabs
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => {
                 content.classList.remove('active');
                 content.classList.add('hidden');
             });
 
-            // Add active class to clicked button
             button.classList.add('active');
 
-            // Show corresponding tab content
             const targetTab = button.dataset.target;
             const tabContent = document.getElementById(targetTab);
             if (tabContent) {
@@ -55,33 +46,29 @@ function initTabSwitching() {
     });
 }
 
-// Upload modal functionality
 function initUploadModal() {
     const uploadBtn = document.getElementById('upload-btn');
     const uploadModal = document.getElementById('upload-modal');
     const closeModalBtn = document.getElementById('close-modal');
     const cancelUploadBtn = document.getElementById('cancel-upload');
     const uploadForm = document.getElementById('upload-form');
-    
-    // Open modal
+
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {
             uploadModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         });
     }
-    
-    // Close modal
+
     const closeModal = () => {
         uploadModal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Enable scrolling
+        document.body.style.overflow = 'auto';
         resetUploadForm();
     };
     
     if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
     if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', closeModal);
     
-    // Close modal when clicking outside
     uploadModal.addEventListener('click', (event) => {
         if (event.target === uploadModal) {
             closeModal();
@@ -211,12 +198,10 @@ function initFileUploadHandling() {
     
     // Handle form submission
     uploadForm.addEventListener('submit', (event) => {
-        // Form validation is handled by HTML5 required attributes
-        // You can add additional validation here if needed
+        // 
     });
 }
 
-// Helper function to format file size
 function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
@@ -320,7 +305,7 @@ function changePage(direction) {
     renderPage(currentPage);
 }
 
-// --- NEW: Functionality for 'By Course' Tab ---
+
 function initCourseTabFunctionality() {
     const coursesTab = document.getElementById('courses'); // The main container for the courses tab
     if (!coursesTab) return; // Don't proceed if the tab doesn't exist
@@ -417,3 +402,85 @@ function fetchDocumentsForCourse(courseId, container) {
             container.innerHTML = '<p class="text-red-500 text-center col-span-full">Failed to load documents. Please try again later.</p>';
         });
 }
+
+// AI
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('file-input');
+    const aiSummarizeBtn = document.getElementById('ai-summarize-btn');
+    const aiSummaryLoading = document.getElementById('ai-summary-loading');
+    const moTaTextarea = document.getElementById('moTa');
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+    
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (file && file.type === 'application/pdf') {
+        aiSummarizeBtn.disabled = false;
+      } else {
+        aiSummarizeBtn.disabled = true;
+      }
+    });
+
+    aiSummarizeBtn.addEventListener('click', function() {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Vui lòng chọn file PDF để tóm tắt.');
+        return;
+      }
+      
+      aiSummarizeBtn.disabled = true;
+      aiSummaryLoading.style.display = 'flex';
+      
+      // Tạo FormData để gửi file
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      // Gọi API để tóm tắt
+      fetch('/ai/summarize-upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            [csrfHeader]: csrfToken  // Thêm CSRF token vào header
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Lỗi kết nối đến máy chủ');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Ẩn trạng thái đang xử lý
+        aiSummaryLoading.style.display = 'none';
+        aiSummarizeBtn.disabled = false;
+        
+        if (data.error) {
+          alert(`Lỗi: ${data.message || data.error}`);
+          return;
+        }
+
+        if (data.summary) {
+          moTaTextarea.value = data.summary;
+
+          moTaTextarea.style.height = 'auto';
+          moTaTextarea.style.height = (moTaTextarea.scrollHeight) + 'px';
+        }
+      })
+      .catch(error => {
+        aiSummaryLoading.style.display = 'none';
+        aiSummarizeBtn.disabled = false;
+
+        console.error('Error:', error);
+        alert(`Lỗi: ${error.message}`);
+      });
+    });
+  });
+
+  formData.append('file', file);
+  fetch('/ai/test-upload', {
+    method: 'POST',
+    body: formData,
+  })
+  .then(response => response.json())
+  .then(data => console.log('Test Upload Response:', data))
+  .catch(error => console.error('Test Upload Error:', error));

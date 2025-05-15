@@ -1,8 +1,6 @@
-// PDF.js configuration
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Show notification messages if present
   if (document.getElementById('successMessage')) {
     showNotification(document.getElementById('successMessage').textContent, 'success');
   }
@@ -10,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     showNotification(document.getElementById('errorMessage').textContent, 'error');
   }
   
-  // Mobile menu toggle
   const menuToggle = document.getElementById('menu-toggle');
   const sidebar = document.getElementById('sidebar');
   
@@ -20,10 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // PDF Viewer Initialization
   initPdfViewer();
   
-  // Vote buttons
   const upvoteBtn = document.querySelector('.vote-btn.upvote');
   const downvoteBtn = document.querySelector('.vote-btn.downvote');
   
@@ -41,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Comment functionality
   const commentInput = document.getElementById('comment-input');
   const postCommentBtn = document.getElementById('post-comment');
   
@@ -53,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
     
-    // Allow posting comment with Enter key (Shift+Enter for new line)
     commentInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -65,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Report Modal
   const reportBtn = document.getElementById('report-document');
   const reportModal = document.getElementById('report-modal');
   const closeReportModal = document.getElementById('close-report-modal');
@@ -97,7 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // AI Chatbot Modal
   const chatbotBtn = document.getElementById('ai-chatbot-btn');
   const chatbotModal = document.getElementById('chatbot-modal');
   const closeChatbotModal = document.getElementById('close-chatbot-modal');
@@ -107,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (chatbotBtn && chatbotModal) {
     chatbotBtn.addEventListener('click', function() {
       chatbotModal.style.display = 'flex';
-      // Scroll to bottom of chat
       const messages = document.getElementById('chatbot-messages');
       if (messages) {
         messages.scrollTop = messages.scrollHeight;
@@ -443,6 +433,8 @@ function submitReport() {
 // Send question to AI chatbot
 function sendQuestion(question) {
   const docId = window.location.pathname.split('/').pop();
+  const pdfContainer = document.getElementById('pdf-viewer');
+  const filename = pdfContainer.getAttribute('data-filename');
   const chatMessages = document.getElementById('chatbot-messages');
   const chatInput = document.getElementById('chatbot-input');
   
@@ -478,42 +470,48 @@ function sendQuestion(question) {
   // Clear input
   chatInput.value = '';
   
+  // Lấy CSRF token và header
+  const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
   // Send request to backend
-  fetch(`/documents/chat/${docId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ question: question })
+  fetch('/ai/ask-question', {
+     method: 'POST',
+     headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      [csrfHeader]: csrfToken
+     },
+     body: new URLSearchParams({
+       filename: filename,
+       question: question
+     })
+    
   })
   .then(response => response.json())
   .then(data => {
-    // Remove loading message
-    chatMessages.removeChild(loadingElement);
-    
-    // Add bot response
-    const botMessageElement = document.createElement('div');
-    botMessageElement.className = 'chat-message bot-message';
-    botMessageElement.innerHTML = `
+     // Remove loading message
+     chatMessages.removeChild(loadingElement);
+
+     const botMessageElement = document.createElement('div');
+     botMessageElement.className = 'chat-message bot-message';
+     botMessageElement.innerHTML = `
       <div class="message-avatar">
         <i class="fas fa-robot"></i>
       </div>
       <div class="message-content">
+        <div class="message-file"><strong>Tài liệu:</strong> ${data.filename}</div>
         <p>${data.answer ? formatChatbotResponse(data.answer) : 'Xin lỗi, tôi không thể xử lý câu hỏi của bạn lúc này.'}</p>
       </div>
     `;
-    chatMessages.appendChild(botMessageElement);
-    
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  })
+     chatMessages.appendChild(botMessageElement);
+     
+     // Scroll to bottom
+     chatMessages.scrollTop = chatMessages.scrollHeight;
+   })
   .catch(error => {
     console.error('Error getting chatbot response:', error);
     
-    // Remove loading message
     chatMessages.removeChild(loadingElement);
-    
-    // Add error message
+
     const errorMessageElement = document.createElement('div');
     errorMessageElement.className = 'chat-message bot-message error';
     errorMessageElement.innerHTML = `
@@ -525,31 +523,26 @@ function sendQuestion(question) {
       </div>
     `;
     chatMessages.appendChild(errorMessageElement);
-    
-    // Scroll to bottom
+
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
 }
 
-// Helper functions
 function showNotification(message, type) {
-  // Create notification element if it doesn't exist
+
   let notification = document.getElementById('notification');
   if (!notification) {
     notification = document.createElement('div');
     notification.id = 'notification';
     document.body.appendChild(notification);
   }
-  
-  // Set message and type
+
   notification.textContent = message;
   notification.className = 'notification ' + type;
-  
-  // Show notification
+
   notification.style.display = 'block';
   notification.style.opacity = '1';
-  
-  // Hide after 5 seconds
+
   setTimeout(function() {
     notification.style.opacity = '0';
     setTimeout(function() {
@@ -568,14 +561,8 @@ function escapeHtml(unsafe) {
 }
 
 function formatChatbotResponse(text) {
-  // Convert line breaks to <br>
   text = text.replace(/\n/g, '<br>');
-  
-  // Bold important points (e.g., headings with asterisks)
   text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  
-  // Italics
   text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  
   return text;
 }
