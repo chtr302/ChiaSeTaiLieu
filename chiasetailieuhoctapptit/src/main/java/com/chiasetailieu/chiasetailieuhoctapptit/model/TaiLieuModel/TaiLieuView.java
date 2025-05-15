@@ -37,6 +37,9 @@ public class TaiLieuView {
     @Column(name = "DuongDanFile")
     private String duongDanFile;
 
+    @Column(name = "MoTa")
+    private String moTa;
+
     public long getMaTaiLieu() {
         return maTaiLieu;
     }
@@ -71,4 +74,9 @@ public class TaiLieuView {
     public String getDuongDanFile(){
         return duongDanFile;
     }
+
+    public String getMoTa() {
+        return moTa;
+    }
+    
 }
