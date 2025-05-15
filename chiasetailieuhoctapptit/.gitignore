@@ -33,3 +33,5 @@ build/
 .vscode/
 application-secret.properties
 OAuth2.json
+thumbnails
+uploads
