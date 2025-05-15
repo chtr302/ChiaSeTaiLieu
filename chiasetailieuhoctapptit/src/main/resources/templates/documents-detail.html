@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head('Studucu - Document Detail')"></head>
+<head th:replace="fragments/head :: head('Studucu - Document Detail')">
+  <!-- CSRF tokens for AJAX calls -->
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
 <body class="document-detail-page">
   <!-- Thông báo -->
   <div th:if="${successMessage}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
@@ -128,16 +132,19 @@
                 </button>
               </div>
             </div>
-            <div id="pdf-viewer" class="pdf-view-container" th:data-pdf-url="@{'/documents/view/' + ${taiLieu.maTaiLieu}}"></div>
+            <div id="pdf-viewer" class="pdf-view-container"
+                 th:data-pdf-url="@{'/documents/view/' + ${taiLieu.maTaiLieu}}"
+                 th:data-filename="${taiLieu.duongDanFile}">
+            </div>
           </div>
           
           <!-- Description Section -->
-          <!-- <div class="document-section">
+          <div class="document-section">
             <h2 class="section-title">Mô tả</h2>
             <div class="document-description" th:text="${taiLieu.moTa}">
               Mô tả tài liệu sẽ hiển thị ở đây. Nội dung mô tả chi tiết về tài liệu giúp người đọc hiểu rõ hơn về nội dung.
             </div>
-          </div> -->
+          </div>
           
           <!-- Comment Section -->
           <div class="document-section">

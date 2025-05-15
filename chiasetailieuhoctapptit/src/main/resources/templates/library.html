@@ -16,11 +16,11 @@
                     </p>
                     <div class="user-follow-stats">
                         <div class="follow-item">
-                            <span class="follow-count">0</span>
+                            <span class="follow-count" th:text="${followerCount != null ? followerCount : '0'}">0</span>
                             <span class="follow-label">Followers</span>
                         </div>
                         <div class="follow-item">
-                            <span class="follow-count">0</span>
+                            <span class="follow-count" th:text="${followingCount != null ? followingCount : '0'}">0</span>
                             <span class="follow-label">Following</span>
                         </div>
                     </div>

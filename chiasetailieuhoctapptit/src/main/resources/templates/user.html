@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<head th:replace="fragments/head :: head('Studucu - User Profile')">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="user-profile">
+    <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
+    <div class="main">
+        <main class="main-content">
+            <section class="user-header-section">
+                <img th:if="${profileUser != null}" th:src="${profileUser.hinhAnh}" th:alt="${profileUser.hoVaTen}" class="user-avatar-medium">
+                <img th:unless="${profileUser != null}" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Default avatar" class="user-avatar-medium">
+                <div class="user-details">
+                    <div class="user-name-follow">
+                        <h2 class="user-name" th:text="${profileUser != null ? profileUser.hoVaTen : 'User'}">Username</h2>
+                    </div>
+                    
+                    <p class="user-major">
+                        <i class="fas fa-university icon-major"></i>
+                        <span>Ngành Công nghệ thông tin</span>
+                    </p>
+                    <div class="user-follow-stats">
+                        <div class="follow-item clickable" id="followers-count" th:data-userid="${profileUser != null ? profileUser.maSV : ''}">
+                            <span class="follow-count" th:text="${followerCount}">0</span>
+                            <span class="follow-label">Followers</span>
+                        </div>
+                        <div class="follow-item clickable" id="following-count" th:data-userid="${profileUser != null ? profileUser.maSV : ''}">
+                            <span class="follow-count" th:text="${followingCount}">0</span>
+                            <span class="follow-label">Following</span>
+                        </div>
+                        <button th:if="${profileUser != null && sinhVien != null && profileUser.maSV != sinhVien.maSV}" 
+                            th:class="${isFollowing ? 'btn btn-secondary follow-btn followed' : 'btn btn-primary follow-btn'}"
+                            th:data-userid="${profileUser.maSV}"
+                            th:data-action="${isFollowing ? 'unfollow' : 'follow'}">
+                        <span th:text="${isFollowing ? 'Following' : 'Follow'}">Follow</span>
+                    </button>
+                    </div>
+                    
+                </div>
+            </section>
+
+            <section class="statistics-section">
+                <div class="stats-container">
+                    <div class="stat-card uploads-card">
+                        <div class="stat-card-header">
+                            <i class="fas fa-file-alt icon-uploads"></i>
+                            <h3 th:text="${profileUser != null && sinhVien != null && profileUser.maSV == sinhVien.maSV ? 'My Uploads' : 'User Uploads'}">User Uploads</h3>
+                        </div>
+                        <div class="stat-card-values">
+                            <div class="stat-item">
+                                <span class="stat-number" th:text="${uploadCount}">0</span>
+                                <span class="stat-label">Uploads</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" th:text="${totalUpvotes}">0</span>
+                                <span class="stat-label">Upvotes</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" th:text="${totalComments}">0</span>
+                                <span class="stat-label">Comments</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card impact-card">
+                        <div class="stat-card-header">
+                            <i class="fas fa-heart icon-impact"></i>
+                            <h3>Impact</h3>
+                        </div>
+                        <div class="stat-card-values impact-values">
+                            <div class="stat-item">
+                                <span class="stat-number" th:text="${studentsHelped}">0</span>
+                                <span class="stat-label">Students Helped</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="documents-section card">
+                <!-- <div class="library-header">
+                    <h2 class="library-title">
+                        <span th:text="${profileUser != null && sinhVien != null && profileUser.maSV == sinhVien.maSV ? 'My Documents' : 'User Documents'}">User Documents</span>
+                        <span class="library-count"></span>
+                    </h2>
+                    <div class="library-filters">
+                        <select class="filter-select" id="subject-filter">
+                            <option value="">All Subjects</option>
+                            <option th:each="subject : ${subjects}" th:value="${subject.maMon}" th:text="${subject.tenMon}">Subject</option>
+                        </select>
+                        <select class="filter-select" id="sort-filter">
+                            <option value="recent">Sort by: Recently Added</option>
+                            <option value="oldest">Sort by: Oldest</option>
+                            <option value="title">Sort by: Title</option>
+                            <option value="popular">Sort by: Most Popular</option>
+                        </select>
+                        <button class="btn btn-primary" id="filter-btn">Filter</button>
+                    </div>
+                </div> -->
+
+                <!-- <div class="documents-container">
+                    <div class="document-card" th:each="doc : ${userDocuments}">
+                        <img th:if="${doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
+                             alt="Document Preview" class="document-image">
+                        <img th:if="${doc.thumbnail == null}" src="/img/default-document.png" 
+                             alt="Document Preview" class="document-image">
+      
+                        <div class="document-details">
+                          <p class="document-title" th:text="${doc.tieuDe}">Document Title</p>
+                          <p class="document-category" th:text="${doc.tenMon}">Category</p>
+                          <p class="document-category" th:text="${doc.tenLoai}">Type</p>
+                          <div class="document-stats">
+                            <span class="views"><i class="fas fa-eye"></i> <span th:text="${doc.luotXem}">0</span></span>
+                            <div class="vote-buttons">
+                              <button class="upvote-btn" th:data-docid="${doc.maTaiLieu}"><i class="fas fa-arrow-up"></i></button>
+                              <span class="vote-count" th:text="${doc.danhGia}">0</span>
+                              <button class="downvote-btn" th:data-docid="${doc.maTaiLieu}"><i class="fas fa-arrow-down"></i></button>
+                            </div>
+                            <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc.soLuongBL}">0</span></span>
+                          </div>
+                          <a th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
+                          <button class="save-btn" th:data-docid="${doc.maTaiLieu}">Lưu</button>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- <div class="load-more-container" th:if="${userDocuments.size() >= 10}">
+                    <button class="btn btn-secondary" id="load-more-btn">Load more</button>
+                </div> -->
+            </section>
+        </main>
+    </div>
+    <div class="modal fade" id="followModal" tabindex="-1" aria-labelledby="followModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="followModalLabel">Danh sách người theo dõi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group follow-list">
+                        <!-- Danh sách sẽ được thêm vào bằng JavaScript -->
+                    </ul>
+                    <div class="text-center mt-3 loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3 no-results d-none">
+                        <p class="mb-0">Không có người dùng nào</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/scripts :: scripts"></div>
+    <link th:href="@{/css/library.css}" rel="stylesheet">
+    <link th:href="@{/css/user.css}" rel="stylesheet">
+    <script th:src="@{/js/user.js}"></script>
+</body>
+</html>
