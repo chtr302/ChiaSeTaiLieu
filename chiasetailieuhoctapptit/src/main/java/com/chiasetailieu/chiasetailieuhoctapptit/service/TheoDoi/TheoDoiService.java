@@ -27,7 +27,7 @@ public class TheoDoiService {
                 jdbcTemplate.update(insertSql, followerMaSV, followingMaSV);
             }
             return true;
-        } catch (Exception e) {
+        } catch (org.springframework.dao.DataAccessException | IllegalArgumentException e) {
             return false;
         }
     }
@@ -36,7 +36,7 @@ public class TheoDoiService {
             String sql = "UPDATE TheoDoi SET TrangThai = 1 WHERE NguoiDung = ? AND DangTheoDoi = ?";
             int rowsAffected = jdbcTemplate.update(sql, followerMaSV, followingMaSV);
             return rowsAffected > 0;
-        } catch (Exception e) {
+        } catch (org.springframework.dao.DataAccessException | IllegalArgumentException e) {
             return false;
         }
     }
