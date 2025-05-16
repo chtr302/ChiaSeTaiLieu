@@ -1,8 +1,8 @@
 package com.chiasetailieu.chiasetailieuhoctapptit.controller;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,13 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.ui.Model;
 
 import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel.SinhVien;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.TheoDoi.Follow_VW;
@@ -41,10 +41,10 @@ public class UserController {
     public String user(@PathVariable("id") String userId, Model model, @AuthenticationPrincipal OidcUser principal){
 
         try{
+            model.addAttribute("isFollowing", false);
             String email = principal.getEmail();
             String maSV = email.substring(0, email.indexOf('@'));
-            SinhVien nguoiDung = null;
-            nguoiDung = sinhVienService.getSinhVienbyMaSinhVien(maSV);
+            SinhVien nguoiDung = sinhVienService.getSinhVienbyMaSinhVien(maSV);
             model.addAttribute("sinhVien", nguoiDung);
 
             SinhVien profileSinhVien = sinhVienService.getSinhVienbyMaSinhVien(userId);
@@ -101,7 +101,6 @@ public class UserController {
                         .body(createResponse(false, "Không thể thực hiện thao tác, vui lòng thử lại.", null));
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(createResponse(false, "Lỗi hệ thống: " + e.getMessage(), null));
         }
@@ -125,7 +124,6 @@ public class UserController {
             List<Map<String, Object>> followers = followViewService.getFollowers(userId);
             return ResponseEntity.ok(followers);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi khi lấy danh sách người theo dõi: " + e.getMessage());
         }
@@ -138,7 +136,6 @@ public class UserController {
             List<Map<String, Object>> following = followViewService.getFollowing(userId);
             return ResponseEntity.ok(following);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi khi lấy danh sách người đang theo dõi: " + e.getMessage());
         }

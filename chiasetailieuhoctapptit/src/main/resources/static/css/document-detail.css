@@ -10,7 +10,17 @@
     flex-direction: column;
     min-height: 100vh;
   }
-  
+  /* Header */
+nav {
+  position: fixed;  /* Đảm bảo header luôn cố định ở trên cùng */
+  top: 0;           /* Đặt header ở đầu trang */
+  left: 0;
+  width: 100%;      /* Đảm bảo header chiếm toàn bộ chiều rộng */
+  z-index: 20;      /* Đảm bảo header nằm trên các phần tử khác */
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Tạo bóng cho header */
+  padding: 0 20px;  /* Thêm padding cho header */
+}
   .document-detail-section {
     flex: 1;
     padding: 0;
@@ -23,17 +33,15 @@
   
   /* Sidebar */
   .sidebar {
-    width: 320px;
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
+    position: fixed; /* Giữ sidebar cố định */
+    top: 80px;
     left: 0;
-    bottom: 0;
-    z-index: 100;
-    transform: translateX(0);
+    width: 260px;
+    height: calc(100vh - 70px); /* Chiều cao bằng toàn bộ chiều cao màn hình trừ chiều cao của header */
+    z-index: 10;
+    background-color: white;
+    border-right: 1px solid #e5e7eb;
+    overflow-y: auto;
     transition: transform 0.3s ease;
   }
   
@@ -217,6 +225,7 @@
     margin-left: 320px;
     flex: 1;
     padding: 24px 32px;
+    padding-top: 85px;
   }
   
   .content-header {
@@ -256,42 +265,21 @@
   
   .vote-actions {
     display: flex;
-    gap: 8px;
-  }
-  
-  .vote-btn {
-    background-color: #f3f4f6;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.9rem;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .vote-btn:hover {
-    background-color: #e5e7eb;
-  }
-  
-  .upvote:hover {
-    color: #10b981;
-  }
-  
-  .downvote:hover {
-    color: #ef4444;
+    gap: 15px;
   }
   
   /* PDF Viewer */
   .pdf-container {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
     overflow: hidden;
     margin-bottom: 24px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border: none;
   }
   
   .pdf-toolbar {
@@ -349,18 +337,23 @@
   }
   
   .pdf-view-container {
-    padding: 20px;
+    padding: 0;
     min-height: 80vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f3f4f6;
+    justify-content: flex-start;
+    background-color: transparent;
     overflow: auto;
+    width: 100%;
   }
   
   .pdf-page {
     margin-bottom: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: none;
+    width: auto;
+    max-width: 100%;
+    height: auto;
   }
   
   /* Document Sections */
@@ -857,14 +850,19 @@
     .content-header {
       flex-direction: column;
       align-items: flex-start;
-      gap: 16px;
+      gap: 12px;
     }
     
     .document-actions {
       width: 100%;
-      justify-content: flex-end;
     }
     
+    .document-stats-row {
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      width: 100%;
+    }
+
     .related-documents {
       grid-template-columns: 1fr;
     }
@@ -875,8 +873,8 @@
     }
     
     .toolbar-right {
-      width: 100%;
       justify-content: space-between;
+      width: 100%;
     }
     
     .comment-form {
@@ -884,7 +882,7 @@
     }
     
     .comment-avatar {
-      align-self: flex-start;
+      margin-bottom: 10px;
     }
   }
   .notification {
@@ -903,3 +901,64 @@
 .notification.error {
     background-color: #dc3545;
 }
+
+/* Document Stats Row Styling */
+.document-stats-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 10px 0;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  /* Vote Section with Oval Frame */
+  .vote-oval {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f9fafb;
+    padding: 6px 12px;
+    border-radius: 9999px; /* fully rounded (oval) */
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .upvote-btn, .downvote-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #6b7280;
+    transition: color 0.2s;
+  }
+  
+  .upvote-btn:hover {
+    color: #10b981;
+  }
+  
+  .downvote-btn:hover {
+    color: #ef4444;
+  }
+  
+  .vote-count {
+    font-weight: 600;
+    color: #374151;
+    min-width: 24px;
+    text-align: center;
+  }
+  
+  /* Views & Comments */
+  .view-comment-group {
+    display: flex;
+    gap: 14px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+  
+  .views i,
+  .comments i {
+    margin-right: 4px;
+    color: #9ca3af;
+  }

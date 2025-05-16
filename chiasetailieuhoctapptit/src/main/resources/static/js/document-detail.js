@@ -162,16 +162,25 @@ function initPdfViewer() {
     existingPages.forEach(page => page.remove());
     
     pdfDoc.getPage(num).then(function(page) {
-      const viewport = page.getViewport({scale: scale});
+      // Get container width to adjust scale for full width
+      const containerWidth = pdfContainer.clientWidth - 40; // Accounting for padding
+      const viewport = page.getViewport({scale: 1.0});
+      
+      // Adjust scale to fit container width
+      const containerScale = containerWidth / viewport.width;
+      const finalScale = Math.min(scale, containerScale);
+      
+      const finalViewport = page.getViewport({scale: finalScale});
+      
       const canvas = document.createElement('canvas');
       canvas.className = 'pdf-page';
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+      canvas.width = finalViewport.width;
+      canvas.height = finalViewport.height;
       
       const ctx = canvas.getContext('2d');
       const renderContext = {
         canvasContext: ctx,
-        viewport: viewport
+        viewport: finalViewport
       };
       
       pdfContainer.appendChild(canvas);
@@ -271,6 +280,11 @@ function initPdfViewer() {
     
     // Update page count
     document.getElementById('page-count').textContent = doc.numPages;
+    
+    // Add window resize listener to rerender when size changes
+    window.addEventListener('resize', function() {
+      queueRenderPage(pageNum);
+    });
     
     // Initial render
     renderPage(pageNum);

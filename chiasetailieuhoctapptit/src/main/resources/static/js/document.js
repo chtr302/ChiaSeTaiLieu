@@ -10,39 +10,152 @@ document.addEventListener('DOMContentLoaded', function() {
     if (errorMessage && errorMessage.textContent.trim() !== '') {
         showNotification(errorMessage.textContent, 'error');
     }
-
-    initTabSwitching();
-
+    
+    // Upload document functionality
     initUploadModal();
 
     initFileUploadHandling();
 
-    renderPage(currentPage);
+    // Initialize course item click events
+    initCourseItemClickEvents();
 
-    initCourseTabFunctionality();
+    // Initialize category item click events
+    initCategoryItemClickEvents();
+
+    // Initialize recents dropdown
+    initRecentsDropdown();
+
+    // Mobile menu toggle
+    initMobileMenu();
+
+    // Keep sidebar and header fixed during scroll
+    initFixedElements();
+    
+    // Handle profile link click
+    initProfileLink();
 });
 
-function initTabSwitching() {
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+// Handle profile link click to set a flag for the library page
+function initProfileLink() {
+    const profileLink = document.querySelector('.user-profile-link');
+    if (!profileLink) return;
+    
+    profileLink.addEventListener('click', function(e) {
+        // Set a session storage flag to inform the library page
+        // that navigation is coming from the profile link
+        sessionStorage.setItem('fromProfile', 'true');
+    });
+}
 
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-                content.classList.add('hidden');
-            });
+// Initialize recents dropdown
+function initRecentsDropdown() {
+    const recentsDropdown = document.getElementById('recents-dropdown');
+    const recentsContent = document.getElementById('recents-dropdown-content');
+    
+    if (!recentsDropdown || !recentsContent) return;
+    
+    recentsDropdown.addEventListener('click', function(e) {
+        if (e.target.closest('.dropdown-content')) return;
+        
+        // Toggle dropdown
+        this.classList.toggle('open');
+        
+        // Load recent items if dropdown is open and empty
+        if (this.classList.contains('open') && recentsContent.children.length === 0) {
+            loadRecentItems();
+        }
+    });
+}
 
-            button.classList.add('active');
-
-            const targetTab = button.dataset.target;
-            const tabContent = document.getElementById(targetTab);
-            if (tabContent) {
-                tabContent.classList.remove('hidden');
-                tabContent.classList.add('active');
-            }
+// Load recent items (from local storage or could be from API)
+function loadRecentItems() {
+    const recentsContent = document.getElementById('recents-dropdown-content');
+    if (!recentsContent) return;
+    
+    // Example recent items - this would be loaded from backend in a real app
+    const recentItems = [
+        { 
+            type: 'document', 
+            title: 'Introduction to Data Structures', 
+            time: 'Today, 10:45 AM',
+            icon: 'fa-file-pdf',
+            url: '/documents/detail/1'
+        },
+        { 
+            type: 'course', 
+            title: 'Operating Systems', 
+            time: 'Yesterday, 3:20 PM',
+            icon: 'fa-book',
+            url: '/documents/course/2'
+        },
+        { 
+            type: 'document', 
+            title: 'Algorithm Analysis Notes', 
+            time: 'May 15, 2023',
+            icon: 'fa-file-alt',
+            url: '/documents/detail/3'
+        }
+    ];
+    
+    // Clear any existing content
+    recentsContent.innerHTML = '';
+    
+    // Add recent items
+    if (recentItems.length === 0) {
+        recentsContent.innerHTML = '<div class="empty-recents">No recent activity</div>';
+    } else {
+        recentItems.forEach(item => {
+            const recentItemEl = document.createElement('div');
+            recentItemEl.className = 'recent-item';
+            recentItemEl.innerHTML = `
+                <div class="recent-item-icon">
+                    <i class="fas ${item.icon}"></i>
+                </div>
+                <div class="recent-item-details">
+                    <a href="${item.url}" class="recent-item-title">${item.title}</a>
+                    <div class="recent-item-time">${item.time}</div>
+                </div>
+            `;
+            recentsContent.appendChild(recentItemEl);
         });
+    }
+}
+
+// Mobile menu toggle
+function initMobileMenu() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (!menuToggle || !sidebar) return;
+    
+    menuToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+        document.body.classList.toggle('sidebar-open');
+    });
+    
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(e) {
+        if (sidebar.classList.contains('active') && 
+            !e.target.closest('#sidebar') && 
+            !e.target.closest('#menu-toggle')) {
+            sidebar.classList.remove('active');
+            document.body.classList.remove('sidebar-open');
+        }
+    });
+}
+
+// Keep sidebar and header fixed during scroll
+function initFixedElements() {
+    const sidebar = document.getElementById('sidebar');
+    const contentHeader = document.querySelector('.content-header');
+    
+    if (!sidebar || !contentHeader) return;
+    
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.scrollY;
+        
+        // Nothing to adjust here since we've set them as fixed in CSS
+        // This function could be used to add/remove classes based on scroll position if needed
     });
 }
 
@@ -86,7 +199,7 @@ function initFileUploadHandling() {
     
     if (!fileInput || !uploadDefault || !filePreview || !dropZone) return;
 
-    // Ngăn chặn việc click lan truyền và chỉ trigger một lần
+    // Prevent click propagation and only trigger once
     dropZone.addEventListener('click', (e) => {
         if (e.target === fileInput || fileInput.contains(e.target)) return;
         if (e.target.closest('.remove-file')) return;
@@ -94,8 +207,7 @@ function initFileUploadHandling() {
         fileInput.click();
     });
 
-    fileInput.addEventListener('change',handleFileSelection);
-
+    fileInput.addEventListener('change', handleFileSelection);
 
     // Handle drag and drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -125,7 +237,7 @@ function initFileUploadHandling() {
         const dt = e.dataTransfer;
         const files = dt.files;
         if (files.length > 0) {
-            fileInput.files = files; t
+            fileInput.files = files;
             handleFileSelection();   
         }
     }, false);
@@ -251,236 +363,40 @@ function hideNotification(notification) {
     }, 300);
 }
 
-// Pagination functionality
-let currentPage = 1;
-const itemsPerPage = 8;
-
-function renderPage(page) {
-    const allDocuments = document.querySelectorAll('.document-card');
-    const totalPages = Math.ceil(allDocuments.length / itemsPerPage);
-
-    // Hide all documents
-    allDocuments.forEach(doc => doc.style.display = 'none');
-
-    // Show documents for the current page
-    const start = (page - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    for (let i = start; i < end && i < allDocuments.length; i++) {
-        allDocuments[i].style.display = 'block';
-    }
-
-    // Update pagination controls
-    updatePaginationControls(totalPages);
-}
-
-function updatePaginationControls(totalPages) {
-    const pageNumbersContainer = document.getElementById('page-numbers');
-    pageNumbersContainer.innerHTML = '';
-
-    for (let i = 1; i <= totalPages; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.className = 'page-btn';
-        pageButton.textContent = i;
-        if (i === currentPage) {
-            pageButton.classList.add('active');
-        }
-        pageButton.addEventListener('click', () => {
-            currentPage = i;
-            renderPage(currentPage);
-        });
-        pageNumbersContainer.appendChild(pageButton);
-    }
-}
-
-function changePage(direction) {
-    const allDocuments = document.querySelectorAll('.document-card');
-    const totalPages = Math.ceil(allDocuments.length / itemsPerPage);
-
-    if (direction === 'prev' && currentPage > 1) {
-        currentPage--;
-    } else if (direction === 'next' && currentPage < totalPages) {
-        currentPage++;
-    }
-
-    renderPage(currentPage);
-}
-
-
-function initCourseTabFunctionality() {
-    const coursesTab = document.getElementById('courses'); // The main container for the courses tab
-    if (!coursesTab) return; // Don't proceed if the tab doesn't exist
-
-    const coursesList = coursesTab.querySelector('#courses-list');
-    const courseDocumentsView = coursesTab.querySelector('#course-documents-view');
-    const backToCoursesBtn = coursesTab.querySelector('#back-to-courses');
-    const courseTitle = coursesTab.querySelector('#course-title');
-    const courseDocumentsContainer = coursesTab.querySelector('#course-documents-container');
-
-    // Check if all necessary elements within the courses tab exist
-    if (!coursesList || !courseDocumentsView || !backToCoursesBtn || !courseTitle || !courseDocumentsContainer) {
-        console.warn("Elements within the 'By Course' tab (#courses) are missing. Functionality might be limited.");
-        return;
-    }
-
-    // Event delegation for 'View Documents' buttons within the courses tab
-    coursesList.addEventListener('click', function(event) {
-        const viewBtn = event.target.closest('.view-course-btn');
-        if (viewBtn) {
-            const courseId = viewBtn.getAttribute('data-course'); // Get maKhoaHoc
-            const courseItem = viewBtn.closest('.course-item');
-            const courseNameElement = courseItem ? courseItem.querySelector('h3') : null;
-            const courseName = courseNameElement ? courseNameElement.textContent : 'Selected Course';
-
-            // Hide courses list and show documents view WITHIN the courses tab
-            coursesList.classList.add('hidden');
-            courseDocumentsView.classList.remove('hidden');
-            courseTitle.textContent = `${courseName} Documents`;
-
-            // --- Load Documents ---
-            fetchDocumentsForCourse(courseId, courseDocumentsContainer);
-        }
-    });
-
-    // Back to courses button listener within the courses tab
-    backToCoursesBtn.addEventListener('click', () => {
-        coursesList.classList.remove('hidden');
-        courseDocumentsView.classList.add('hidden');
-        courseDocumentsContainer.innerHTML = ''; // Clear loaded documents
-    });
-}
-
-// --- NEW: Fetch documents for a specific course ---
-function fetchDocumentsForCourse(courseId, container) {
-    container.innerHTML = '<p class="text-gray-500 text-center col-span-full">Loading documents...</p>';
-
-    // Simulate fetching data - replace with actual fetch
-    fetch(`/api/courses/${courseId}/documents`) // Replace with your actual API endpoint
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch documents');
-            }
-            return response.json();
-        })
-        .then(documents => {
-            container.innerHTML = ''; // Clear loading message
-
-            if (documents.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 text-center col-span-full">No documents found for this course.</p>';
+// Initialize course item click events
+function initCourseItemClickEvents() {
+    const courseItems = document.querySelectorAll('.course-item');
+    courseItems.forEach(item => {
+        item.addEventListener('click', (event) => {
+            // If the user clicked on the link, let the default action happen
+            if (event.target.closest('.course-link')) {
                 return;
             }
-
-            documents.forEach(doc => {
-                const card = document.createElement('div');
-                card.className = 'document-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg';
-                card.innerHTML = `
-                    <div class="p-5">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="type-badge px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">${doc.type}</span>
-                            <span class="text-gray-500 text-sm"><i class="fas fa-eye mr-1"></i> ${doc.views}</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-2">${doc.title}</h3>
-                        <p class="text-gray-600 text-sm mb-4">${doc.description}</p>
-                        <div class="flex justify-between items-center text-sm text-gray-500">
-                            <span><i class="fas fa-university mr-1"></i> ${doc.university}</span>
-                            <span>${doc.pages} pages</span>
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 px-5 py-3 flex justify-between items-center">
-                        <div class="flex items-center">
-                            <img src="/img/default-avatar.png" alt="Professor" class="w-6 h-6 rounded-full mr-2 object-cover"> <span class="text-sm text-gray-700">${doc.professor}</span>
-                        </div>
-                        <button class="text-blue-600 hover:text-blue-800" title="Download">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        })
-        .catch(error => {
-            console.error(error);
-            container.innerHTML = '<p class="text-red-500 text-center col-span-full">Failed to load documents. Please try again later.</p>';
+            
+            // Otherwise, simulate clicking the link
+            const courseLink = item.querySelector('.course-link');
+            if (courseLink) {
+                courseLink.click();
+            }
         });
+    });
 }
 
-// AI
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('file-input');
-    const aiSummarizeBtn = document.getElementById('ai-summarize-btn');
-    const aiSummaryLoading = document.getElementById('ai-summary-loading');
-    const moTaTextarea = document.getElementById('moTa');
-    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-    
-    fileInput.addEventListener('change', function() {
-      const file = this.files[0];
-      if (file && file.type === 'application/pdf') {
-        aiSummarizeBtn.disabled = false;
-      } else {
-        aiSummarizeBtn.disabled = true;
-      }
+// Initialize category item click events
+function initCategoryItemClickEvents() {
+    const categoryItems = document.querySelectorAll('.category-item');
+    categoryItems.forEach(item => {
+        item.addEventListener('click', (event) => {
+            // If the user clicked on the link, let the default action happen
+            if (event.target.closest('.category-link')) {
+                return;
+            }
+            
+            // Otherwise, simulate clicking the link
+            const categoryLink = item.querySelector('.category-link');
+            if (categoryLink) {
+                categoryLink.click();
+            }
+        });
     });
-
-    aiSummarizeBtn.addEventListener('click', function() {
-      const file = fileInput.files[0];
-      if (!file) {
-        alert('Vui lòng chọn file PDF để tóm tắt.');
-        return;
-      }
-      
-      aiSummarizeBtn.disabled = true;
-      aiSummaryLoading.style.display = 'flex';
-      
-      // Tạo FormData để gửi file
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      // Gọi API để tóm tắt
-      fetch('/ai/summarize-upload', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            [csrfHeader]: csrfToken  // Thêm CSRF token vào header
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Lỗi kết nối đến máy chủ');
-        }
-        return response.json();
-      })
-      .then(data => {
-        // Ẩn trạng thái đang xử lý
-        aiSummaryLoading.style.display = 'none';
-        aiSummarizeBtn.disabled = false;
-        
-        if (data.error) {
-          alert(`Lỗi: ${data.message || data.error}`);
-          return;
-        }
-
-        if (data.summary) {
-          moTaTextarea.value = data.summary;
-
-          moTaTextarea.style.height = 'auto';
-          moTaTextarea.style.height = (moTaTextarea.scrollHeight) + 'px';
-        }
-      })
-      .catch(error => {
-        aiSummaryLoading.style.display = 'none';
-        aiSummarizeBtn.disabled = false;
-
-        console.error('Error:', error);
-        alert(`Lỗi: ${error.message}`);
-      });
-    });
-  });
-
-  formData.append('file', file);
-  fetch('/ai/test-upload', {
-    method: 'POST',
-    body: formData,
-  })
-  .then(response => response.json())
-  .then(data => console.log('Test Upload Response:', data))
-  .catch(error => console.error('Test Upload Error:', error));
+}

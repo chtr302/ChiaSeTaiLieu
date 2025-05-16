@@ -5,9 +5,9 @@
 <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <body class="documents-page">
   <!-- Thêm div hiển thị thông báo từ server -->
-  <div th:if="${successMessage}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
-  <div th:if="${errorMessage}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>  
-  <!-- <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div> -->
+  <div th:if="${successMessage != null}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage != null}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>  
+  <div class="nav"th:replace="~{fragments/navbar :: navbar(sinhVien=${sinhVien != null ? sinhVien : null})}"></div>
   <main class="main">
     <section class="documents-section">
       <div class="documents-container">
@@ -16,42 +16,45 @@
           <div class="sidebar-padding"></div>
           <div class="sidebar-content">
             <div class="sidebar-header">
-              <div class="user-profile">
-                <img class="avatar" th:src="${sinhVien.hinhAnh}" th:alt="${sinhVien.hoVaTen}" 
-                     onerror="this.src='/img/default-avatar.png'">
-                <div class="user-info">
-                  <p class="username" th:text="${sinhVien.hoVaTen}">Username</p>
-                </div>
+              <div class="user-profile" id="user-profile">
+                <a th:href="@{/library}" class="user-profile-link">
+                  <img class="avatar" th:src="${sinhVien != null ? sinhVien.hinhAnh : ''}" th:alt="${sinhVien != null ? sinhVien.hoVaTen : 'User'}" 
+                       onerror="this.src='/img/default-avatar.png'">
+                  <div class="user-info">
+                    <p class="username" th:text="${sinhVien != null ? sinhVien.hoVaTen : 'User'}">Username</p>
+                  </div>
+                </a>
               </div>
+              <button id="upload-btn" class="upload-button">
+                <i class="fas fa-cloud-upload-alt"></i> Upload Document
+              </button>
             </div>
-            <h2 class="sidebar-title">Categories</h2>
             <ul class="sidebar-menu">
-              <li class="sidebar-item">
+              <li class="sidebar-item" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() == '/index' ? 'active' : ''}">
                 <a th:href="@{/index}">
                     <i class="fas fa-home"></i> Home
                 </a>
               </li>
-              <li class="sidebar-item">
-                <a href="javascript:void(0);">
+              <li class="sidebar-item" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() != null && #httpServletRequest.getRequestURI().contains('/courses') ? 'active' : ''}">
+                <a th:href="@{/documents/courses}">
                   <i class="fas fa-book"></i> Courses
                 </a>
               </li>
-              <li class="sidebar-item">
-                <a href="javascript:void(0);">
+              <li class="sidebar-item" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() != null && #httpServletRequest.getRequestURI().contains('/library') ? 'active' : ''}">
+                <a th:href="@{/library}">
                   <i class="fas fa-folder-open"></i> Library
                 </a>
               </li>
-              <li class="sidebar-item">
+              <li class="sidebar-item dropdown" id="recents-dropdown">
                 <a href="javascript:void(0);">
                   <i class="fas fa-clock"></i> Recents
+                  <i class="fas fa-chevron-down dropdown-icon"></i>
                 </a>
+                <div class="dropdown-content" id="recents-dropdown-content">
+                  <!-- Will be populated with JavaScript -->
+                </div>
               </li>
             </ul>
-          </div>
-          <div class="sidebar-footer">
-            <button id="upload-btn" class="upload-button">
-              <i class="fas fa-cloud-upload-alt"></i> Upload Document
-            </button>
           </div>
         </div>
       
@@ -69,177 +72,149 @@
             </div>
           </div>
           
-          <!-- Document Navigation -->
-          <div class="document-navigation">
-            <div class="document-tabs">
-              <button class="tab-btn active" data-target="all">All Documents</button>
-              <button class="tab-btn" data-target="courses">By Course</button>
-              <button class="tab-btn" data-target="categories">By Type</button>
-              <button class="tab-btn" data-target="featured">Most Viewed</button>
-            </div>
-            
-            <div class="filter-dropdown">
-              <button class="filter-btn">
-                <i class="fas fa-filter"></i> Filter
-              </button>
-              <div class="filter-dropdown-content">
-                <div class="filter-container">
-                  <div class="filter-group">
-                    <label>Semester:</label>
-                    <select class="filter-select">
-                      <option>Tất cả</option>
-                      <option>HK1 (2023-2024)</option>
-                      <option>HK2 (2023-2024)</option>
-                    </select>
-                  </div>
-                  
-                  <div class="filter-group">
-                    <label>Type:</label>
-                    <select class="filter-select">
-                      <option>All</option>
-                      <option>Lectures</option>
-                      <option>Exercise</option>
-                      <option>Exam</option>
-                    </select>
-                  </div>
-                  
-                  <div class="filter-group">
-                    <label>Sort:</label>
-                    <select class="filter-select">
-                      <option>Newest</option>
-                      <option>Most Viewed</option>
-                      <option>Most Related</option>
-                    </select>
-                  </div>
-                  
-                  <button class="apply-filter-btn">Apply</button>
-                </div>
-              </div>
-            </div>
-          </div>
-      
           <!-- Content Container -->
           <div class="content-container">
-            <!-- All Documents Tab -->
-            <div class="tab-content active" id="all">
-              <div class="document-grid full-width">
-                <!-- Document Card -->
-                <div class="document-card" th:each="doc : ${Documents}">
-                  <img th:if="${doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
-                       alt="Document Preview" class="document-image">
-                  <img th:if="${doc.thumbnail == null}" src="/img/default-document.png" 
-                       alt="Document Preview" class="document-image">
-
-                  <div class="document-details">
-                    <p class="document-title" th:text="${doc.tieuDe}">Document Title</p>
-                    <p class="document-category" th:text="${doc.tenMon}">Category</p>
-                    <p class="document-category" th:text="${doc.tenLoai}">Category</p>
-                    <div class="document-stats">
-                      <span class="views"><i class="fas fa-eye"></i> <span th:text="${doc.luotXem}">5.2K</span></span>
-                      <div class="vote-buttons">
-                        <button class="upvote-btn"><i class="fas fa-arrow-up"></i></button>
-                        <span class="vote-count" th:text="${doc.danhGia}">128</span>
-                        <button class="downvote-btn"><i class="fas fa-arrow-down"></i></button>
-                      </div>
-                      <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc.soLuongBL}">24</span></span>
-                    </div>
-                    <a th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
-                    <button class="save-btn">Lưu</button>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Pagination -->
-              <div class="pagination">
-                <button class="page-btn prev" onclick="changePage('prev')"><i class="fas fa-chevron-left"></i></button>
-                <div id="page-numbers" class="page-numbers">
-                  <!-- Page numbers will be dynamically generated here -->
-                </div>
-                <button class="page-btn next" onclick="changePage('next')"><i class="fas fa-chevron-right"></i></button>
-              </div>
+            <!-- All Documents Section -->
+            <div class="section-header">
+              <h2 class="section-title">All Documents</h2>
+              <a th:href="@{/documents/all}" class="see-more-btn">See More <i class="fas fa-arrow-right"></i></a>
             </div>
+            <div class="document-grid">
+              <div class="document-card" th:each="doc, docStat : ${Documents != null ? Documents : {}}" th:if="${docStat != null && docStat.index < 5}">
+                
+                <!-- Thumbnail -->
+                <img th:if="${doc != null && doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
+                     alt="Document Preview" class="document-image">
+                <img th:if="${doc == null || doc.thumbnail == null}" src="/img/default-document.png" 
+                     alt="Document Preview" class="document-image">
             
-            <!-- Courses Tab -->
-            <!-- <div class="tab-content hidden" id="courses">
-              <div class="courses-container">
-                <div class="course-group" th:each="course : ${danhSachMonHoc}">
-                  <div class="course-header">
-                    <h3 class="course-name" th:text="${course.tenMon}">Course Name</h3>
-                    <p class="course-info">
-                      <span class="course-code" th:text="${course.maMon}">CSE123</span>
-                      <span class="course-code" th:text="${course.taiLieu}">CSE123</span>
+                <!-- Details -->
+                <div class="document-details">
+                  <p class="document-title" th:text="${doc != null ? doc.tieuDe : 'Document Title'}">Document Title</p>
+                  <div class="document-category">
+                    <p>
+                      <i class="fas fa-book"></i>
+                      <span th:text="${doc != null && doc.tenMon != null ? doc.tenMon : 'Course'}">Course</span>
+                    </p>
+                    <p>
+                      <i class="fas fa-folder"></i>
+                      <span th:text="${doc != null && doc.tenLoai != null ? doc.tenLoai : 'Category'}">Category</span>
                     </p>
                   </div>
-                </div>
-              </div>
-            </div> -->
-            <div id="courses-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              <div th:each="course : ${danhSachMonHoc}" class="course-item bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
-                  <div class="p-5">
-                      <h3 class="text-lg font-semibold text-center text-gray-800 mb-2" th:text="${course.tenMon}">Course Name</h3>
-                      <p class="text-gray-600 text-sm text-center mb-3" th:text="${course.taiLieu}">Number documents</p>
-                      <!-- <button class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition view-course-btn"
-                              th:data-course="${courses.taiLieu}"> View Documents
-                      </button> -->
-                  </div>
-              </div>
-              </div>
-
-            <div id="course-documents-view" class="hidden">
-              <div class="flex items-center mb-6">
-                  <button id="back-to-courses" class="mr-4 text-blue-600 hover:text-blue-800">
-                      <i class="fas fa-arrow-left"></i> Back to Courses
-                  </button>
-                  <h2 id="course-title" class="text-2xl font-bold text-gray-800">Course Documents</h2>
-              </div>
-
-              <div id="course-documents-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  </div>
-            </div>
-
-            <!-- Featured Tab -->
-            <div class="tab-content hidden" id="featured">
-              <div class="document-grid full-width">
-                <p th:if="${mostViewedDocuments == null}" class="empty-message">No featured documents available.</p>
-                
-                <div class="document-card" th:if="${mostViewedDocuments != null}" th:each="doc : ${mostViewedDocuments}">
-                  <img th:src="@{'/img/default-document.png'}" alt="Document Preview" class="document-image">
-                  <div class="document-details">
-                    <p class="document-title" th:text="${doc.title}">Document Title</p>
-                    <p class="document-category" th:text="${doc.category}">Category</p>
-                    <div class="document-stats">
-                      <span class="views"><i class="fas fa-eye"></i> <span th:text="${doc.views}">10.5K</span></span>
-                      <div class="vote-buttons">
-                        <button class="upvote-btn"><i class="fas fa-arrow-up"></i></button>
-                        <span class="vote-count" th:text="${doc.voteCount}">245</span>
-                        <button class="downvote-btn"><i class="fas fa-arrow-down"></i></button>
-                      </div>
-                      <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc.commentCount}">42</span></span>
+                  
+                  <!-- Stats Row -->
+                  <div class="document-stats-row">
+                    <!-- Vote Section -->
+                    <div class="vote-oval">
+                      <button class="upvote-btn"><i class="fas fa-thumbs-up"></i></button>
+                      <span class="vote-count" th:text="${doc != null && doc.danhGia != null ? doc.danhGia : '0'}">128</span>
+                      <button class="downvote-btn"><i class="fas fa-thumbs-down"></i></button>
                     </div>
-                    <button class="view-btn">Xem</button>
+            
+                    <!-- Views & Comments -->
+                    <div class="view-comment-group">
+                      <span class="views"><i class="fas fa-eye"></i> <span th:text="${doc != null && doc.luotXem != null ? doc.luotXem : '0'}">5.2K</span></span>
+                      <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc != null && doc.soLuongBL != null ? doc.soLuongBL : '0'}">24</span></span>
+                    </div>
+                  </div>
+            
+                  <!-- Action Buttons -->
+                  <div class="document-buttons">
+                    <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
+                    <a th:if="${doc == null || doc.maTaiLieu == null}" href="#" class="view-btn">Xem</a>
                     <button class="save-btn">Lưu</button>
                   </div>
                 </div>
               </div>
-              
-              <!-- Pagination -->
-              <div class="pagination">
-                <button class="page-btn prev"><i class="fas fa-chevron-left"></i></button>
-                <div class="page-numbers">
-                  <button class="page-btn active">1</button>
-                  <button class="page-btn">2</button>
-                  <button class="page-btn">3</button>
-                  <span class="page-ellipsis">...</span>
-                  <button class="page-btn">10</button>
+            </div>
+            
+            <!-- Courses Section -->
+            <div class="section-header">
+              <h2 class="section-title">By Course</h2>
+              <a th:href="@{/documents/courses}" class="see-more-btn">See More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="courses-grid">
+              <div th:each="course, courseStat : ${danhSachMonHoc != null ? danhSachMonHoc : {}}" th:if="${courseStat != null && courseStat.index < 4}" 
+                   class="course-item" th:data-course-id="${course != null && course.maMon != null ? course.maMon : ''}">
+                <div class="course-content">
+                  <div class="course-icon">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <h3 class="course-name" th:text="${course != null && course.tenMon != null ? course.tenMon : 'Course Name'}">Course Name</h3>
+                  <p class="course-doc-count" th:text="${course != null && course.taiLieu != null ? (course.taiLieu + ' documents') : '0 documents'}">10 documents</p>
+                  <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
+                  <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
                 </div>
-                <button class="page-btn next"><i class="fas fa-chevron-right"></i></button>
               </div>
             </div>
             
-            <!-- Categories Tab -->
-            <div class="tab-content hidden" id="categories">
-              <div class="categories-container">
-                <p>Categories content here</p>
+            <!-- Categories Section -->
+            <div class="section-header">
+              <h2 class="section-title">By Category</h2>
+              <a th:href="@{/documents/categories}" class="see-more-btn">See More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="categories-grid">
+              <div th:each="category, categoryStat : ${loaiTaiLieu != null ? loaiTaiLieu : {}}" th:if="${categoryStat != null && categoryStat.index < 4}" 
+                   class="category-item" th:data-category-id="${category != null && category.maLoai != null ? category.maLoai : ''}">
+                <div class="category-content">
+                  <div class="category-icon">
+                    <i class="fas fa-folder"></i>
+                  </div>
+                  <h3 class="category-name" th:text="${category != null && category.tenLoai != null ? category.tenLoai : 'Category Name'}">Category Name</h3>
+                  <a th:if="${category != null && category.maLoai != null}" th:href="@{'/documents/category/' + ${category.maLoai}}" class="category-link">View Documents</a>
+                  <a th:if="${category == null || category.maLoai == null}" href="#" class="category-link">View Documents</a>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Most Viewed Section -->
+            <div class="section-header">
+              <h2 class="section-title">Most Viewed</h2>
+              <a th:href="@{/documents/most-viewed}" class="see-more-btn">See More <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="document-grid">
+              <div class="document-card" th:each="doc, docStat : ${mostViewedDocuments != null ? mostViewedDocuments : {}}" th:if="${docStat != null && docStat.index < 4}">
+                <img th:if="${doc != null && doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
+                     alt="Document Preview" class="document-image">
+                <img th:if="${doc == null || doc.thumbnail == null}" src="/img/default-document.png" 
+                     alt="Document Preview" class="document-image">
+
+                <div class="document-details">
+                  <p class="document-title" th:text="${doc != null && doc.tieuDe != null ? doc.tieuDe : 'Document Title'}">Document Title</p>
+                  <div class="document-category">
+                    <p>
+                      <i class="fas fa-book"></i>
+                      <span th:text="${doc != null && doc.tenMon != null ? doc.tenMon : 'Course'}">Course</span>
+                    </p>
+                    <p>
+                      <i class="fas fa-folder"></i>
+                      <span th:text="${doc != null && doc.tenLoai != null ? doc.tenLoai : 'Category'}">Category</span>
+                    </p>
+                  </div>
+                  
+                  <!-- Stats Row -->
+                  <div class="document-stats-row">
+                    <!-- Vote Section -->
+                    <div class="vote-oval">
+                      <button class="upvote-btn"><i class="fas fa-thumbs-up"></i></button>
+                      <span class="vote-count" th:text="${doc != null && doc.danhGia != null ? doc.danhGia : '0'}">128</span>
+                      <button class="downvote-btn"><i class="fas fa-thumbs-down"></i></button>
+                    </div>
+            
+                    <!-- Views & Comments -->
+                    <div class="view-comment-group">
+                      <span class="views"><i class="fas fa-eye"></i> <span th:text="${doc != null && doc.luotXem != null ? doc.luotXem : '0'}">5.2K</span></span>
+                      <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc != null && doc.soLuongBL != null ? doc.soLuongBL : '0'}">24</span></span>
+                    </div>
+                  </div>
+            
+                  <!-- Action Buttons -->
+                  <div class="document-buttons">
+                    <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
+                    <a th:if="${doc == null || doc.maTaiLieu == null}" href="#" class="view-btn">Xem</a>
+                    <button class="save-btn">Lưu</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -275,18 +250,18 @@
               <label for="maLoai" class="form-label">Category <span class="required">*</span></label>
               <select id="maLoai" name="maLoai" class="form-control" required>
                 <option value="">Select a category</option>
-                <option th:each="loaiTaiLieu : ${loaiTaiLieu}"
-                        th:value="${loaiTaiLieu.maLoai}" 
-                        th:text="${loaiTaiLieu.tenLoai}">Category Name</option>
+                <option th:each="category : ${loaiTaiLieu != null ? loaiTaiLieu : {}}"
+                        th:value="${category != null && category.maLoai != null ? category.maLoai : ''}" 
+                        th:text="${category != null && category.tenLoai != null ? category.tenLoai : 'Category Name'}">Category Name</option>
               </select>
             </div>
             <div class="form-group">
               <label for="maMonHoc" class="form-label">Course <span class="required">*</span></label>
               <select id="maMonHoc" name="maMonHoc" class="form-control" required>
                 <option value="">Select a course</option>
-                <option th:each="monHoc : ${danhSachMonHoc}"
-                        th:value="${monHoc.maMon}" 
-                        th:text="${monHoc.tenMon}">Course Name</option>
+                <option th:each="monHoc : ${danhSachMonHoc != null ? danhSachMonHoc : {}}"
+                        th:value="${monHoc != null && monHoc.maMon != null ? monHoc.maMon : ''}" 
+                        th:text="${monHoc != null && monHoc.tenMon != null ? monHoc.tenMon : 'Course Name'}">Course Name</option>
               </select>
             </div>
             <div class="form-group">
@@ -317,7 +292,7 @@
   </div>
 
   <!-- Scripts -->
-  <div th:replace="fragments/scripts :: scripts"></div>
+  <div th:replace="~{fragments/scripts :: scripts}"></div>
   <link th:href="@{/css/documents.css}" rel="stylesheet">
   <script th:src="@{/js/document.js}"></script>
 </body>

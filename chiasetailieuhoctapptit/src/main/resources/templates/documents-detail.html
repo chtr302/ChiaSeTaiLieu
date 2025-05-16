@@ -37,17 +37,17 @@
                 <span class="info-label">Loại:</span>
                 <span class="info-value" th:text="${taiLieu.tenLoai}">Loại tài liệu</span>
               </div>
-              <!-- <div class="info-item">
-                <span class="info-label">Người đăng:</span>
-                <span class="info-value" th:text="${taiLieu.tenSV}">Tên sinh viên</span>
-              </div> -->
-              <!-- <div class="info-item">
-                <span class="info-label">Ngày đăng:</span>
-                <span class="info-value" th:text="${#temporals.format(taiLieu.ngayDang, 'dd/MM/yyyy')}">01/01/2023</span>
-              </div> -->
               <div class="info-item">
                 <span class="info-label">Lượt xem:</span>
-                <span class="info-value" th:text="${taiLieu.luotXem}">1,234</span>
+                <span class="info-value" th:text="${taiLieu.luotXem}">0</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Đánh giá:</span>
+                <span class="info-value" th:text="${taiLieu.danhGia}">0</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Bình luận:</span>
+                <span class="info-value" th:text="${taiLieu.soLuongBL}">0</span>
               </div>
             </div>
             
@@ -87,14 +87,24 @@
               <h1 class="document-title" th:text="${taiLieu.tieuDe}">Tiêu đề tài liệu</h1>
             </div>
             <div class="document-actions">
-              <!-- <div class="vote-actions">
-                <button class="vote-btn upvote" th:data-id="${taiLieu.maTaiLieu}">
-                  <i class="fas fa-thumbs-up"></i> <span th:text="${taiLieu.upVote}">128</span>
-                </button>
-                <button class="vote-btn downvote" th:data-id="${taiLieu.maTaiLieu}">
-                  <i class="fas fa-thumbs-down"></i> <span th:text="${taiLieu.downVote}">12</span>
-                </button>
-              </div> -->
+              <div class="document-stats-row">
+                <!-- Vote Section -->
+                <div class="vote-oval">
+                  <button class="upvote-btn" th:data-id="${taiLieu.maTaiLieu}">
+                    <i class="fas fa-thumbs-up"></i>
+                  </button>
+                  <span class="vote-count" th:text="${taiLieu.danhGia}">0</span>
+                  <button class="downvote-btn" th:data-id="${taiLieu.maTaiLieu}">
+                    <i class="fas fa-thumbs-down"></i>
+                  </button>
+                </div>
+        
+                <!-- Views & Comments -->
+                <div class="view-comment-group">
+                  <span class="views"><i class="fas fa-eye"></i> <span th:text="${taiLieu.luotXem}">0</span></span>
+                  <span class="comments"><i class="fas fa-comment"></i> <span th:text="${taiLieu.soLuongBL}">0</span></span>
+                </div>
+              </div>
             </div>
           </div>
           

@@ -21,4 +21,8 @@ public class LoaiTaiLieuService {
     public Optional<LoaiTaiLieu> searchTaiLieuBy(String maLoai){
         return loaiTaiLieuRepo.findById(maLoai);
     }
+    
+    public Optional<LoaiTaiLieu> getLoaiTaiLieuByMa(String maLoai) {
+        return loaiTaiLieuRepo.findById(maLoai);
+    }
 }

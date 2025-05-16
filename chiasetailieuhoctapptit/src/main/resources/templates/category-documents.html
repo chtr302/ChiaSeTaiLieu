@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('Category Documents')"></head>
+<body class="documents-page">
+  <!-- Thêm div hiển thị thông báo từ server -->
+  <div th:if="${successMessage}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>  
+  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
+  <main class="main">
+    <section class="documents-section">
+      <div class="documents-container">
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-header">
+            <div class="search-area">
+              <button id="menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+              </button>
+              <div class="search-bar">
+                <input type="text" placeholder="Search for documents in this category..." class="search-input document-search">
+                <i class="fas fa-search search-icon"></i>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Category Header Section -->
+          <div class="course-header-section">
+            <div class="breadcrumb">
+              <a th:href="@{/documents}">Documents</a> &gt; 
+              <a th:href="@{/documents/categories}">Categories</a> &gt; 
+              <span th:text="${category.tenLoai}">Category Name</span>
+            </div>
+            <div class="course-header-content">
+              <div class="category-icon large">
+                <i class="fas fa-folder"></i>
+              </div>
+              <div class="course-info">
+                <h1 class="course-title" th:text="${category.tenLoai}">Category Name</h1>
+                <div class="course-details">
+                  <span class="document-count">
+                    <i class="fas fa-file-alt"></i> <span th:text="${Documents.size() + ' documents'}">0 documents</span>
+                  </span>
+                </div>
+              </div>
+              <div class="course-actions">
+                <button class="follow-btn" th:if="${!isFollowing}">
+                  <i class="fas fa-plus"></i> Follow
+                </button>
+                <button class="following-btn" th:if="${isFollowing}">
+                  <i class="fas fa-check"></i> Following
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Filter Section -->
+          <div class="filter-section">
+            <div class="filter-container">
+              <div class="filter-group">
+                <label for="course-filter">Course:</label>
+                <select id="course-filter" class="filter-select">
+                  <option value="">All Courses</option>
+                  <option th:each="course : ${danhSachMonHoc}" 
+                          th:value="${course.maMon}" 
+                          th:text="${course.tenMon}"
+                          th:selected="${course.maMon == selectedCourse}">Course Name</option>
+                </select>
+              </div>
+              
+              <div class="filter-group">
+                <label for="sort-filter">Sort By:</label>
+                <select id="sort-filter" class="filter-select">
+                  <option value="newest" th:selected="${selectedSort == 'newest'}">Newest</option>
+                  <option value="views" th:selected="${selectedSort == 'views'}">Most Viewed</option>
+                  <option value="rating" th:selected="${selectedSort == 'rating'}">Highest Rated</option>
+                </select>
+              </div>
+              
+              <div class="filter-actions">
+                <button id="reset-filter" class="reset-filter-btn">Reset</button>
+                <button id="apply-filter" class="apply-filter-btn">Apply</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Content Container -->
+          <div class="content-container">
+            <!-- No Documents Message -->
+            <div th:if="${Documents != null && #lists.isEmpty(Documents)}" class="no-documents">
+              <i class="fas fa-file-alt"></i>
+              <p>No documents found for this category</p>
+            </div>
+            <!-- Document Card -->
+              <div class="document-grid">
+                <div class="document-card" th:each="doc : ${Documents}" th:if="${docStat.index < 16}">
+                  
+                  <!-- Thumbnail -->
+                  <img th:if="${doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
+                       alt="Document Preview" class="document-image">
+                  <img th:if="${doc.thumbnail == null}" src="/img/default-document.png" 
+                       alt="Document Preview" class="document-image">
+              
+                  <!-- Details -->
+                  <div class="document-details">
+                    <p class="document-title" th:text="${doc.tieuDe}">Document Title</p>
+                    <div class="document-category">
+                      <p>
+                        <i class="fas fa-book"></i>
+                        <span th:text="${doc.tenMon}">Course</span>
+                      </p>
+                      <p>
+                        <i class="fas fa-folder"></i>
+                        <span th:text="${doc.tenLoai}">Category</span>
+                      </p>
+                    </div>
+                    
+                    
+              
+                    <!-- Stats Row -->
+                    <div class="document-stats-row">
+                      <!-- Vote Section -->
+                      <div class="vote-oval">
+                        <button class="upvote-btn"><i class="fas fa-thumbs-up"></i></button>
+                        <span class="vote-count" th:text="${doc != null && doc.danhGia != null ? doc.danhGia : '0'}">0</span>
+                        <button class="downvote-btn"><i class="fas fa-thumbs-down"></i></button>
+                      </div>
+              
+                      <!-- Views & Comments -->
+                      <div class="view-comment-group">
+                        <span class="views"><i class="fas fa-eye"></i> <span th:text="${doc != null && doc.luotXem != null ? doc.luotXem : '0'}">0</span></span>
+                        <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc != null && doc.soLuongBL != null ? doc.soLuongBL : '0'}">0</span></span>
+                      </div>
+                    </div>
+              
+                    <!-- Action Buttons -->
+                    <div class="document-buttons">
+                      <a th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
+                      <button class="save-btn">Lưu</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" th:if="${totalPages != null && totalPages > 0}">
+              <a th:if="${currentPage > 1}" 
+                 th:href="@{/documents/category/{categoryId}(categoryId=${category.maLoai}, page=${currentPage - 1}, sort=${selectedSort}, course=${selectedCourse})}" 
+                 class="page-btn prev">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+              <span th:unless="${currentPage > 1}" class="page-btn prev disabled">
+                <i class="fas fa-chevron-left"></i>
+              </span>
+              
+              <div class="page-numbers">
+                <!-- Simplified pagination -->
+                <span th:each="pageNumber : ${#numbers.sequence(1, totalPages)}">
+                  <a th:if="${pageNumber != currentPage}"
+                     th:href="@{/documents/category/{categoryId}(categoryId=${category.maLoai}, page=${pageNumber}, sort=${selectedSort}, course=${selectedCourse})}" 
+                     class="page-number" th:text="${pageNumber}"></a>
+                  <span th:if="${pageNumber == currentPage}" 
+                        class="page-number active" th:text="${pageNumber}"></span>
+                </span>
+              </div>
+              
+              <a th:if="${currentPage < totalPages}" 
+                 th:href="@{/documents/category/{categoryId}(categoryId=${category.maLoai}, page=${currentPage + 1}, sort=${selectedSort}, course=${selectedCourse})}" 
+                 class="page-btn next">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+              <span th:unless="${currentPage < totalPages}" class="page-btn next disabled">
+                <i class="fas fa-chevron-right"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <link th:href="@{/css/documents.css}" rel="stylesheet">
+  <script th:src="@{/js/document.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Search functionality
+      const searchInput = document.querySelector('.document-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchValue = this.value.toLowerCase();
+          const documentCards = document.querySelectorAll('.document-card');
+          
+          documentCards.forEach(card => {
+            const title = card.querySelector('.document-title').textContent.toLowerCase();
+            const category = card.querySelector('.document-category').textContent.toLowerCase();
+            
+            if (title.includes(searchValue) || category.includes(searchValue)) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      }
+      
+      // Filter functionality
+      const applyFilterBtn = document.getElementById('apply-filter');
+      if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', function() {
+          const courseFilter = document.getElementById('course-filter').value;
+          const sortFilter = document.getElementById('sort-filter').value;
+          
+          const currentUrl = new URL(window.location.href);
+          const categoryId = currentUrl.pathname.split('/').pop();
+          
+          let newUrl = `/documents/category/${categoryId}?page=1`;
+          
+          if (courseFilter) {
+            newUrl += `&course=${encodeURIComponent(courseFilter)}`;
+          }
+          
+          if (sortFilter) {
+            newUrl += `&sort=${encodeURIComponent(sortFilter)}`;
+          }
+          
+          window.location.href = newUrl;
+        });
+      }
+      
+      // Reset filter
+      const resetFilterBtn = document.getElementById('reset-filter');
+      if (resetFilterBtn) {
+        resetFilterBtn.addEventListener('click', function() {
+          const currentUrl = new URL(window.location.href);
+          const categoryId = currentUrl.pathname.split('/').pop();
+          window.location.href = `/documents/category/${categoryId}`;
+        });
+      }
+    });
+  </script>
+</body>
+</html> 
