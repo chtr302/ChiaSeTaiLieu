@@ -84,10 +84,14 @@
           
           <!-- Content Container -->
           <div class="content-container">
-            <div class="document-grid full-width">
+            <!-- No Documents Message -->
+            <div th:if="${Documents != null && #lists.isEmpty(Documents)}" class="no-documents">
+              <i class="fas fa-file-alt"></i>
+              <p>No documents found for this course</p>
+            </div>
               <!-- Document Card -->
               <div class="document-grid">
-                <div class="document-card" th:each="doc, docStat : ${Documents}" th:if="${docStat.index < 4}">
+                <div class="document-card" th:each="doc, docStat : ${Documents}" th:if="${docStat.index < 16}">
                   
                   <!-- Thumbnail -->
                   <img th:if="${doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
@@ -167,12 +171,6 @@
               <span th:unless="${currentPage < totalPages}" class="page-btn next disabled">
                 <i class="fas fa-chevron-right"></i>
               </span>
-            </div>
-            
-            <!-- No Documents Message -->
-            <div th:if="${Documents != null && #lists.isEmpty(Documents)}" class="no-documents">
-              <i class="fas fa-file-alt"></i>
-              <p>No documents found for this course</p>
             </div>
           </div>
         </div>

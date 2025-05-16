@@ -8,8 +8,8 @@
       <div class="documents-container">
         <!-- Main Content -->
         <div class="main-content">
-          <div class="content-header">
-            <div class="search-area">
+          <div class="content-header categories-header">
+            <div class="search-area search-area-categories">
               <button id="menu-toggle" class="menu-toggle">
                 <i class="fas fa-bars"></i>
               </button>
@@ -22,7 +22,7 @@
 
           
           <!-- Content Container -->
-          <div class="content-container">
+          <div class="content-container-categories">
             <div class="categories-grid-full">
               <div th:each="category : ${loaiTaiLieu}" class="category-item" th:data-category-id="${category.maLoai}">
                 <div class="category-content">

@@ -31,7 +31,7 @@
               <span th:text="${category.tenLoai}">Category Name</span>
             </div>
             <div class="course-header-content">
-              <div class="course-icon large">
+              <div class="category-icon large">
                 <i class="fas fa-folder"></i>
               </div>
               <div class="course-info">
@@ -85,10 +85,14 @@
           
           <!-- Content Container -->
           <div class="content-container">
-            <div class="document-grid full-width">
-              <!-- Document Card -->
+            <!-- No Documents Message -->
+            <div th:if="${Documents != null && #lists.isEmpty(Documents)}" class="no-documents">
+              <i class="fas fa-file-alt"></i>
+              <p>No documents found for this category</p>
+            </div>
+            <!-- Document Card -->
               <div class="document-grid">
-                <div class="document-card" th:each="doc : ${Documents}">
+                <div class="document-card" th:each="doc : ${Documents}" th:if="${docStat.index < 16}">
                   
                   <!-- Thumbnail -->
                   <img th:if="${doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
@@ -168,12 +172,6 @@
               <span th:unless="${currentPage < totalPages}" class="page-btn next disabled">
                 <i class="fas fa-chevron-right"></i>
               </span>
-            </div>
-            
-            <!-- No Documents Message -->
-            <div th:if="${Documents != null && #lists.isEmpty(Documents)}" class="no-documents">
-              <i class="fas fa-file-alt"></i>
-              <p>No documents found for this category</p>
             </div>
           </div>
         </div>

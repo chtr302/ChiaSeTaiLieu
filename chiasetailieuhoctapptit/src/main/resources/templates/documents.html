@@ -78,7 +78,7 @@
               <a th:href="@{/documents/all}" class="see-more-btn">See More <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="document-grid">
-              <div class="document-card" th:each="doc, docStat : ${Documents != null ? Documents : {}}" th:if="${docStat != null && docStat.index < 4}">
+              <div class="document-card" th:each="doc, docStat : ${Documents != null ? Documents : {}}" th:if="${docStat != null && docStat.index < 5}">
                 
                 <!-- Thumbnail -->
                 <img th:if="${doc != null && doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 

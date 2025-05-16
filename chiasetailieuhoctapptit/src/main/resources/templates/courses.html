@@ -4,12 +4,12 @@
 <body class="documents-page">
   <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
   <main class="main">
-    <section class="documents-section">
+    <section class="documents-section ">
       <div class="documents-container">
         <!-- Main Content -->
         <div class="main-content">
-          <div class="content-header">
-            <div class="search-area">
+          <div class="content-header courses-header">
+            <div class="search-area search-area-courses">
               <button id="menu-toggle" class="menu-toggle">
                 <i class="fas fa-bars"></i>
               </button>
@@ -21,7 +21,7 @@
           </div>
 
           <!-- Content Container -->
-          <div class="content-container">
+          <div class="content-container-courses">
             <div class="courses-grid-full">
               <div th:each="course : ${danhSachMonHoc}" class="course-item" th:data-course-id="${course.maMon}">
                 <div class="course-content">
