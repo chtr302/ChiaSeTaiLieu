@@ -33,12 +33,5 @@ build/
 .vscode/
 application-secret.properties
 OAuth2.json
-
-### MySQL ###
-*.log
-*.sql
-
-/thumbnails/
-/uploads/
-
-
+thumbnails
+uploads
