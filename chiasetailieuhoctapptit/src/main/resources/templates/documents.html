@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Studucu - Documents')}"></head>
+
 <body class="documents-page">
   <!-- Thêm div hiển thị thông báo từ server -->
   <div th:if="${successMessage != null}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
@@ -268,9 +268,18 @@
             </div>
             <div class="form-group">
               <label for="moTa" class="form-label">Description <span class="required">*</span></label>
+              <!-- Thêm nút tóm tắt AI ở đây -->
+              <div class="ai-summary-controls">
+                <button type="button" id="ai-summarize-btn" class="btn-ai-summarize" disabled>
+                  <i class="fas fa-robot"></i> Tóm tắt với AI
+                </button>
+                <div id="ai-summary-loading" class="ai-summary-loading" style="display: none;">
+                  <div class="spinner-border spinner-border-sm" role="status"></div>
+                  <span>Đang tóm tắt...</span>
+                </div>
+              </div>
               <textarea id="moTa" name="moTa" rows="4" placeholder="Describe your document" class="form-control" required></textarea>
             </div>
-          </div>
           <div class="modal-footer">
             <button type="button" id="cancel-upload" class="btn-cancel">Cancel</button>
             <button type="submit" id="save-upload" class="btn-save"><i class="fas fa-save"></i> Upload</button>

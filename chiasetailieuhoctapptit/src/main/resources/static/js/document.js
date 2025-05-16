@@ -10,114 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (errorMessage && errorMessage.textContent.trim() !== '') {
         showNotification(errorMessage.textContent, 'error');
     }
-    
-    // Upload document functionality
+
     initUploadModal();
-    
-    // File upload handling with drag and drop
+
     initFileUploadHandling();
 
-    // Initialize course item click events
-    initCourseItemClickEvents();
 
-    // Initialize category item click events
-    initCategoryItemClickEvents();
-
-    // Initialize recents dropdown
-    initRecentsDropdown();
-
-    // Mobile menu toggle
-    initMobileMenu();
-
-    // Keep sidebar and header fixed during scroll
-    initFixedElements();
-    
-    // Handle profile link click
-    initProfileLink();
-});
-
-// Handle profile link click to set a flag for the library page
-function initProfileLink() {
-    const profileLink = document.querySelector('.user-profile-link');
-    if (!profileLink) return;
-    
-    profileLink.addEventListener('click', function(e) {
-        // Set a session storage flag to inform the library page
-        // that navigation is coming from the profile link
-        sessionStorage.setItem('fromProfile', 'true');
-    });
-}
-
-// Initialize recents dropdown
-function initRecentsDropdown() {
-    const recentsDropdown = document.getElementById('recents-dropdown');
-    const recentsContent = document.getElementById('recents-dropdown-content');
-    
-    if (!recentsDropdown || !recentsContent) return;
-    
-    recentsDropdown.addEventListener('click', function(e) {
-        if (e.target.closest('.dropdown-content')) return;
-        
-        // Toggle dropdown
-        this.classList.toggle('open');
-        
-        // Load recent items if dropdown is open and empty
-        if (this.classList.contains('open') && recentsContent.children.length === 0) {
-            loadRecentItems();
-        }
-    });
-}
-
-// Load recent items (from local storage or could be from API)
-function loadRecentItems() {
-    const recentsContent = document.getElementById('recents-dropdown-content');
-    if (!recentsContent) return;
-    
-    // Example recent items - this would be loaded from backend in a real app
-    const recentItems = [
-        { 
-            type: 'document', 
-            title: 'Introduction to Data Structures', 
-            time: 'Today, 10:45 AM',
-            icon: 'fa-file-pdf',
-            url: '/documents/detail/1'
-        },
-        { 
-            type: 'course', 
-            title: 'Operating Systems', 
-            time: 'Yesterday, 3:20 PM',
-            icon: 'fa-book',
-            url: '/documents/course/2'
-        },
-        { 
-            type: 'document', 
-            title: 'Algorithm Analysis Notes', 
-            time: 'May 15, 2023',
-            icon: 'fa-file-alt',
-            url: '/documents/detail/3'
-        }
-    ];
-    
-    // Clear any existing content
-    recentsContent.innerHTML = '';
-    
-    // Add recent items
-    if (recentItems.length === 0) {
-        recentsContent.innerHTML = '<div class="empty-recents">No recent activity</div>';
-    } else {
-        recentItems.forEach(item => {
-            const recentItemEl = document.createElement('div');
-            recentItemEl.className = 'recent-item';
-            recentItemEl.innerHTML = `
-                <div class="recent-item-icon">
-                    <i class="fas ${item.icon}"></i>
-                </div>
-                <div class="recent-item-details">
-                    <a href="${item.url}" class="recent-item-title">${item.title}</a>
-                    <div class="recent-item-time">${item.time}</div>
-                </div>
-            `;
-            recentsContent.appendChild(recentItemEl);
         });
     }
 }
@@ -160,33 +58,29 @@ function initFixedElements() {
     });
 }
 
-// Upload modal functionality
 function initUploadModal() {
     const uploadBtn = document.getElementById('upload-btn');
     const uploadModal = document.getElementById('upload-modal');
     const closeModalBtn = document.getElementById('close-modal');
     const cancelUploadBtn = document.getElementById('cancel-upload');
     const uploadForm = document.getElementById('upload-form');
-    
-    // Open modal
+
     if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {
             uploadModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         });
     }
-    
-    // Close modal
+
     const closeModal = () => {
         uploadModal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Enable scrolling
+        document.body.style.overflow = 'auto';
         resetUploadForm();
     };
     
     if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
     if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', closeModal);
     
-    // Close modal when clicking outside
     uploadModal.addEventListener('click', (event) => {
         if (event.target === uploadModal) {
             closeModal();
@@ -315,12 +209,10 @@ function initFileUploadHandling() {
     
     // Handle form submission
     uploadForm.addEventListener('submit', (event) => {
-        // Form validation is handled by HTML5 required attributes
-        // You can add additional validation here if needed
+        // 
     });
 }
 
-// Helper function to format file size
 function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
@@ -386,6 +278,7 @@ function initCourseItemClickEvents() {
                 courseLink.click();
             }
         });
+
     });
 }
 
@@ -405,5 +298,4 @@ function initCategoryItemClickEvents() {
                 categoryLink.click();
             }
         });
-    });
-}
+
