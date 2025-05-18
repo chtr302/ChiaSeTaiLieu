@@ -40,6 +40,55 @@
                     
                 </div>
             </section>
+            <div id="followers-list-container" class="user-follow-list-container" style="display:none;">
+                <div class="user-follow-list-header">
+                    <span class="fw-bold">Người theo dõi</span>
+                    <button type="button" class="close-follow-list btn btn-link">Đóng</button>
+                </div>
+                <ul class="list-group follow-list"></ul>
+                <div class="text-center mt-3 loading-spinner" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="text-center mt-3 no-results d-none">
+                    <p class="mb-0">Không có người dùng nào</p>
+                </div>
+            </div>
+            <div id="following-list-container" class="user-follow-list-container" style="display:none;">
+                <div class="user-follow-list-header">
+                    <span class="fw-bold">Đang theo dõi</span>
+                    <button type="button" class="close-follow-list btn btn-link">Close</button>
+                </div>
+                <ul class="list-group follow-list"></ul>
+                <div class="text-center mt-3 loading-spinner" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div class="text-center mt-3 no-results d-none">
+                    <p class="mb-0">Không có người dùng nào</p>
+                </div>
+            </div>
+
+            <!-- Modal-style overlay for followers/following list -->
+            <div id="user-follow-overlay" class="user-follow-overlay" style="display:none;">
+                <div class="user-follow-modal">
+                    <div class="user-follow-modal-header">
+                        <span id="user-follow-modal-title" class="fw-bold"></span>
+                        <button type="button" class="close-user-follow-modal btn btn-link">&times;</button>
+                    </div>
+                    <ul class="list-group follow-list"></ul>
+                    <div class="text-center mt-3 loading-spinner" style="display:none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3 no-results d-none">
+                        <p class="mb-0">No user found</p>
+                    </div>
+                </div>
+            </div>
 
             <section class="statistics-section">
                 <div class="stats-container">
@@ -130,29 +179,6 @@
                 </div> -->
             </section>
         </main>
-    </div>
-    <div class="modal fade" id="followModal" tabindex="-1" aria-labelledby="followModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="followModalLabel">Danh sách người theo dõi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <ul class="list-group follow-list">
-                        <!-- Danh sách sẽ được thêm vào bằng JavaScript -->
-                    </ul>
-                    <div class="text-center mt-3 loading-spinner">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                    <div class="text-center mt-3 no-results d-none">
-                        <p class="mb-0">Không có người dùng nào</p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     <div th:replace="fragments/scripts :: scripts"></div>
     <link th:href="@{/css/library.css}" rel="stylesheet">

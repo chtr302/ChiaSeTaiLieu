@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="fragments/head :: head('Document sharing platform of the Posts and Telecommunications Institute of Technology - Home')"></head>
+<link th:href="@{/css/index.css}" rel="stylesheet">
 
 <body class="index-page">
   <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
@@ -14,11 +15,13 @@
           <p>Xin chào <span th:text="${sinhVien.hoVaTen}">Guest</span>!</p>
         </div>
         <div class="search-container">
-          <input type="text" placeholder="Tìm tài liệu..." class="search-input">
+          <input type="text" placeholder="Tìm tài liệu..." class="search-input" id="searchInput" autocomplete="off">
           <button class="search-button">
             <i class="fas fa-search"></i>
           </button>
+          <div id="suggestionBox" class="suggestion-box" style="display:none;"></div>
         </div>
+
         <div class="categories-container">
           <a href="#" class="category-tag category-blue">Lập trình web</a>
           <a href="#" class="category-tag category-green">Hệ quản trị</a>
@@ -31,5 +34,11 @@
   </main>
 
   <div th:replace="fragments/scripts :: scripts"></div>
+  <!-- Truyền dữ liệu Documents sang JS -->
+  <script th:inline="javascript">
+    // filepath: e:\ChiaSeTaiLieu-2\chiasetailieuhoctapptit\src\main\resources\templates\index.html
+    window.allDocuments = /*[[${Documents}]]*/ [];
+  </script>
+  <script th:src="@{/js/index.js}" th:inline="javascript"></script>
 </body>
 </html>

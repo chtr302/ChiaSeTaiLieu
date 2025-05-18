@@ -69,126 +69,95 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const followersCount = document.getElementById('followers-count');
     const followingCount = document.getElementById('following-count');
-    
-    if (followersCount) followersCount.classList.add('clickable');
-    if (followingCount) followingCount.classList.add('clickable');
+    const overlay = document.getElementById('user-follow-overlay');
+    const modalTitle = document.getElementById('user-follow-modal-title');
+    const closeBtn = document.querySelector('.close-user-follow-modal');
+    const followList = overlay ? overlay.querySelector('.follow-list') : null;
+    const loadingSpinner = overlay ? overlay.querySelector('.loading-spinner') : null;
+    const noResults = overlay ? overlay.querySelector('.no-results') : null;
 
-    const modalElement = document.getElementById('followModal');
-    let followModal;
-    
-    if (modalElement) {
-        followModal = new bootstrap.Modal(modalElement);
-
-        if (followersCount) {
-            followersCount.addEventListener('click', function() {
-                const userId = this.getAttribute('data-userid');
-                if (!userId) return;
-                
-                document.getElementById('followModalLabel').textContent = 'Danh sách người theo dõi';
-                showLoading();
-                
-                // Lấy danh sách followers - sửa URL đúng endpoint
-                fetch(`/user/followers/${userId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderFollowList(data);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showNoResults('Có lỗi xảy ra khi tải dữ liệu');
-                    });
-                
-                followModal.show();
-            });
+    function showOverlayList(type, userId) {
+        if (!overlay || !followList) return;
+        overlay.style.display = 'flex';
+        modalTitle.textContent = type === 'followers' ? 'Người theo dõi' : 'Đang theo dõi';
+        showLoadingOverlay();
+        let endpoint = '';
+        // Đảo lại endpoint cho đúng ý nghĩa
+        if (type === 'followers') {
+            endpoint = `/user/following/${userId}`;
+        } else {
+            endpoint = `/user/followers/${userId}`;
         }
-        
-        // Xử lý click vào Following count
-        if (followingCount) {
-            followingCount.addEventListener('click', function() {
-                const userId = this.getAttribute('data-userid');
-                if (!userId) return;
-                
-                document.getElementById('followModalLabel').textContent = 'Danh sách người đang theo dõi';
-                showLoading();
-                
-                // Lấy danh sách following - sửa URL đúng endpoint
-                fetch(`/user/following/${userId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderFollowList(data);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showNoResults('Có lỗi xảy ra khi tải dữ liệu');
-                    });
-                
-                followModal.show();
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => {
+                renderUserListOverlay(data);
+            })
+            .catch(() => {
+                showNoResultsOverlay('Có lỗi xảy ra khi tải dữ liệu');
             });
-        }
     }
-    
-    // Hiển thị danh sách người dùng trong modal
-    function renderFollowList(users) {
-        const followList = document.querySelector('.follow-list');
-        const loadingSpinner = document.querySelector('.loading-spinner');
-        const noResults = document.querySelector('.no-results');
-        
-        // Ẩn loading
+
+    if (followersCount) {
+        followersCount.addEventListener('click', function() {
+            const userId = this.getAttribute('data-userid');
+            showOverlayList('followers', userId);
+        });
+    }
+    if (followingCount) {
+        followingCount.addEventListener('click', function() {
+            const userId = this.getAttribute('data-userid');
+            showOverlayList('following', userId);
+        });
+    }
+    if (closeBtn && overlay) {
+        closeBtn.addEventListener('click', function() {
+            overlay.style.display = 'none';
+            if (followList) followList.innerHTML = '';
+            if (loadingSpinner) loadingSpinner.style.display = 'none';
+            if (noResults) noResults.classList.add('d-none');
+        });
+    }
+
+    function renderUserListOverlay(users) {
+        if (!followList) return;
         if (loadingSpinner) loadingSpinner.style.display = 'none';
-        
-        // Xóa danh sách cũ
-        if (followList) followList.innerHTML = '';
-        
-        // Hiển thị thông báo nếu không có người dùng
+        followList.innerHTML = '';
         if (!users || users.length === 0) {
             if (noResults) noResults.classList.remove('d-none');
             return;
         }
-        
-        // Ẩn thông báo không có kết quả
         if (noResults) noResults.classList.add('d-none');
-        
-        // Hiển thị danh sách người dùng
         users.forEach(user => {
-            const listItem = document.createElement('li');
-            listItem.className = 'list-group-item follow-list-item';
-            
-            listItem.innerHTML = `
+            const li = document.createElement('li');
+            li.className = 'list-group-item follow-list-item';
+            li.innerHTML = `
                 <a href="/user/${user.maSV}">
-                    <img src="${user.hinhAnh || '/img/default-avatar.jpg'}" 
-                         alt="${user.hoVaTen}" 
+                    <img src="${user.hinhAnh || '/img/default-avatar.jpg'}"
+                         alt="${user.hoVaTen || ''}"
                          class="follow-avatar"
                          referrerpolicy="no-referrer">
                     <div class="follow-info">
-                        <p class="follow-name">${user.hoVaTen}</p>
+                        <p class="follow-name">${user.hoVaTen || ''}</p>
                         <p class="follow-id">@${user.maSV}</p>
                     </div>
                 </a>
             `;
-            
-            followList.appendChild(listItem);
+            followList.appendChild(li);
         });
     }
-    
-    // Hiển thị loading
-    function showLoading() {
-        const loadingSpinner = document.querySelector('.loading-spinner');
-        const noResults = document.querySelector('.no-results');
-        const followList = document.querySelector('.follow-list');
-        
+
+    function showLoadingOverlay() {
         if (loadingSpinner) loadingSpinner.style.display = 'block';
         if (noResults) noResults.classList.add('d-none');
         if (followList) followList.innerHTML = '';
     }
-    
-    // Hiển thị thông báo không có kết quả
-    function showNoResults(message = 'Không có người dùng nào') {
-        const loadingSpinner = document.querySelector('.loading-spinner');
-        const noResults = document.querySelector('.no-results');
-        const messageEl = noResults ? noResults.querySelector('p') : null;
-        
+
+    function showNoResultsOverlay(message = 'Không có người dùng nào') {
         if (loadingSpinner) loadingSpinner.style.display = 'none';
         if (noResults) noResults.classList.remove('d-none');
+        const messageEl = noResults ? noResults.querySelector('p') : null;
         if (messageEl) messageEl.textContent = message;
+        if (followList) followList.innerHTML = '';
     }
 });

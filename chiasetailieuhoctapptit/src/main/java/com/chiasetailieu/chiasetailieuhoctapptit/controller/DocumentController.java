@@ -2,6 +2,7 @@ package com.chiasetailieu.chiasetailieuhoctapptit.controller;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +74,8 @@ public class DocumentController {
     private String uploadDir;
 
     @GetMapping
-    public String showDocuments(@AuthenticationPrincipal OidcUser principal, Model model) {
+    public String showDocuments(@AuthenticationPrincipal OidcUser principal, Model model,
+                                @RequestParam(value = "q", required = false) String keyword) {
         if (principal == null) {
             return "redirect:/signin";
         }
@@ -89,6 +91,21 @@ public class DocumentController {
             model.addAttribute("loaiTaiLieu", loaiTaiLieu);
             
             List<TaiLieuView> allDocuments = taiLieuViewService.getTaiLieu();
+
+            // Lọc theo từ khóa nếu có (lọc cả có dấu và không dấu)
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String lower = keyword.trim().toLowerCase();
+                String lowerNoAccent = removeVietnameseTones(lower);
+                allDocuments = allDocuments.stream()
+                    .filter(doc -> {
+                        if (doc.getTieuDe() == null) return false;
+                        String title = doc.getTieuDe().toLowerCase();
+                        String titleNoAccent = removeVietnameseTones(title);
+                        // So khớp cả có dấu và không dấu
+                        return title.contains(lower) || titleNoAccent.contains(lowerNoAccent);
+                    })
+                    .toList();
+            }
             model.addAttribute("Documents", allDocuments);
             
         } catch (Exception e) {
@@ -98,54 +115,88 @@ public class DocumentController {
         return "documents";
     }
 
+    // Sửa lại để hỗ trợ upload từ trang upload.html (nhiều file) và modal (1 file)
     @PostMapping("/upload")
-    public String uploadDocument(
-            @AuthenticationPrincipal OidcUser principal, // Lấy thông tin đăng nhập của người dùng
-            @RequestParam("file") MultipartFile file, // Lấy các thông tin nhận được từ View
-            @RequestParam("tieuDe") String tieuDe,
-            @RequestParam("moTa") String moTa,
-            @RequestParam("maLoai") String maLoai,
-            @RequestParam("maMonHoc") String maMonHoc,
-            @RequestParam(value = "tags", required = false) String tags,
-            RedirectAttributes redirectAttributes) {
-        
+    public String uploadDocuments(
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestParam(value = "files", required = false) List<MultipartFile> files,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam Map<String, String> params,
+            RedirectAttributes redirectAttributes
+    ) {
         if (principal == null) {
             return "redirect:/signin";
         }
-        
-        try {            
+        try {
             String email = principal.getEmail();
             String maSV = email.substring(0, email.indexOf('@'));
-            
-            File fileEntity = fileService.saveFile(file);            
-            TaiLieu taiLieu = new TaiLieu();
-            taiLieu.setTieuDe(tieuDe);
-            taiLieu.setMoTa(moTa);
-            taiLieu.setMaSinhVien(maSV);
-            taiLieu.setMaLoai(maLoai);
-            taiLieu.setMaMonHoc(maMonHoc);
-            taiLieu.setLuotXem(0);
-            taiLieu.setUpVote(0);
-            taiLieu.setDownVote(0);
-            taiLieu.setNgayDang(LocalDate.now());
-            taiLieu.setMaFile((long) fileEntity.getMaFile());
-            
-            taiLieuService.saveTaiLieu(taiLieu);
-            
-            redirectAttributes.addFlashAttribute("successMessage", 
-                "Tài liệu '" + tieuDe + "' đã được tải lên thành công!");
-            
-        } catch (java.io.IOException e) {
-            System.err.println("LỖI khi xử lý file: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", 
-                "Có lỗi xảy ra khi xử lý tập tin: " + e.getMessage());
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            System.err.println("LỖI dữ liệu không hợp lệ: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", 
-                "Dữ liệu không hợp lệ: " + e.getMessage());
+
+            // Nếu upload nhiều file từ trang upload.html
+            if (files != null && !files.isEmpty()) {
+                for (int i = 0; i < files.size(); i++) {
+                    MultipartFile mf = files.get(i);
+                    String tieuDe = params.get("tieuDe_" + i);
+                    String moTa = params.get("moTa_" + i);
+                    String maLoai = params.get("maLoai_" + i);
+                    String maMonHoc = params.get("maMonHoc_" + i);
+                    String tags = params.get("tags_" + i);
+
+                    if (mf == null || mf.isEmpty() || tieuDe == null || moTa == null || maLoai == null || maMonHoc == null) {
+                        continue;
+                    }
+
+                    File fileEntity = fileService.saveFile(mf);
+                    TaiLieu taiLieu = new TaiLieu();
+                    taiLieu.setTieuDe(tieuDe);
+                    taiLieu.setMoTa(moTa);
+                    taiLieu.setMaSinhVien(maSV);
+                    taiLieu.setMaLoai(maLoai);
+                    taiLieu.setMaMonHoc(maMonHoc);
+                    taiLieu.setLuotXem(0);
+                    taiLieu.setUpVote(0);
+                    taiLieu.setDownVote(0);
+                    taiLieu.setNgayDang(LocalDate.now());
+                    taiLieu.setMaFile((long) fileEntity.getMaFile());
+                    taiLieuService.saveTaiLieu(taiLieu);
+                }
+                redirectAttributes.addFlashAttribute("successMessage", "Tải lên thành công " + files.size() + " tài liệu!");
+                return "redirect:/documents";
+            }
+
+            // Nếu chỉ upload 1 file (modal)
+            if (file != null && !file.isEmpty()) {
+                String tieuDe = params.get("tieuDe");
+                String moTa = params.get("moTa");
+                String maLoai = params.get("maLoai");
+                String maMonHoc = params.get("maMonHoc");
+                String tags = params.get("tags");
+
+                File fileEntity = fileService.saveFile(file);
+                TaiLieu taiLieu = new TaiLieu();
+                taiLieu.setTieuDe(tieuDe);
+                taiLieu.setMoTa(moTa);
+                taiLieu.setMaSinhVien(maSV);
+                taiLieu.setMaLoai(maLoai);
+                taiLieu.setMaMonHoc(maMonHoc);
+                taiLieu.setLuotXem(0);
+                taiLieu.setUpVote(0);
+                taiLieu.setDownVote(0);
+                taiLieu.setNgayDang(LocalDate.now());
+                taiLieu.setMaFile((long) fileEntity.getMaFile());
+                taiLieuService.saveTaiLieu(taiLieu);
+
+                redirectAttributes.addFlashAttribute("successMessage", "Tài liệu '" + tieuDe + "' đã được tải lên thành công!");
+                return "redirect:/documents";
+            }
+
+            // Không có file nào được gửi lên
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy file để tải lên.");
+            return "redirect:/documents";
+        } catch (Exception e) {
+            System.err.println("LỖI khi upload file: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải lên: " + e.getMessage());
+            return "redirect:/documents";
         }
-        
-        return "redirect:/documents";
     }
 
     @GetMapping("/thumbnails/{filename:.+}")
@@ -635,5 +686,14 @@ public class DocumentController {
         }
         
         return "category-documents";
+    }
+
+    // Thêm hàm loại bỏ dấu tiếng Việt
+    private String removeVietnameseTones(String str) {
+        if (str == null) return "";
+        String temp = Normalizer.normalize(str, Normalizer.Form.NFD);
+        temp = temp.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        temp = temp.replace('đ', 'd').replace('Đ', 'D');
+        return temp;
     }
 }
