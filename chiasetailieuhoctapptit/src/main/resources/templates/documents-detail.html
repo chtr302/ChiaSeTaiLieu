@@ -9,7 +9,6 @@
   <!-- Thông báo -->
   <div th:if="${successMessage}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
   <div th:if="${errorMessage}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>
-  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
   
   <main class="main">
     <section class="document-detail-section">
@@ -148,7 +147,8 @@
             </div>
             <div id="pdf-viewer" class="pdf-view-container"
                  th:data-pdf-url="@{'/documents/view/' + ${taiLieu.maTaiLieu}}"
-                 th:data-filename="${taiLieu.duongDanFile}">
+                 th:data-filename="${taiLieu.duongDanFile}"
+                 th:data-document-title="${taiLieu.tieuDe}">
             </div>
           </div>
           
@@ -334,10 +334,10 @@
           <div class="chatbot-messages" id="chatbot-messages">
             <div class="chat-message bot-message">
               <div class="message-avatar">
-                <i class="fas fa-robot"></i>
+                <img src="/img/gemma.png" alt="Gemma">
               </div>
               <div class="message-content">
-                <p>Xin chào! Tôi có thể giúp bạn tìm hiểu thêm về tài liệu này. Bạn có thể hỏi tôi về nội dung, yêu cầu tóm tắt hoặc giải thích các khái niệm trong tài liệu.</p>
+                <p>Xin chào! Tôi có thể giúp bạn trả lời các câu hỏi về tài liệu này, cơ bản. Nếu bạn muốn nghiên cứu sâu hơn, tôi khuyên bạn nên sử dụng Noteboolklm của Google sẽ giúp bạn nghiên cứu sâu hơn</p>
               </div>
             </div>
           </div>
@@ -351,6 +351,8 @@
       </div>
     </div>
   </div>
+  <input type="hidden" id="current-user-avatar" th:value="${sinhVien.hinhAnh}">
+  <input type="hidden" id="current-user-name" th:value="${sinhVien.hoVaTen}">
 
   <!-- Scripts -->
   <div th:replace="fragments/scripts :: scripts"></div>
