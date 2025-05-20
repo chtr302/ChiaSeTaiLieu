@@ -16,6 +16,80 @@ document.addEventListener('DOMContentLoaded', function() {
   const fileDetailsContainer = document.getElementById('file-details-container');
   let uploadedFiles = [];
 
+  // Function để thiết lập nút AI summarize
+  function setupAiSummarizeButtons() {
+    // Lấy tất cả các tiêu đề và nút AI summarize trong container
+    const containers = document.querySelectorAll('#file-details-container fieldset');
+    
+    containers.forEach((container, index) => {
+      const titleInput = container.querySelector('.tieuDe');
+      const aiButton = container.querySelector('.btn-ai-summarize');
+      
+      if (titleInput && aiButton) {
+        // Kiểm tra giá trị ban đầu
+        aiButton.disabled = !titleInput.value.trim();
+        
+        // Thêm event listener cho input
+        titleInput.addEventListener('input', function() {
+          // Kích hoạt nút khi có giá trị trong input tiêu đề
+          aiButton.disabled = !this.value.trim();
+        });
+        
+        // Thêm functionality cho nút AI summarize
+        aiButton.addEventListener('click', function() {
+          const fileIndex = index;
+          const file = uploadedFiles[fileIndex];
+          const loadingIndicator = container.querySelector('.ai-summary-loading');
+          const descriptionTextarea = container.querySelector('.moTa');
+          
+          if (!file || !loadingIndicator || !descriptionTextarea) return;
+          
+          // Hiển thị loading
+          aiButton.style.display = 'none';
+          loadingIndicator.style.display = 'flex';
+          
+          // Tạo FormData để gửi file
+          const formData = new FormData();
+          formData.append('file', file);
+          
+          // CSRF token
+          const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+          const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+          const headers = {};
+          if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+          }
+          
+          // Gọi API AI summarize
+          fetch('/ai/summarize-upload', {
+            method: 'POST',
+            body: formData,
+            headers: headers
+          })
+          .then(res => {
+            if (!res.ok) throw new Error('Failed to summarize document');
+            return res.json();
+          })
+          .then(data => {
+            if (data && data.summary) {
+              // Điền nội dung tóm tắt vào textarea mô tả
+              descriptionTextarea.value = data.summary;
+            }
+          })
+          .catch(err => {
+            console.error('Error summarizing document:', err);
+            alert('Không thể tóm tắt tài liệu: ' + err.message);
+          })
+          .finally(() => {
+            // Ẩn loading, hiển thị lại nút
+            loadingIndicator.style.display = 'none';
+            aiButton.style.display = 'inline-flex';
+          });
+        });
+      }
+    });
+  }
+
   // Bước 1: Chọn file, tối đa 5 file
   if (uploadFileInput) {
     uploadFileInput.addEventListener('change', function(e) {
@@ -89,26 +163,45 @@ document.addEventListener('DOMContentLoaded', function() {
       step2.style.display = 'block';
       step1Indicator.classList.remove('active');
       step2Indicator.classList.add('active');
-      // Render detail form cho từng file đã chọn bằng template (option đã render bằng Thymeleaf)
+      
+      // Render detail form cho từng file đã chọn bằng template
       if (fileDetailsContainer) {
         fileDetailsContainer.innerHTML = '';
         let template = document.getElementById('file-detail-template');
         let templateHTML = template.innerHTML;
         uploadedFiles.forEach((file, idx) => {
+          // Lấy tên file và xử lý để làm tiêu đề
+          const fileName = file.name;
+          // Loại bỏ đuôi file .pdf và thay thế dấu gạch ngang bằng khoảng trắng
+          const suggestedTitle = fileName.replace(/\.pdf$/i, '').replace(/_|-/g, ' ');
+          
           // Thay thế file-index và file-name
           let html = templateHTML
             .replace('<span class="file-index"></span>', `<span class="file-index">${idx + 1}</span>`)
             .replace('<span class="file-name"></span>', `<span class="file-name">${file.name}</span>`);
+          
           // Tạo một div tạm để set lại name cho các input/select
           let tempDiv = document.createElement('div');
           tempDiv.innerHTML = html;
-          tempDiv.querySelector('.tieuDe').setAttribute('name', `tieuDe_${idx}`);
+          
+          // Set tên file đã xử lý vào trường tiêu đề
+          const tieuDeInput = tempDiv.querySelector('.tieuDe');
+          tieuDeInput.setAttribute('name', `tieuDe_${idx}`);
+          tieuDeInput.value = suggestedTitle;
+          
           tempDiv.querySelector('.maLoai').setAttribute('name', `maLoai_${idx}`);
           tempDiv.querySelector('.maMonHoc').setAttribute('name', `maMonHoc_${idx}`);
           tempDiv.querySelector('.tags').setAttribute('name', `tags_${idx}`);
           tempDiv.querySelector('.moTa').setAttribute('name', `moTa_${idx}`);
+          
+          // Đảm bảo có một id duy nhất cho nút AI
+          tempDiv.querySelector('.btn-ai-summarize').setAttribute('id', `ai-summarize-btn-${idx}`);
+          
           fileDetailsContainer.appendChild(tempDiv.firstElementChild);
         });
+        
+        // Thiết lập event listeners cho nút AI summarize
+        setupAiSummarizeButtons();
       }
     });
   }

@@ -145,29 +145,6 @@ function loadRecentItems() {
     }
 }
 
-// Mobile menu toggle
-function initMobileMenu() {
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.getElementById('sidebar');
-    
-    if (!menuToggle || !sidebar) return;
-    
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-        document.body.classList.toggle('sidebar-open');
-    });
-    
-    // Close sidebar when clicking outside
-    document.addEventListener('click', function(e) {
-        if (sidebar.classList.contains('active') && 
-            !e.target.closest('#sidebar') && 
-            !e.target.closest('#menu-toggle')) {
-            sidebar.classList.remove('active');
-            document.body.classList.remove('sidebar-open');
-        }
-    });
-}
-
 // Keep sidebar and header fixed during scroll
 function initFixedElements() {
     const sidebar = document.getElementById('sidebar');
