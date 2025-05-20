@@ -25,7 +25,7 @@ public class SecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                 .loginPage("/signin")
-                .defaultSuccessUrl("/documents", true)
+                .defaultSuccessUrl("/index", true)
                 .failureUrl("/auth-error")
                 .userInfoEndpoint(userInfo -> userInfo
                     .oidcUserService(this.oidcUserService())
