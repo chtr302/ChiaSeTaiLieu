@@ -1,5 +1,6 @@
 package com.chiasetailieu.chiasetailieuhoctapptit.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +87,7 @@ public class UploadController {
                 taiLieu.setDownVote(0);
                 taiLieu.setNgayDang(java.time.LocalDate.now());
                 taiLieu.setMaFile((long) fileEntity.getMaFile());
+                taiLieu.setTags(tags);
                 taiLieuService.saveTaiLieu(taiLieu);
 
                 redirectAttributes.addFlashAttribute("successMessage", "Tài liệu '" + tieuDe + "' đã được tải lên thành công!");
@@ -122,13 +124,15 @@ public class UploadController {
                 taiLieu.setDownVote(0);
                 taiLieu.setNgayDang(java.time.LocalDate.now());
                 taiLieu.setMaFile((long) fileEntity.getMaFile());
+                taiLieu.setTags(tags);
                 taiLieuService.saveTaiLieu(taiLieu);
             }
 
             redirectAttributes.addFlashAttribute("successMessage", "Tải lên thành công " + files.size() + " tài liệu!");
-        } catch (Exception e) {
-            System.err.println("LỖI khi upload nhiều file: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải lên: " + e.getMessage());
+        } catch (IOException | IllegalArgumentException | NullPointerException e) {
+            System.err.println("Lỗi xử lý: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xử lý file: " + e.getMessage());
+            return "redirect:/documents";
         }
         return "redirect:/documents";
     }
