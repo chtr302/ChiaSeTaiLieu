@@ -76,13 +76,13 @@ searchInput.addEventListener('keydown', function(e) {
       // Nếu không chọn thì search như cũ
       const query = this.value.trim();
       if (query) {
-        window.location.href = '/documents?q=' + encodeURIComponent(query);
+        window.location.href = '/documents/all?q=' + encodeURIComponent(query);
       }
     }
   } else if (e.key === 'Enter') {
     const query = this.value.trim();
     if (query) {
-      window.location.href = '/documents?q=' + encodeURIComponent(query);
+      window.location.href = '/documents/all?q=' + encodeURIComponent(query);
     }
   }
 });
