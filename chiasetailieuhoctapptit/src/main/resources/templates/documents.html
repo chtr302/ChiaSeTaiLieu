@@ -7,7 +7,6 @@
   <!-- Thêm div hiển thị thông báo từ server -->
   <div th:if="${successMessage != null}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
   <div th:if="${errorMessage != null}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>  
-  <div class="nav"th:replace="~{fragments/navbar :: navbar(sinhVien=${sinhVien != null ? sinhVien : null})}"></div>
   <main class="main">
     <section class="documents-section">
       <div class="documents-container">
