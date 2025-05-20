@@ -1,5 +1,6 @@
 package com.chiasetailieu.chiasetailieuhoctapptit.controller;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.Normalizer;
@@ -109,8 +110,10 @@ public class DocumentController {
             }
             model.addAttribute("Documents", allDocuments);
             
-        } catch (Exception e) {
-            System.err.println("Lỗi khi tải trang documents: " + e.getMessage());
+        } catch (java.lang.NullPointerException e) {
+            System.err.println("Lỗi NullPointer khi tải trang documents: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.err.println("Lỗi Runtime khi tải trang documents: " + e.getMessage());
         }
         
         return "documents";
@@ -158,6 +161,7 @@ public class DocumentController {
                     taiLieu.setDownVote(0);
                     taiLieu.setNgayDang(LocalDate.now());
                     taiLieu.setMaFile((long) fileEntity.getMaFile());
+                    taiLieu.setTags(tags);
                     taiLieuService.saveTaiLieu(taiLieu);
                 }
                 redirectAttributes.addFlashAttribute("successMessage", "Tải lên thành công " + files.size() + " tài liệu!");
@@ -184,6 +188,7 @@ public class DocumentController {
                 taiLieu.setDownVote(0);
                 taiLieu.setNgayDang(LocalDate.now());
                 taiLieu.setMaFile((long) fileEntity.getMaFile());
+                taiLieu.setTags(tags);
                 taiLieuService.saveTaiLieu(taiLieu);
 
                 redirectAttributes.addFlashAttribute("successMessage", "Tài liệu '" + tieuDe + "' đã được tải lên thành công!");
@@ -193,9 +198,9 @@ public class DocumentController {
             // Không có file nào được gửi lên
             redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy file để tải lên.");
             return "redirect:/documents";
-        } catch (Exception e) {
-            System.err.println("LỖI khi upload file: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra khi tải lên: " + e.getMessage());
+        } catch (IOException | IllegalArgumentException | NullPointerException e) {
+            System.err.println("Lỗi xử lý: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xử lý file: " + e.getMessage());
             return "redirect:/documents";
         }
     }
@@ -278,7 +283,11 @@ public class DocumentController {
             
             return "documents-detail";
             
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
+            System.err.println("NullPointerException khi tải chi tiết tài liệu: " + e.getMessage());
+            return "redirect:/documents?error=error_loading_document";
+        } catch (RuntimeException e) {
+            System.err.println("RuntimeException khi tải chi tiết tài liệu: " + e.getMessage());
             return "redirect:/documents?error=error_loading_document";
         }
     }
@@ -411,9 +420,10 @@ public class DocumentController {
             model.addAttribute("selectedSemester", semester);
             model.addAttribute("keyword", keyword); // truyền lại từ khóa cho view
             
-        } catch (Exception e) {
-            System.err.println("Lỗi khi tải trang all documents: " + e.getMessage());
-            
+        } catch (NullPointerException e) {
+            System.err.println("NullPointerException khi tải trang all documents: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.err.println("RuntimeException khi tải trang all documents: " + e.getMessage());
         }
         
         return "all-documents";
