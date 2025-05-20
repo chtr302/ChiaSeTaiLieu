@@ -61,6 +61,10 @@
               <button class="action-button" id="ai-chatbot-btn">
                 <i class="fas fa-robot"></i> Hỏi AI về tài liệu
               </button>
+              <!-- Nút sửa thông tin tài liệu -->
+              <button type="button" class="action-button" id="edit-document-btn" style="background-color:#fbbf24; color:#1f2937;">
+                <i class="fas fa-edit"></i> Sửa thông tin
+              </button>
             </div>
             
             <!-- <div class="document-tags">
@@ -257,6 +261,61 @@
           <div class="modal-footer">
             <button type="button" class="btn-cancel" id="cancel-report">Hủy</button>
             <button type="submit" class="btn-report"><i class="fas fa-flag"></i> Báo cáo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Sửa Thông Tin Tài Liệu -->
+  <div id="edit-document-modal" class="modal-overlay">
+    <div class="modal-container" style="max-width:600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Sửa thông tin tài liệu</h3>
+        <button id="close-edit-document-modal" class="modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-document-form" onsubmit="return false;">
+          <fieldset style="margin-bottom:22px; border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
+            <legend style="font-weight:600; color:#2563eb;">Thông tin tài liệu</legend>
+            <div class="form-section">
+              <div class="form-group">
+                <label>Title <span class="required">*</span></label>
+                <input type="text" id="edit-tieuDe" class="form-control" required
+                       th:value="${taiLieu.tieuDe}">
+              </div>
+              <div class="form-group">
+                <label>Category <span class="required">*</span></label>
+                <select id="edit-maLoai" class="form-control" required>
+                  <option value="">Select a category</option>
+                  <option th:each="loai : ${loaiTaiLieu}"
+                          th:value="${loai.maLoai}"
+                          th:text="${loai.tenLoai}"
+                          th:selected="${taiLieu.tenLoai == loai.tenLoai}">
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Course <span class="required">*</span></label>
+                <select id="edit-maMonHoc" class="form-control" required>
+                  <option value="">Select a course</option>
+                  <option th:each="mon : ${danhSachMonHoc}"
+                          th:value="${mon.maMon}"
+                          th:text="${mon.tenMon}"
+                          th:selected="${taiLieu.tenMon == mon.tenMon}">
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Description <span class="required">*</span></label>
+                <textarea id="edit-moTa" class="form-control" rows="4" required
+                          th:text="${taiLieu.moTa}"></textarea>
+              </div>
+            </div>
+          </fieldset>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="cancel-edit-document">Hủy</button>
+            <button type="submit" class="btn-report" id="save-edit-document"><i class="fas fa-save"></i> Lưu thay đổi</button>
           </div>
         </form>
       </div>

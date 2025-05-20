@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -263,12 +264,13 @@ public class DocumentController {
             // Tăng lượt xem
             taiLieuService.incrementViewCount(id);
             
-            // Xử lý tags nếu có
-            // if (taiLieu.getTags() != null && !taiLieu.getTags().isEmpty()) {
-            //     String[] tags = taiLieu.getTags().split(",");
-            //     model.addAttribute("tags", tags);
-            // }
-            
+            // Thêm danh sách loại tài liệu và môn học cho modal chỉnh sửa
+            List<LoaiTaiLieu> loaiTaiLieu = loaiTaiLieuService.getLoaiTaiLieu();
+            model.addAttribute("loaiTaiLieu", loaiTaiLieu);
+
+            List<MonHoc> danhSachMonHoc = monHocService.getAllMonHoc();
+            model.addAttribute("danhSachMonHoc", danhSachMonHoc);
+
             model.addAttribute("taiLieu", taiLieuView);
             
             List<BinhLuanView> comments = binhLuanViewService.getCommentByDocumentId(id);
@@ -323,6 +325,7 @@ public class DocumentController {
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "course", required = false) String course,
             @RequestParam(value = "semester", required = false) String semester,
+            @RequestParam(value = "q", required = false) String keyword, // thêm tham số q
             Model model) {
         
         if (principal == null) {
@@ -341,6 +344,20 @@ public class DocumentController {
             
             // Get all documents with filters
             List<TaiLieuView> allDocuments = taiLieuViewService.getTaiLieu();
+            
+            // Lọc theo từ khóa nếu có (giống trang documents)
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String lower = keyword.trim().toLowerCase();
+                String lowerNoAccent = removeVietnameseTones(lower);
+                allDocuments = allDocuments.stream()
+                    .filter(doc -> {
+                        if (doc.getTieuDe() == null) return false;
+                        String title = doc.getTieuDe().toLowerCase();
+                        String titleNoAccent = removeVietnameseTones(title);
+                        return title.contains(lower) || titleNoAccent.contains(lowerNoAccent);
+                    })
+                    .toList();
+            }
             
             // Apply filters
             if (type != null && !type.isEmpty()) {
@@ -392,6 +409,7 @@ public class DocumentController {
             model.addAttribute("selectedType", type);
             model.addAttribute("selectedCourse", course);
             model.addAttribute("selectedSemester", semester);
+            model.addAttribute("keyword", keyword); // truyền lại từ khóa cho view
             
         } catch (Exception e) {
             System.err.println("Lỗi khi tải trang all documents: " + e.getMessage());
@@ -686,6 +704,57 @@ public class DocumentController {
         }
         
         return "category-documents";
+    }
+
+    // Đảm bảo không có GET mapping cho /edit/{id}
+    // Nếu muốn trả về lỗi rõ ràng khi truy cập GET
+    @GetMapping("/edit/{id}")
+    @ResponseBody
+    public ResponseEntity<?> editDocumentNotAllowed() {
+        return ResponseEntity.status(405).body("Method Not Allowed");
+    }
+
+    // API cập nhật thông tin tài liệu
+    @PostMapping(value = "/edit/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, Object> editDocument(
+            @PathVariable("id") long id,
+            @AuthenticationPrincipal OidcUser principal,
+            @RequestBody Map<String, String> body
+    ) {
+        Map<String, Object> response = new HashMap<>();
+        if (principal == null) {
+            response.put("success", false);
+            response.put("message", "Bạn chưa đăng nhập.");
+            return response;
+        }
+        try {
+            TaiLieu taiLieu = taiLieuService.getTaiLieuById(id);
+            if (taiLieu == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy tài liệu.");
+                return response;
+            }
+            // Chỉ cho phép chủ sở hữu hoặc admin sửa (nếu cần)
+            String email = principal.getEmail();
+            String maSV = email.substring(0, email.indexOf('@'));
+            if (!maSV.equals(taiLieu.getMaSinhVien())) {
+                response.put("success", false);
+                response.put("message", "Bạn không có quyền sửa tài liệu này.");
+                return response;
+            }
+            // Cập nhật thông tin
+            taiLieu.setTieuDe(body.getOrDefault("tieuDe", taiLieu.getTieuDe()));
+            taiLieu.setMaLoai(body.getOrDefault("maLoai", taiLieu.getMaLoai()));
+            taiLieu.setMaMonHoc(body.getOrDefault("maMonHoc", taiLieu.getMaMonHoc()));
+            taiLieu.setMoTa(body.getOrDefault("moTa", taiLieu.getMoTa()));
+            taiLieuService.saveTaiLieu(taiLieu);
+            response.put("success", true);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi cập nhật: " + e.getMessage());
+        }
+        return response;
     }
 
     // Thêm hàm loại bỏ dấu tiếng Việt

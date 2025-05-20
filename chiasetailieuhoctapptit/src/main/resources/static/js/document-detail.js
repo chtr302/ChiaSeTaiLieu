@@ -139,6 +139,72 @@ document.addEventListener('DOMContentLoaded', function() {
       chatbotModal.style.display = 'none';
     }
   });
+
+  // Modal sửa thông tin tài liệu
+  const editBtn = document.getElementById('edit-document-btn');
+  const editModal = document.getElementById('edit-document-modal');
+  const closeEditModal = document.getElementById('close-edit-document-modal');
+  const cancelEdit = document.getElementById('cancel-edit-document');
+  const saveEditBtn = document.getElementById('save-edit-document');
+
+  if (editBtn && editModal) {
+    editBtn.addEventListener('click', function() {
+      // Chỉ cần mở modal, không set lại giá trị các trường
+      editModal.style.display = 'flex';
+    });
+    if (closeEditModal) closeEditModal.onclick = () => editModal.style.display = 'none';
+    if (cancelEdit) cancelEdit.onclick = () => editModal.style.display = 'none';
+    window.addEventListener('click', function(e) {
+      if (e.target === editModal) editModal.style.display = 'none';
+    });
+  }
+
+  // Xử lý lưu thay đổi tài liệu
+  if (saveEditBtn) {
+    saveEditBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const tieuDe = document.getElementById('edit-tieuDe').value.trim();
+      const maLoai = document.getElementById('edit-maLoai').value;
+      const maMonHoc = document.getElementById('edit-maMonHoc').value;
+      const moTa = document.getElementById('edit-moTa').value.trim();
+      const docId = window.location.pathname.split('/').pop();
+
+      if (!tieuDe || !maLoai || !maMonHoc || !moTa) {
+        showNotification('Vui lòng điền đầy đủ thông tin!', 'error');
+        return;
+      }
+
+      // CSRF token
+      const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+
+      fetch(`/documents/edit/${docId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          [csrfHeader]: csrfToken
+        },
+        body: JSON.stringify({
+          tieuDe: tieuDe,
+          maLoai: maLoai,
+          maMonHoc: maMonHoc,
+          moTa: moTa
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showNotification('Cập nhật tài liệu thành công!', 'success');
+          setTimeout(() => window.location.reload(), 1200);
+        } else {
+          showNotification(data.message || 'Cập nhật thất bại!', 'error');
+        }
+      })
+      .catch(() => {
+        showNotification('Có lỗi xảy ra khi cập nhật!', 'error');
+      });
+    });
+  }
 });
 
 // PDF Viewer functions

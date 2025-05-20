@@ -40,6 +40,11 @@ public class TaiLieuService {
     public List<TaiLieu> getAllTaiLieu() {
         return taiLieuRepo.findAll();
     }
+
+    public TaiLieu getTaiLieuById(long id) {
+        return taiLieuRepo.findById(id).orElse(null);
+    }
+
     @Transactional
     public void incrementViewCount(long id){
         TaiLieu taiLieu = taiLieuRepo.findById(id).orElse(null);
@@ -50,5 +55,4 @@ public class TaiLieuService {
             taiLieuRepo.save(taiLieu);
         }
     }
-    // 
 }

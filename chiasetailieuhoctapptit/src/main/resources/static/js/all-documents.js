@@ -4,6 +4,94 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize filter functionality
     initFilterFunctionality();
+
+    // --- Begin: moved from all-documents.html inline script ---
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const semesterFilter = document.getElementById('semester-filter');
+    const typeFilter = document.getElementById('type-filter');
+    const courseFilter = document.getElementById('course-filter');
+    const sortFilter = document.getElementById('sort-filter');
+    const searchInput = document.getElementById('searchInput');
+
+    if (semesterFilter) semesterFilter.value = urlParams.get('semester') || '';
+    if (typeFilter) typeFilter.value = urlParams.get('type') || '';
+    if (courseFilter) courseFilter.value = urlParams.get('course') || '';
+    if (sortFilter) sortFilter.value = urlParams.get('sort') || 'newest';
+    if (searchInput) searchInput.value = urlParams.get('q') || '';
+
+    // Apply filters on button click
+    const applyFilterBtn = document.getElementById('apply-filter');
+    if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', function() {
+            let url = '/documents/all?page=1';
+
+            if (semesterFilter && semesterFilter.value)
+                url += `&semester=${semesterFilter.value}`;
+            if (typeFilter && typeFilter.value)
+                url += `&type=${typeFilter.value}`;
+            if (courseFilter && courseFilter.value)
+                url += `&course=${courseFilter.value}`;
+            if (sortFilter && sortFilter.value)
+                url += `&sort=${sortFilter.value}`;
+            if (searchInput && searchInput.value.trim())
+                url += `&q=${encodeURIComponent(searchInput.value.trim())}`;
+
+            window.location.href = url;
+        });
+    }
+
+    // Reset filters on reset button click
+    const resetFilterBtn = document.getElementById('reset-filter');
+    if (resetFilterBtn) {
+        resetFilterBtn.addEventListener('click', function() {
+            if (semesterFilter) semesterFilter.value = '';
+            if (typeFilter) typeFilter.value = '';
+            if (courseFilter) courseFilter.value = '';
+            if (sortFilter) sortFilter.value = 'newest';
+            if (searchInput) searchInput.value = '';
+
+            window.location.href = '/documents/all?page=1';
+        });
+    }
+
+    // Handle Enter key in search input
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                let url = '/documents/all?page=1';
+                if (semesterFilter && semesterFilter.value)
+                    url += `&semester=${semesterFilter.value}`;
+                if (typeFilter && typeFilter.value)
+                    url += `&type=${typeFilter.value}`;
+                if (courseFilter && courseFilter.value)
+                    url += `&course=${courseFilter.value}`;
+                if (sortFilter && sortFilter.value)
+                    url += `&sort=${sortFilter.value}`;
+                if (searchInput && searchInput.value.trim())
+                    url += `&q=${encodeURIComponent(searchInput.value.trim())}`;
+                window.location.href = url;
+            }
+        });
+    }
+
+    // Update pagination links to preserve search/filter params
+    function updatePaginationLinks() {
+        const urlParams = new URLSearchParams(window.location.search);
+        document.querySelectorAll('.pagination a.page-btn, .pagination a.page-number').forEach(function(link) {
+            const href = link.getAttribute('href');
+            if (href) {
+                const pageMatch = href.match(/page=(\d+)/);
+                if (pageMatch) {
+                    let newParams = new URLSearchParams(urlParams);
+                    newParams.set('page', pageMatch[1]);
+                    link.setAttribute('href', '/documents/all?' + newParams.toString());
+                }
+            }
+        });
+    }
+    updatePaginationLinks();
+    // --- End: moved from all-documents.html inline script ---
 });
 
 // Pagination functionality
@@ -142,4 +230,4 @@ function applyFilters() {
     
     // Redirect to the same page with filters
     window.location.href = window.location.pathname + '?' + params.toString();
-} 
+}
