@@ -311,6 +311,12 @@
                 <textarea id="edit-moTa" class="form-control" rows="4" required
                           th:text="${taiLieu.moTa}"></textarea>
               </div>
+              <div class="form-group">
+                <label>Tags</label>
+                <input type="text" id="edit-tags" class="form-control"
+                       placeholder="Nhập các tag, cách nhau bởi dấu phẩy"
+                       th:value="${taiLieu.tags}">
+              </div>
             </div>
           </fieldset>
           <div class="modal-footer">

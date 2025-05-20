@@ -40,6 +40,9 @@ public class TaiLieuView {
     @Column(name = "MoTa")
     private String moTa;
 
+    @Column(name = "Tags")
+    private String tags;
+
     public long getMaTaiLieu() {
         return maTaiLieu;
     }
@@ -77,6 +80,10 @@ public class TaiLieuView {
 
     public String getMoTa() {
         return moTa;
+    }
+
+    public String getTags() {
+        return tags;
     }
     
 }

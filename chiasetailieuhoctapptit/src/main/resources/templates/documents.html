@@ -4,6 +4,8 @@
 <meta name="_csrf" th:content="${_csrf.token}"/>
 <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 <body class="documents-page">
+  <!-- Thêm navbar fragment vào đầu body -->
+  <div th:replace="fragments/navbar :: navbar"></div>
   <!-- Thêm div hiển thị thông báo từ server -->
   <div th:if="${successMessage != null}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
   <div th:if="${errorMessage != null}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>  
@@ -60,16 +62,6 @@
         <!-- Main Content -->
         <div class="main-content">
           <div class="content-header">
-            <div class="search-area">
-              <button id="menu-toggle" class="menu-toggle">
-                <i class="fas fa-bars"></i>
-              </button>
-              <div class="search-bar">
-                <input type="text" placeholder="Search for documents, courses, or topics..." class="search-input document-search" id="searchInput" autocomplete="off">
-                <i class="fas fa-search search-icon"></i>
-                <div id="suggestionBox" class="suggestion-box" style="display:none;"></div>
-              </div>
-            </div>
           </div>
           
           <!-- Content Container -->

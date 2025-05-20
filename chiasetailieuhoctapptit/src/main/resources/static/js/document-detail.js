@@ -167,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const maLoai = document.getElementById('edit-maLoai').value;
       const maMonHoc = document.getElementById('edit-maMonHoc').value;
       const moTa = document.getElementById('edit-moTa').value.trim();
+      const tags = document.getElementById('edit-tags').value.trim();
       const docId = window.location.pathname.split('/').pop();
 
       if (!tieuDe || !maLoai || !maMonHoc || !moTa) {
@@ -188,7 +189,8 @@ document.addEventListener('DOMContentLoaded', function() {
           tieuDe: tieuDe,
           maLoai: maLoai,
           maMonHoc: maMonHoc,
-          moTa: moTa
+          moTa: moTa,
+          tags: tags
         })
       })
       .then(res => res.json())

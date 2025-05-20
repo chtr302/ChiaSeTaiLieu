@@ -758,6 +758,7 @@ public class DocumentController {
             taiLieu.setMaLoai(body.getOrDefault("maLoai", taiLieu.getMaLoai()));
             taiLieu.setMaMonHoc(body.getOrDefault("maMonHoc", taiLieu.getMaMonHoc()));
             taiLieu.setMoTa(body.getOrDefault("moTa", taiLieu.getMoTa()));
+            taiLieu.setTags(body.getOrDefault("tags", taiLieu.getTags()));
             taiLieuService.saveTaiLieu(taiLieu);
             response.put("success", true);
         } catch (Exception e) {

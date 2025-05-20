@@ -28,35 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle profile link click
     initProfileLink();
-
-    // Preserve search query in all-documents.html
-    const searchInput = document.getElementById('searchInput');
-    const seeMoreBtn = document.getElementById('see-more-documents-btn');
-    if (searchInput) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const q = urlParams.get('q');
-        if (q) searchInput.value = q;
-
-        // Redirect to all-documents when searching (on documents.html)
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                var query = searchInput.value.trim();
-                if (query) {
-                    window.location.href = '/documents/all?q=' + encodeURIComponent(query);
-                }
-            }
-        });
-    }
-    // Handle "See More" button (on documents.html)
-    if (seeMoreBtn && searchInput) {
-        seeMoreBtn.addEventListener('click', function(e) {
-            var query = searchInput.value.trim();
-            if (query) {
-                e.preventDefault();
-                window.location.href = '/documents/all?q=' + encodeURIComponent(query);
-            }
-        });
-    }
 });
 
 // Handle profile link click to set a flag for the library page
@@ -277,33 +248,3 @@ const secondaryInput = document.getElementById('secondaryDocumentSearch');
 if (secondaryInput) {
   secondaryInput.addEventListener('keydown', handleDocumentSearchInput);
 }
-
-// Xử lý tìm kiếm và "See More" cho trang documents.html
-document.addEventListener('DOMContentLoaded', function() {
-  var searchInput = document.getElementById('searchInput');
-  var seeMoreBtn = document.getElementById('see-more-documents-btn');
-  if (seeMoreBtn && searchInput) {
-    seeMoreBtn.addEventListener('click', function(e) {
-      var query = searchInput.value.trim();
-      if (query) {
-        e.preventDefault();
-        window.location.href = '/documents/all?q=' + encodeURIComponent(query);
-      }
-    });
-  }
-  // Khi nhấn Enter trên thanh tìm kiếm, chỉ tìm kiếm trên trang documents
-  if (searchInput) {
-    searchInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        var query = searchInput.value.trim();
-        if (query) {
-          e.preventDefault();
-          window.location.href = '/documents?q=' + encodeURIComponent(query);
-        } else {
-          e.preventDefault();
-          window.location.href = '/documents';
-        }
-      }
-    });
-  }
-});
