@@ -60,6 +60,9 @@ public class TaiLieu {
     @JoinColumn(name = "MaFile", referencedColumnName = "MaFile", insertable = false, updatable = false)
     private File file;
 
+    @Column(name="Tags")
+    private String tags;
+    
     public TaiLieu() {
         this.luotXem = 0;
         this.upVote = 0;
@@ -169,6 +172,14 @@ public class TaiLieu {
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
 }
