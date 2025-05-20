@@ -48,7 +48,6 @@ import com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVien.SinhVienServic
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu.TaiLieuService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu.TaiLieuViewService;
 
-
 @Controller
 @RequestMapping("/documents")
 public class DocumentController {
@@ -775,5 +774,35 @@ public class DocumentController {
         temp = temp.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         temp = temp.replace('đ', 'd').replace('Đ', 'D');
         return temp;
+    }
+
+    // --- API GỢI Ý TÌM KIẾM CHO NAVBAR VÀ INDEX ---
+    @GetMapping("/api/search/suggestions")
+    @ResponseBody
+    public List<Map<String, Object>> searchSuggestions(
+            @RequestParam("query") String query
+    ) {
+        if (query == null || query.trim().isEmpty()) return List.of();
+        String lower = query.trim().toLowerCase();
+        String lowerNoAccent = removeVietnameseTones(lower);
+        List<TaiLieuView> allDocuments = taiLieuViewService.getTaiLieu();
+        return allDocuments.stream()
+            .filter(doc -> {
+                if (doc.getTieuDe() == null) return false;
+                String title = doc.getTieuDe().toLowerCase();
+                String titleNoAccent = removeVietnameseTones(title);
+                return title.contains(lower) || titleNoAccent.contains(lowerNoAccent);
+            })
+            .limit(10)
+            .map(doc -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", doc.getMaTaiLieu());
+                map.put("tenTaiLieu", doc.getTieuDe());
+                map.put("monHoc", doc.getTenMon());
+                map.put("loaiTaiLieu", doc.getTenLoai());
+                map.put("thumbnail", doc.getThumbnail());
+                return map;
+            })
+            .toList();
     }
 }
