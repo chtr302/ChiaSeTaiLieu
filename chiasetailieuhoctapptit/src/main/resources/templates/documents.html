@@ -218,6 +218,9 @@
   <!-- Scripts -->
   <div th:replace="~{fragments/scripts :: scripts}"></div>
   <link th:href="@{/css/documents.css}" rel="stylesheet">
+  <script th:inline="javascript">
+    window.allDocuments = /*[[${Documents}]]*/ [];
+  </script>
   <script th:src="@{/js/document.js}"></script>
   <script th:src="@{/js/index.js}"></script>
 </body>

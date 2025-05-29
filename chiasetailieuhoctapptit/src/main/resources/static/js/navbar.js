@@ -1,20 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('navbar-search-input');
     const suggestionsBox = document.getElementById('navbar-search-suggestions');
-    const allDocuments = window.allDocuments || [];
 
     let debounceTimeout = null;
     let selectedIndex = -1;
 
-    function removeVietnameseTones(str) {
-        return str.normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/đ/g, 'd').replace(/Đ/g, 'D');
-    }
-
     input.addEventListener('input', function () {
-        const query = input.value.trim().toLowerCase();
-        const queryNoAccent = removeVietnameseTones(query);
+        const query = input.value.trim();
         if (debounceTimeout) clearTimeout(debounceTimeout);
 
         if (!query) {
@@ -24,32 +16,42 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         debounceTimeout = setTimeout(() => {
-            let suggestions = [];
-            try {
-                suggestions = allDocuments.filter(doc => {
-                    if (!doc.tieuDe) return false;
-                    const title = doc.tieuDe.toLowerCase();
-                    const titleNoAccent = removeVietnameseTones(title);
-                    return title.includes(query) || titleNoAccent.includes(queryNoAccent);
-                }).slice(0, 10);
-            } catch (e) {}
-            if (!suggestions || suggestions.length === 0) {
-                suggestionsBox.innerHTML = '';
-                suggestionsBox.classList.add('hidden');
-                selectedIndex = -1;
-                return;
-            }
-            suggestionsBox.innerHTML = suggestions.map((doc, idx) => `
-                <a href="/documents/detail/${doc.maTaiLieu}" class="navbar-suggestion-item${idx === 0 ? ' selected' : ''}" data-index="${idx}">
-                    <img src="${doc.thumbnail ? '/documents/thumbnails/' + doc.thumbnail : '/img/default-document.png'}" alt="" class="navbar-suggestion-thumb">
-                    <div class="navbar-suggestion-info">
-                        <div class="navbar-suggestion-title">${doc.tieuDe}</div>
-                        <div class="navbar-suggestion-meta">${doc.tenMon || ''}${doc.tenMon && doc.tenLoai ? ' • ' : ''}${doc.tenLoai || ''}</div>
-                    </div>
-                </a>
-            `).join('');
-            suggestionsBox.classList.remove('hidden');
-            selectedIndex = -1;
+            fetch('/documents/api/search/suggestions?query=' + encodeURIComponent(query))
+                .then(res => res.json())
+                .then(suggestions => {
+                    if (!suggestions || suggestions.length === 0) {
+                        suggestionsBox.innerHTML = '<div class="navbar-suggestion-empty">Không tìm thấy tài liệu phù hợp</div>';
+                        suggestionsBox.classList.remove('hidden');
+                        selectedIndex = -1;
+                        return;
+                    }
+                    suggestionsBox.innerHTML = suggestions.map((doc, idx) => {
+                        let meta = '';
+                        if (doc.monHoc && doc.loaiTaiLieu) {
+                            meta = `${doc.monHoc} • ${doc.loaiTaiLieu}`;
+                        } else if (doc.monHoc) {
+                            meta = doc.monHoc;
+                        } else if (doc.loaiTaiLieu) {
+                            meta = doc.loaiTaiLieu;
+                        }
+                        return `
+                        <a href="/documents/detail/${doc.id}" class="navbar-suggestion-item${idx === 0 ? ' selected' : ''}" data-index="${idx}">
+                            <img src="${doc.thumbnail ? '/documents/thumbnails/' + doc.thumbnail : '/img/default-document.png'}" alt="" class="navbar-suggestion-thumb">
+                            <div class="navbar-suggestion-info">
+                                <div class="navbar-suggestion-title">${doc.tenTaiLieu}</div>
+                                <div class="navbar-suggestion-meta">${meta}</div>
+                            </div>
+                        </a>
+                        `;
+                    }).join('');
+                    suggestionsBox.classList.remove('hidden');
+                    selectedIndex = -1;
+                })
+                .catch(() => {
+                    suggestionsBox.innerHTML = '<div class="navbar-suggestion-empty">Không tìm thấy tài liệu phù hợp</div>';
+                    suggestionsBox.classList.remove('hidden');
+                    selectedIndex = -1;
+                });
         }, 180);
     });
 
@@ -69,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     window.location.href = items[selectedIndex].getAttribute('href');
                     return;
                 }
-                // Nếu không chọn thì search như cũ
                 const query = input.value.trim();
                 if (query) {
                     window.location.href = '/documents/all?q=' + encodeURIComponent(query);
@@ -94,13 +95,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Hiển thị suggestion box khi focus nếu có nội dung
+    input.addEventListener('focus', function () {
+        if (suggestionsBox.innerHTML.trim()) {
+            suggestionsBox.classList.remove('hidden');
+        }
+    });
+
     input.addEventListener('blur', function () {
         setTimeout(() => suggestionsBox.classList.add('hidden'), 120);
     });
-    input.addEventListener('focus', function () {
-        if (suggestionsBox.innerHTML.trim()) suggestionsBox.classList.remove('hidden');
-    });
 
+    // Click chọn suggestion
     suggestionsBox.addEventListener('mousedown', function (e) {
         let target = e.target;
         while (target && !target.classList.contains('navbar-suggestion-item') && target !== suggestionsBox) {
@@ -118,3 +124,4 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+

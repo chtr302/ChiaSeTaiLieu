@@ -34,11 +34,6 @@
   </main>
 
   <div th:replace="fragments/scripts :: scripts"></div>
-  <!-- Truyền dữ liệu Documents sang JS -->
-  <script th:inline="javascript">
-    // filepath: e:\ChiaSeTaiLieu-2\chiasetailieuhoctapptit\src\main\resources\templates\index.html
-    window.allDocuments = /*[[${Documents}]]*/ [];
-  </script>
   <script th:src="@{/js/index.js}" th:inline="javascript"></script>
 </body>
 </html>

@@ -1,4 +1,8 @@
 .navbar-suggestion-box {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
     max-height: 340px;
     overflow-y: auto;
     border-radius: 0 0 12px 12px;
@@ -7,6 +11,8 @@
     font-size: 15px;
     padding: 0;
     z-index: 1000;
+    border: 1px solid #e5e7eb;
+    margin-top: 2px;
 }
 .navbar-suggestion-item {
     display: flex;
@@ -61,4 +67,7 @@
     font-size: 14px;
     text-align: left;
     background: #fff;
+}
+.hidden {
+    display: none !important;
 }
