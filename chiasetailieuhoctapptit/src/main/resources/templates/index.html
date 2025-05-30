@@ -3,6 +3,7 @@
 
 <head th:replace="fragments/head :: head('Document sharing platform of the Posts and Telecommunications Institute of Technology - Home')"></head>
 <link th:href="@{/css/index.css}" rel="stylesheet">
+<link th:href="@{/css/chatbot.css}" rel="stylesheet">
 
 <body class="index-page">
   <div th:replace="fragments/navbar-index :: navbar-index(sinhVien=${sinhVien})"></div>
@@ -34,11 +35,22 @@
   </main>
 
   <div th:replace="fragments/scripts :: scripts"></div>
-  <!-- Truyền dữ liệu Documents sang JS -->
   <script th:inline="javascript">
-    // filepath: e:\ChiaSeTaiLieu-2\chiasetailieuhoctapptit\src\main\resources\templates\index.html
     window.allDocuments = /*[[${Documents}]]*/ [];
+
+    window.chatbotConfig = {
+        userId: /*[[${sinhVien?.maSV}]]*/ null,
+        userName: /*[[${sinhVien?.hoVaTen}]]*/ null,
+        userAvatar: /*[[${sinhVien?.hinhAnh}]]*/ null,
+        isLoggedIn: /*[[${sinhVien != null}]]*/ false
+    };
   </script>
   <script th:src="@{/js/index.js}" th:inline="javascript"></script>
+  <div th:replace="~{fragments/chatbot :: chatbot(
+    chatType='search', 
+    documentText='', 
+    documentTitle=''
+  )}"></div>
+
 </body>
 </html>
