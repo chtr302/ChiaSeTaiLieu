@@ -32,23 +32,25 @@
             <div class="flex items-center ml-4">
                 <div th:if="${sinhVien != null}" class="flex items-center">
                     <a th:href="${sinhVien != null ? '/user/' + sinhVien.maSV : '#'}" class="flex items-center">
-                        <img th:src="${sinhVien != null && sinhVien.hinhAnh != null ? sinhVien.hinhAnh : '/img/default-avatar.png'}"
+                        <img th:src="${sinhVien != null && sinhVien.hinhAnh != null ? sinhVien.hinhAnh : '/img/default-avatar.png'}" 
                              alt="Profile" class="w-8 h-8 rounded-full mr-2"
                              onerror="this.src='/img/default-avatar.png'">
-                        <span th:text="${sinhVien != null && sinhVien.hoVaTen != null ? sinhVien.hoVaTen : 'User'}" class="text-sm font-medium mr-4"></span>
+                        
+                        <span th:text="${sinhVien.hoVaTen != null ? sinhVien.hoVaTen : 'User'}" 
+                              class="text-sm font-medium mr-4"></span>
                     </a>
                     <form action="/logout" method="post" class="inline">
                         <input type="hidden" th:name="${_csrf != null ? _csrf.parameterName : '_csrf'}" th:value="${_csrf != null ? _csrf.token : ''}" />
-                        <button type="submit" class="px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700">Đăng xuất</button>
+                        <button type="submit" class="px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700">
+                            Đăng xuất
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </nav>
-<!-- Truyền biến allDocuments cho JS navbar (nếu chưa có ở layout, thêm đoạn này vào cuối body hoặc trong navbar fragment) -->
 <script th:inline="javascript">
-    // ...chỉ truyền nếu chưa có ở layout...
     window.allDocuments = /*[[${Documents}]]*/ [];
 </script>
 <script src="/js/navbar.js"></script>
