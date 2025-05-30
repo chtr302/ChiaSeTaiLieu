@@ -43,6 +43,15 @@ public class TaiLieuView {
     @Column(name = "Tags")
     private String tags;
 
+    @Column(name = "MaSinhVien")
+    private String maSinhVien;
+    
+    @Column(name = "HinhAnh")
+    private String hinhAnhSV;
+    
+    @Column(name = "HoVaTen")
+    private String tenSinhVien;
+
     public long getMaTaiLieu() {
         return maTaiLieu;
     }
@@ -84,6 +93,21 @@ public class TaiLieuView {
 
     public String getTags() {
         return tags;
+    }
+    public String getMaSinhVien() {
+        return maSinhVien;
+    }
+    
+    public String getHinhAnhSV() {
+        return hinhAnhSV;
+    }
+    
+    public String getTenSinhVien() {
+        return tenSinhVien;
+    }
+
+    public TaiLieuView orElse(Object object) {
+        throw new UnsupportedOperationException("Unimplemented method 'orElse'");
     }
     
 }
