@@ -50,10 +50,10 @@ function initSaveButtons() {
                     // Update button state
                     if (data.saved) {
                         this.classList.add('saved');
-                        this.textContent = 'Đã lưu';
+                        this.textContent = 'Saved';
                     } else {
                         this.classList.remove('saved');
-                        this.textContent = 'Lưu';
+                        this.textContent = 'Save';
                     }
                     
                     // Show notification
@@ -105,7 +105,7 @@ function checkSavedStatusBatch() {
                 const docId = button.getAttribute('data-id');
                 if (docId && data.savedStatuses[docId]) {
                     button.classList.add('saved');
-                    button.textContent = 'Đã lưu';
+                    button.textContent = 'Saved';
                 }
             });
         }
