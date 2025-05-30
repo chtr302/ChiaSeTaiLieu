@@ -29,6 +29,9 @@ public class BinhLuanView {
     @Column(name="MaTaiLieu")
     private long maTaiLieu;
 
+    @Column(name="MaSinhVien")
+    private String maSV;
+
     public long getMaBinhLuan() {
         return maBinhLuan;
     }
@@ -53,5 +56,7 @@ public class BinhLuanView {
         return maTaiLieu;
     }
 
-
+    public String getMaSV() {
+        return maSV;
+    }
 }
