@@ -1,6 +1,8 @@
 package com.chiasetailieu.chiasetailieuhoctapptit.controller;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.chiasetailieu.chiasetailieuhoctapptit.model.MonHocModel.FollowCourse;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.LoaiTaiLieuModel.LoaiTaiLieu;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.MonHocModel.MonHoc;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel.SinhVien;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.TaiLieuModel.TaiLieuView;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.TheoDoi.Follow_VW;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.MonHoc.FollowCourseService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.LoaiTaiLieu.LoaiTaiLieuService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.MonHoc.MonHocService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVien.SinhVienService;
@@ -36,6 +40,8 @@ public class LibraryController {
     private Follow_vw_Service follow_vw_Service;
     @Autowired
     private LuuTaiLieuService luuTaiLieuService;
+    @Autowired
+    private FollowCourseService followCourseService;
     @Autowired
     private MonHocService monHocService;
     @Autowired
@@ -82,6 +88,17 @@ public class LibraryController {
             // Ghi nhớ tùy chọn sắp xếp
             model.addAttribute("myLibrarySort", myLibrarySort);
             model.addAttribute("savedSort", savedSort);
+            
+            // Get followed courses
+            List<FollowCourse> follows = followCourseService.getFollowedCourses(sinhVien.getMaSV());
+            List<MonHoc> followedCourses = follows.stream()
+                .map((FollowCourse f) -> {
+                    java.util.Optional<MonHoc> monHocOpt = monHocService.getMonHocByMa(f.getMaMon());
+                    return monHocOpt.orElse(null);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+            model.addAttribute("followedCourses", followedCourses);
             
         } catch (Exception e) {
             System.err.println("Lỗi khi tải trang library: " + e.getMessage());

@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle profile link click
     initProfileLink();
+
+    // Khởi tạo toggle follow cho course
+    initCourseFollowButtons();
 });
 
 // Handle profile link click to set a flag for the library page
@@ -287,29 +290,48 @@ function formatFileSize(bytes) {
 
 // Display notification
 function showNotification(message, type = 'info') {
+    let iconClass = 'fa-info-circle';
+    let notificationType = type;
+
+    if (message === 'Đã theo dõi môn học!' || message === "Đã theo dõi môn học") {
+        notificationType = 'success';
+        iconClass = 'fa-check-circle';
+    } else if (message === 'Đã bỏ theo dõi môn học.' || message === "Đã bỏ theo dõi môn học") {
+        notificationType = 'info';
+        iconClass = 'fa-info-circle';
+    } else if (message === 'Bạn đã theo dõi môn học này!' || message === "Bạn đã theo dõi môn học này") {
+        notificationType = 'info';
+        iconClass = 'fa-info-circle';
+    } else if (type === 'success') {
+        iconClass = 'fa-check-circle';
+    } else if (type === 'error') {
+        iconClass = 'fa-exclamation-circle';
+    }
+
     const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
+    notification.className = `notification ${notificationType}`;
     notification.innerHTML = `
-        <div class="notification-icon">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                           type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-        </div>
-        <div class="notification-message">${message}</div>
-        <button class="notification-close"><i class="fas fa-times"></i></button>
+        <span class="notification-icon">
+            <i class="fas ${iconClass}"></i>
+        </span>
+        <span class="notification-message">${message}</span>
+        <button class="notification-close" aria-label="Đóng">
+            <i class="fas fa-times"></i>
+        </button>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Show notification with animation
     setTimeout(() => {
         notification.classList.add('show');
     }, 10);
-    
-    // Auto-hide notification after 5 seconds
+
+    // Auto-hide notification after 1 seconds
     const hideTimeout = setTimeout(() => {
         hideNotification(notification);
-    }, 5000);
-    
+    }, 1000);
+
     // Add close button functionality
     notification.querySelector('.notification-close').addEventListener('click', () => {
         clearTimeout(hideTimeout);
@@ -364,4 +386,129 @@ function initCategoryItemClickEvents() {
             }
         });
     });
+}
+
+// Khởi tạo toggle follow cho course
+function initCourseFollowButtons() {
+    document.querySelectorAll('.course-item').forEach(function(courseItem) {
+        const courseId = courseItem.getAttribute('data-course-id');
+        const followBtn = courseItem.querySelector('.follow-btn');
+        const followingBtn = courseItem.querySelector('.following-btn');
+        if (!courseId || !followBtn || !followingBtn) return;
+
+        // Check follow status on load
+        fetch('/api/follow-course/is-following?maMon=' + encodeURIComponent(courseId))
+            .then(res => res.json())
+            .then(data => {
+                if (data.following) {
+                    followBtn.style.display = 'none';
+                    followingBtn.style.display = '';
+                    setFollowingBtnBehavior(followBtn, followingBtn, courseId);
+                } else {
+                    followBtn.style.display = '';
+                    followingBtn.style.display = 'none';
+                    setFollowBtnBehavior(followBtn, followingBtn, courseId);
+                }
+            });
+
+        // Always set up both behaviors in case of dynamic UI change
+        setFollowBtnBehavior(followBtn, followingBtn, courseId);
+        setFollowingBtnBehavior(followBtn, followingBtn, courseId);
+    });
+
+    // For library page: handle unfollow in followed courses section
+    document.querySelectorAll('#courses-following .following-btn').forEach(function(followingBtn) {
+        const courseContent = followingBtn.closest('.course-content');
+        const courseId = courseContent ? courseContent.getAttribute('data-course-id') : null;
+        if (!courseId) return;
+
+        followingBtn.addEventListener('mouseenter', function() {
+            this.querySelector('.btn-text').textContent = 'Unfollow';
+            this.classList.add('unfollow-hover');
+        });
+        followingBtn.addEventListener('mouseleave', function() {
+            this.querySelector('.btn-text').textContent = 'Following';
+            this.classList.remove('unfollow-hover');
+        });
+
+        followingBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            fetch('/api/follow-course/unfollow?maMon=' + encodeURIComponent(courseId), {
+                method: 'POST',
+                headers: {
+                    ...getCsrfHeaders(),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const card = followingBtn.closest('.document-card');
+                    if (card) card.remove();
+                    showNotification('Đã bỏ theo dõi môn học.', 'info');
+                }
+            });
+        });
+    });
+}
+
+// Helper: set behavior for follow button
+function setFollowBtnBehavior(followBtn, followingBtn, courseId) {
+    followBtn.onclick = function(e) {
+        e.stopPropagation();
+        fetch('/api/follow-course/follow?maMon=' + encodeURIComponent(courseId), {
+            method: 'POST',
+            headers: getCsrfHeaders()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                followBtn.style.display = 'none';
+                followingBtn.style.display = '';
+                followingBtn.querySelector('.btn-text').textContent = 'Following';
+                showNotification('Đã theo dõi môn học!', 'success');
+            } else {
+                showNotification('Bạn đã theo dõi môn học này!', 'info');
+            }
+        });
+    };
+}
+
+// Helper: set behavior for following button (hover to unfollow)
+function setFollowingBtnBehavior(followBtn, followingBtn, courseId) {
+    followingBtn.onmouseenter = function() {
+        this.querySelector('.btn-text').textContent = 'Unfollow';
+        this.classList.add('unfollow-hover');
+    };
+    followingBtn.onmouseleave = function() {
+        this.querySelector('.btn-text').textContent = 'Following';
+        this.classList.remove('unfollow-hover');
+    };
+    followingBtn.onclick = function(e) {
+        e.stopPropagation();
+        // Only unfollow if currently showing "Unfollow"
+        if (this.classList.contains('unfollow-hover')) {
+            fetch('/api/follow-course/unfollow?maMon=' + encodeURIComponent(courseId), {
+                method: 'POST',
+                headers: getCsrfHeaders()
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    followBtn.style.display = '';
+                    followingBtn.style.display = 'none';
+                    showNotification('Đã bỏ theo dõi môn học.', 'info');
+                }
+            });
+        }
+    };
+}
+
+function getCsrfHeaders() {
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+    if (csrfToken && csrfHeader) {
+        return { [csrfHeader]: csrfToken };
+    }
+    return {};
 }

@@ -129,16 +129,27 @@
               <a th:href="@{/documents/courses}" class="see-more-btn">See More <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="courses-grid">
-              <div th:each="course, courseStat : ${danhSachMonHoc != null ? danhSachMonHoc : {}}" th:if="${courseStat != null && courseStat.index < 4}" 
+              <div th:each="course, courseStat : ${danhSachMonHoc != null ? danhSachMonHoc : {}}" 
                    class="course-item" th:data-course-id="${course != null && course.maMon != null ? course.maMon : ''}">
                 <div class="course-content">
                   <div class="course-icon">
                     <i class="fas fa-book"></i>
                   </div>
                   <h3 class="course-name" th:text="${course != null && course.tenMon != null ? course.tenMon : 'Course Name'}">Course Name</h3>
-                  <p class="course-doc-count" th:text="${course != null && course.taiLieu != null ? (course.taiLieu + ' documents') : '0 documents'}">10 documents</p>
-                  <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
-                  <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
+                  <p class="course-doc-count" th:text="${course != null && course.taiLieu != null ? (course.taiLieu + ' documents') : '0 documents'}">0 documents</p>
+                  <div class="course-actions-row">
+                    <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
+                    <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
+                    <!-- Nút Follow/Following luôn có đủ 2 nút, JS sẽ tự động xử lý trạng thái -->
+                    <button type="button" class="follow-btn" th:attr="data-course-id=${course != null ? course.maMon : ''}" style="display:none;">
+                      <i class="fas fa-plus"></i>
+                      <span class="btn-text">Follow</span>
+                    </button>
+                    <button type="button" class="following-btn" th:attr="data-course-id=${course != null ? course.maMon : ''}" style="display:none;">
+                      <i class="fas fa-check"></i>
+                      <span class="btn-text">Following</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -230,27 +241,5 @@
   <link th:href="@{/css/avatar-tooltip.css}" rel="stylesheet">
   <script th:src="@{/js/document.js}"></script>
   <script th:src="@{/js/document-save.js}"></script>
-  <script>
-    // filepath: e:\ChiaSeTaiLieu-2\chiasetailieuhoctapptit\src\main\resources\templates\documents.html
-    function handleDocumentSearchInput(e) {
-      if (e.key === 'Enter') {
-        const value = e.target.value.trim();
-        if (value) {
-          window.location.href = '/documents?q=' + encodeURIComponent(value);
-        }
-      }
-    }
-    document.getElementById('mainDocumentSearch').addEventListener('keydown', handleDocumentSearchInput);
-    document.getElementById('mainDocumentSearchBtn').addEventListener('click', function() {
-      const value = document.getElementById('mainDocumentSearch').value.trim();
-      if (value) {
-        window.location.href = '/documents?q=' + encodeURIComponent(value);
-      }
-    });
-    const secondaryInput = document.getElementById('secondaryDocumentSearch');
-    if (secondaryInput) {
-      secondaryInput.addEventListener('keydown', handleDocumentSearchInput);
-    }
-  </script>
-</body>
+</body></body>
 </html>

@@ -1324,20 +1324,21 @@ nav {
 /* Notification System */
 .notification {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 32px;
+  right: 32px;
   display: flex;
   align-items: center;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  padding: 15px 20px;
-  min-width: 300px;
-  max-width: 500px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+  padding: 18px 28px;
+  min-width: 320px;
+  max-width: 480px;
   z-index: 10000;
-  transform: translateX(110%);
-  transition: transform 0.3s ease;
-  opacity: 0.95;
+  transform: translateX(120%);
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1), box-shadow 0.2s;
+  opacity: 0.98;
+  border: 1.5px solid #fee2e2;
 }
 
 .notification.show {
@@ -1345,51 +1346,87 @@ nav {
 }
 
 .notification.hide {
-  transform: translateX(110%);
+  transform: translateX(120%);
 }
 
 .notification-icon {
-  margin-right: 15px;
-  font-size: 20px;
+  margin-right: 18px;
+  font-size: 22px;
+  color: #ef4444; /* Red for exclamation */
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .notification.success .notification-icon {
-  color: #2ecc71;
+  color: #22c55e;
 }
 
 .notification.error .notification-icon {
-  color: #e74c3c;
+  color: #ef4444;
 }
 
 .notification.info .notification-icon {
-  color: #3498db;
+  color: #2563eb;
 }
 
 .notification-message {
   flex: 1;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #1f2937;
+  font-weight: 500;
+  padding-right: 12px;
 }
 
 .notification-close {
   background: none;
   border: none;
-  color: #999;
+  color: #9ca3af;
   cursor: pointer;
-  margin-left: 15px;
+  margin-left: 10px;
   padding: 0;
-  font-size: 16px;
+  font-size: 18px;
   transition: color 0.2s;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .notification-close:hover {
-  color: #333;
+  color: #ef4444;
+  background: #fef2f2;
 }
 
-/* Hidden elements */
-#successMessage, #errorMessage {
-  display: none;
+@media (max-width: 576px) {
+  .notification {
+    min-width: 0;
+    width: calc(100% - 24px);
+    max-width: none;
+    right: 12px;
+    top: 12px;
+    padding: 14px 12px;
+  }
+  .notification-message {
+    font-size: 14px;
+    padding-right: 6px;
+  }
+  .notification-icon {
+    font-size: 18px;
+    margin-right: 10px;
+  }
+  .notification-close {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
 }
+
+/* ...existing code... */
 
 /* Animation for menu toggle */
 @keyframes slidein {
@@ -1775,7 +1812,7 @@ nav {
 /* Course header section */
 .course-header-section {
   background-color: white;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e7e7eb;
   margin-bottom: 20px;
   margin-top: 40px;
 }
@@ -2030,4 +2067,88 @@ nav {
     padding: 8px 12px;
     font-size: 13px;
   }
+}
+
+.following-btn.unfollow-hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+.following-btn.unfollow-hover i {
+  color: #dc2626;
+}
+.courses-grid-full {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+.courses-grid-full .course-content,
+.courses-grid .course-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.courses-grid-full .course-actions-row,
+.courses-grid .course-actions-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+.courses-grid-full .course-link,
+.courses-grid .course-link {
+  padding: 6px 18px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #2563eb;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+.courses-grid-full .course-link:hover,
+.courses-grid .course-link:hover {
+  background: #2563eb;
+  color: #fff;
+}
+.courses-grid-full .follow-btn,
+.courses-grid-full .following-btn,
+.courses-grid .follow-btn,
+.courses-grid .following-btn {
+  margin: 0;
+  padding: 6px 18px;
+  border: none;
+  border-radius: 20px;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+.courses-grid-full .follow-btn,
+.courses-grid .follow-btn {
+  background: #2563eb;
+  color: #fff;
+}
+.courses-grid-full .follow-btn:hover,
+.courses-grid .follow-btn:hover {
+  background: #1746a2;
+  color: #fff;
+}
+.courses-grid-full .following-btn,
+.courses-grid .following-btn {
+  background: #e0f2fe;
+  color: #2563eb;
+}
+.courses-grid-full .following-btn.unfollow-hover,
+.courses-grid .following-btn.unfollow-hover {
+  background: #ef4444;
+  color: #fff;
 }

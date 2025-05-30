@@ -273,69 +273,37 @@
                     <button class="btn btn-secondary load-more-saved">Load more</button>
                 </div>
             </section>
+
+            <!-- Courses Following Section -->
+            <section class="documents-section card">
+                <div class="library-header">
+                    <h2 class="library-title">Courses Following <span class="library-count" th:text="${followedCourses != null ? '(' + followedCourses.size() + ' courses)' : '(0 courses)'}">(0 courses)</span></h2>
+                </div>
+                <div id="courses-following" class="document-grid">
+                    <div class="document-card" th:each="course : ${followedCourses != null ? followedCourses : {}}">
+                        <div class="course-content" th:data-course-id="${course != null ? course.maMon : ''}">
+                            <div class="course-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3 class="course-name" th:text="${course != null && course.tenMon != null ? course.tenMon : 'Course Name'}">Course Name</h3>
+                            <p class="course-doc-count" th:text="${course != null && course.taiLieu != null ? (course.taiLieu + ' documents') : '0 documents'}">0 documents</p>
+                            <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
+                            <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
+                            <button type="button" class="following-btn" th:attr="data-course-id=${course != null ? course.maMon : ''}">
+                                <i class="fas fa-check"></i> <span class="btn-text">Following</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Empty state -->
+                <div class="empty-documents" th:if="${followedCourses == null || followedCourses.isEmpty()}">
+                    <i class="fas fa-book-open empty-icon"></i>
+                    <p>You are not following any courses yet.</p>
+                </div>
+            </section>
         </main>
     </div>
     
-    <!-- XÓA toàn bộ phần Upload Modal bên dưới -->
-    <!--
-    <div id="upload-modal" class="modal-overlay">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h3 class="modal-title">Upload Document</h3>
-          <button id="close-modal" class="modal-close"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-          <form id="upload-form" th:action="@{/documents/upload}" method="post" enctype="multipart/form-data">
-            <div class="file-upload">
-              <input type="file" id="file-input" name="file" class="file-input" accept=".pdf" required>
-              <div class="upload-default">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <p class="upload-title">Nhấp vào đây hoặc kéo thả file PDF</p>
-                <p class="upload-description">Chỉ chấp nhận định dạng PDF (tối đa 50MB)</p>
-              </div>
-              <div class="file-preview" id="file-preview" style="display: none;"></div>
-            </div>
-            <div class="form-section">
-              <div class="form-group">
-                <label for="tieuDe" class="form-label">Title <span class="required">*</span></label>
-                <input type="text" id="tieuDe" name="tieuDe" placeholder="Document title" class="form-control" required>
-              </div>
-              <div class="form-group">
-                <label for="maLoai" class="form-label">Category <span class="required">*</span></label>
-                <select id="maLoai" name="maLoai" class="form-control" required>
-                  <option value="">Select a category</option>
-                  <option th:each="category : ${loaiTaiLieu != null ? loaiTaiLieu : {}}"
-                          th:value="${category != null && category.maLoai != null ? category.maLoai : ''}" 
-                          th:text="${category != null && category.tenLoai != null ? category.tenLoai : 'Category Name'}">Category Name</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="maMonHoc" class="form-label">Course <span class="required">*</span></label>
-                <select id="maMonHoc" name="maMonHoc" class="form-control" required>
-                  <option value="">Select a course</option>
-                  <option th:each="monHoc : ${danhSachMonHoc != null ? danhSachMonHoc : {}}"
-                          th:value="${monHoc != null && monHoc.maMon != null ? monHoc.maMon : ''}" 
-                          th:text="${monHoc != null && monHoc.tenMon != null ? monHoc.tenMon : 'Course Name'}">Course Name</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="tags" class="form-label">Tags</label>
-                <input type="text" id="tags" name="tags" placeholder="e.g. python, ai, notes (separated by commas)" class="form-control">
-              </div>
-              <div class="form-group">
-                <label for="moTa" class="form-label">Description <span class="required">*</span></label>
-                <textarea id="moTa" name="moTa" rows="4" placeholder="Describe your document" class="form-control" required></textarea>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" id="cancel-upload" class="btn-cancel">Cancel</button>
-              <button type="submit" id="save-upload" class="btn-save"><i class="fas fa-save"></i> Upload</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    -->
     <div th:replace="~{fragments/scripts :: scripts}"></div>
     <link th:href="@{/css/library.css}" rel="stylesheet">
     <link th:href="@{/css/document-save.css}" rel="stylesheet">
