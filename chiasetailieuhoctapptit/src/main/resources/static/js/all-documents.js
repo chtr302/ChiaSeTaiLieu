@@ -12,13 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const typeFilter = document.getElementById('type-filter');
     const courseFilter = document.getElementById('course-filter');
     const sortFilter = document.getElementById('sort-filter');
-    const searchInput = document.getElementById('searchInput');
 
     if (semesterFilter) semesterFilter.value = urlParams.get('semester') || '';
     if (typeFilter) typeFilter.value = urlParams.get('type') || '';
     if (courseFilter) courseFilter.value = urlParams.get('course') || '';
     if (sortFilter) sortFilter.value = urlParams.get('sort') || 'newest';
-    if (searchInput) searchInput.value = urlParams.get('q') || '';
 
     // Apply filters on button click
     const applyFilterBtn = document.getElementById('apply-filter');
@@ -34,8 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 url += `&course=${courseFilter.value}`;
             if (sortFilter && sortFilter.value)
                 url += `&sort=${sortFilter.value}`;
-            if (searchInput && searchInput.value.trim())
-                url += `&q=${encodeURIComponent(searchInput.value.trim())}`;
 
             window.location.href = url;
         });
@@ -49,29 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeFilter) typeFilter.value = '';
             if (courseFilter) courseFilter.value = '';
             if (sortFilter) sortFilter.value = 'newest';
-            if (searchInput) searchInput.value = '';
 
             window.location.href = '/documents/all?page=1';
-        });
-    }
-
-    // Handle Enter key in search input
-    if (searchInput) {
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                let url = '/documents/all?page=1';
-                if (semesterFilter && semesterFilter.value)
-                    url += `&semester=${semesterFilter.value}`;
-                if (typeFilter && typeFilter.value)
-                    url += `&type=${typeFilter.value}`;
-                if (courseFilter && courseFilter.value)
-                    url += `&course=${courseFilter.value}`;
-                if (sortFilter && sortFilter.value)
-                    url += `&sort=${sortFilter.value}`;
-                if (searchInput && searchInput.value.trim())
-                    url += `&q=${encodeURIComponent(searchInput.value.trim())}`;
-                window.location.href = url;
-            }
         });
     }
 
