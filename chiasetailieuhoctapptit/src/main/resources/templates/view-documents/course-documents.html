@@ -93,6 +93,17 @@
               <div class="document-grid">
                 <div class="document-card" th:each="doc, docStat : ${Documents}" th:if="${docStat.index < 16}">
                   
+                  <!-- Student Avatar and Name -->
+                  <div th:if="${doc != null}" class="avatar-wrapper">
+                    <a th:if="${doc.maSinhVien != null}" th:href="@{'/library/' + ${doc.maSinhVien}}">
+                      <img th:if="${doc.hinhAnhSV != null}" th:src="${doc.hinhAnhSV}" alt="Student Avatar" class="student-avatar">
+                      <img th:if="${doc.hinhAnhSV == null}" src="/img/default-avatar.png" alt="Student Avatar" class="student-avatar">
+                      <div class="student-info-tooltip">
+                        <span th:text="${doc.tenSinhVien != null ? doc.tenSinhVien : 'Unknown Student'}">Student Name</span>
+                      </div>
+                    </a>
+                  </div>
+                  
                   <!-- Thumbnail -->
                   <img th:if="${doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
                        alt="Document Preview" class="document-image">
@@ -131,11 +142,11 @@
                       </div>
                     </div>
               
-                    <!-- Action Buttons -->
-                    <div class="document-buttons">
-                      <a th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
-                      <button class="save-btn">Lưu</button>
-                    </div>
+                  <!-- Action Buttons -->
+                  <div class="document-buttons">
+                    <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
+                    <button th:if="${doc != null && doc.maTaiLieu != null}" th:data-id="${doc.maTaiLieu}" class="save-btn">Lưu</button>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -181,7 +192,10 @@
   <!-- Scripts -->
   <div th:replace="fragments/scripts :: scripts"></div>
   <link th:href="@{/css/documents.css}" rel="stylesheet">
+  <link th:href="@{/css/document-save.css}" rel="stylesheet">
+  <link th:href="@{/css/avatar-tooltip.css}" rel="stylesheet">
   <script th:src="@{/js/document.js}"></script>
+  <script th:src="@{/js/document-save.js}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Search functionality

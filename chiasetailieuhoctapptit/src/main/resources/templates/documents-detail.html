@@ -172,8 +172,7 @@
               </div>
             </div>
             
-            <!-- Comment List -->
-            <div class="comments-list">
+                        <div class="comments-list">
               <div class="comment-item" th:each="comment : ${comments}">
                 <img class="comment-avatar" th:src="${comment.hinhAnh}" 
                      onerror="this.src='/img/default-avatar.png'" th:alt="${comment.hoVaTen}">
@@ -186,8 +185,34 @@
                     Nội dung bình luận sẽ hiển thị ở đây.
                   </div>
                   <div class="comment-actions">
-                    <button class="comment-reply-btn">Trả lời</button>
-                    <button class="comment-report-btn">Báo cáo</button>
+                    <button class="comment-reply-btn" th:data-comment-id="${comment.maBinhLuan}">Trả lời</button>
+                    <button class="comment-report-btn" th:data-comment-id="${comment.maBinhLuan}">Báo cáo</button>
+                  </div>
+                  
+                  <!-- Reply Form (hidden by default) -->
+                  <div class="reply-form" th:id="'reply-form-' + ${comment.maBinhLuan}" style="display: none;">
+                    <div class="reply-input-container">
+                      <textarea class="reply-input" th:id="'reply-input-' + ${comment.maBinhLuan}" placeholder="Viết trả lời..."></textarea>
+                      <button class="reply-submit-btn" th:data-comment-id="${comment.maBinhLuan}">Đăng</button>
+                      <button class="reply-cancel-btn" th:data-comment-id="${comment.maBinhLuan}">Hủy</button>
+                    </div>
+                  </div>
+                  
+                  <!-- Replies List -->
+                  <div class="replies-list" th:id="'replies-' + ${comment.maBinhLuan}">
+                    <div class="reply-item" th:each="reply : ${replies}" th:if="${reply.MaBinhLuan == comment.maBinhLuan}">
+                      <img class="reply-avatar" th:src="${reply.HinhAnh}" 
+                           onerror="this.src='/img/default-avatar.png'" th:alt="${reply.HoVaTen}">
+                      <div class="reply-content">
+                        <div class="reply-header">
+                          <span class="reply-author" th:text="${reply.HoVaTen}">Tên người trả lời</span>
+                          <span class="reply-time" th:text="${reply.NgayTraLoi}">01/01/2023 12:30</span>
+                        </div>
+                        <div class="reply-text" th:text="${reply.NoiDung}">
+                          Nội dung trả lời sẽ hiển thị ở đây.
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -328,7 +353,6 @@
     </div>
   </div>
   
-  <!-- AI Chatbot Modal -->
   <div id="chatbot-modal" class="modal-overlay">
     <div class="modal-container chatbot-modal">
       <div class="modal-header">
@@ -343,7 +367,7 @@
                 <img src="/img/gemma.png" alt="Gemma">
               </div>
               <div class="message-content">
-                <p>Xin chào! Tôi có thể giúp bạn trả lời các câu hỏi về tài liệu này, cơ bản. Nếu bạn muốn nghiên cứu sâu hơn, tôi khuyên bạn nên sử dụng Noteboolklm của Google sẽ giúp bạn nghiên cứu sâu hơn</p>
+                <p>Xin chào! Tôi có thể giúp bạn trả lời các câu hỏi về tài liệu này, cơ bản. Nếu bạn muốn nghiên cứu sâu hơn, tôi khuyên bạn nên sử dụng Notebooklm của Google sẽ giúp bạn nghiên cứu sâu hơn</p>
               </div>
             </div>
           </div>
@@ -363,7 +387,10 @@
   <!-- Scripts -->
   <div th:replace="fragments/scripts :: scripts"></div>
   <link th:href="@{/css/document-detail.css}" rel="stylesheet">
+  <link th:href="@{/css/document-save.css}" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script th:src="@{/js/document-detail.js}"></script>
+  <script th:src="@{/js/document-save.js}"></script>
+  <script th:src="@{/js/comment.js}"></script>
 </body>
 </html>
