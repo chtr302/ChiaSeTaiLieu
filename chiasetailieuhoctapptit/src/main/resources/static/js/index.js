@@ -37,8 +37,8 @@ searchInput.addEventListener('input', function() {
       }).slice(0, 10);
     } catch (e) {}
     if (!suggestions || suggestions.length === 0) {
-      suggestionBox.style.display = 'none';
-      suggestionBox.innerHTML = '';
+      suggestionBox.style.display = 'block';
+      suggestionBox.innerHTML = '<div class="suggestion-empty">Không tìm thấy tài liệu phù hợp</div>';
       selectedIndex = -1;
       return;
     }
@@ -76,13 +76,23 @@ searchInput.addEventListener('keydown', function(e) {
       // Nếu không chọn thì search như cũ
       const query = this.value.trim();
       if (query) {
-        window.location.href = '/documents/all?q=' + encodeURIComponent(query);
+        // Kiểm tra nếu không có gợi ý nào thì truyền thêm param notfound
+        if (items.length === 0) {
+          window.location.href = '/documents/all?q=' + encodeURIComponent(query) + '&notfound=1';
+        } else {
+          window.location.href = '/documents/all?q=' + encodeURIComponent(query);
+        }
       }
     }
   } else if (e.key === 'Enter') {
     const query = this.value.trim();
     if (query) {
-      window.location.href = '/documents/all?q=' + encodeURIComponent(query);
+      // Nếu suggestionBox không hiển thị hoặc không có item nào
+      if (!suggestionBox.innerHTML.trim() || suggestionBox.querySelectorAll('.suggestion-item-link').length === 0) {
+        window.location.href = '/documents/all?q=' + encodeURIComponent(query) + '&notfound=1';
+      } else {
+        window.location.href = '/documents/all?q=' + encodeURIComponent(query);
+      }
     }
   }
 });

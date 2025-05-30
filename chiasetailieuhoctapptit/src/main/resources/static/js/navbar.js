@@ -73,13 +73,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 const query = input.value.trim();
                 if (query) {
-                    window.location.href = '/documents/all?q=' + encodeURIComponent(query);
+                    // Nếu không có suggestion nào thì truyền thêm param notfound
+                    if (items.length === 0) {
+                        window.location.href = '/documents/all?q=' + encodeURIComponent(query) + '&notfound=1';
+                    } else {
+                        window.location.href = '/documents/all?q=' + encodeURIComponent(query);
+                    }
                 }
             }
         } else if (e.key === 'Enter') {
             const query = input.value.trim();
             if (query) {
-                window.location.href = '/documents/all?q=' + encodeURIComponent(query);
+                // Nếu không có suggestion nào thì truyền thêm param notfound
+                if (!suggestionsBox.innerHTML.trim() || suggestionsBox.querySelectorAll('.navbar-suggestion-item').length === 0) {
+                    window.location.href = '/documents/all?q=' + encodeURIComponent(query) + '&notfound=1';
+                } else {
+                    window.location.href = '/documents/all?q=' + encodeURIComponent(query);
+                }
             }
         }
     });

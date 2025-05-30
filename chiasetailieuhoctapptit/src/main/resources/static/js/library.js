@@ -37,9 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // Upload document functionality
-    initUploadModal();
     
     // Initialize filters for My Library section
     initMyLibraryFilters();
@@ -47,8 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize filters for Saved Documents section
     initSavedDocumentsFilters();
     
-    // Initialize upload button in empty state
-    initEmptyStateUploadButton();
 });
 
 // Check if navigation came from profile click
@@ -196,38 +191,6 @@ function initMobileMenu() {
             !e.target.closest('#menu-toggle')) {
             sidebar.classList.remove('active');
             document.body.classList.remove('sidebar-open');
-        }
-    });
-}
-
-// Upload modal functionality
-function initUploadModal() {
-    const uploadBtn = document.getElementById('upload-btn');
-    const uploadModal = document.getElementById('upload-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const cancelUploadBtn = document.getElementById('cancel-upload');
-    
-    if (!uploadBtn || !uploadModal) return;
-    
-    // Open modal
-    uploadBtn.addEventListener('click', () => {
-        uploadModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent scrolling
-    });
-    
-    // Close modal
-    const closeModal = () => {
-        uploadModal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Enable scrolling
-    };
-    
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-    if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', closeModal);
-    
-    // Close modal when clicking outside
-    uploadModal.addEventListener('click', (event) => {
-        if (event.target === uploadModal) {
-            closeModal();
         }
     });
 }

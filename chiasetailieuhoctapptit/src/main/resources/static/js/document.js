@@ -11,11 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification(errorMessage.textContent, 'error');
     }
     
-    // Upload document functionality
-    initUploadModal();
-
-    initFileUploadHandling();
-
     // Initialize course item click events
     initCourseItemClickEvents();
 
@@ -156,36 +151,6 @@ function initFixedElements() {
         
         // Nothing to adjust here since we've set them as fixed in CSS
         // This function could be used to add/remove classes based on scroll position if needed
-    });
-}
-
-function initUploadModal() {
-    const uploadBtn = document.getElementById('upload-btn');
-    const uploadModal = document.getElementById('upload-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const cancelUploadBtn = document.getElementById('cancel-upload');
-    const uploadForm = document.getElementById('upload-form');
-
-    if (uploadBtn) {
-        uploadBtn.addEventListener('click', () => {
-            uploadModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        });
-    }
-
-    const closeModal = () => {
-        uploadModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        resetUploadForm();
-    };
-    
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-    if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', closeModal);
-    
-    uploadModal.addEventListener('click', (event) => {
-        if (event.target === uploadModal) {
-            closeModal();
-        }
     });
 }
 

@@ -16,10 +16,6 @@
               <button id="menu-toggle" class="menu-toggle">
                 <i class="fas fa-bars"></i>
               </button>
-              <div class="search-bar">
-                <input type="text" placeholder="Search for documents, courses, or topics..." class="search-input document-search">
-                <i class="fas fa-search search-icon"></i>
-              </div>
             </div>
           </div>
           
@@ -169,6 +165,10 @@
               <i class="fas fa-file-alt"></i>
               <p>No documents found matching your criteria</p>
             </div>
+            <div id="no-documents-notfound" style="display:none;" class="no-documents">
+              <i class="fas fa-file-alt"></i>
+              <p>Không tìm thấy tài liệu phù hợp</p>
+            </div>
           </div>
         </div>
       </div>
@@ -292,7 +292,18 @@
         });
       }
     });
+    
+    // Hiển thị chú thích nếu có param notfound
+    document.addEventListener('DOMContentLoaded', function() {
+      // ...existing code...
+      // Hiển thị chú thích nếu có param notfound
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('notfound') === '1') {
+        var notfoundDiv = document.getElementById('no-documents-notfound');
+        if (notfoundDiv) notfoundDiv.style.display = 'block';
+      }
+    });
   </script>
   
 </body>
-</html> 
+</html>

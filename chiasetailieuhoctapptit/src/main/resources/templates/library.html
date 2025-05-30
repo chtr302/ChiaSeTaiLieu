@@ -18,8 +18,8 @@
                   </div>
                 </a>
               </div>
-              <button id="upload-btn" class="upload-button">
-                <i class="fas fa-cloud-upload-alt"></i> Upload Document
+              <button id="upload-btn" class="upload-button" onclick="window.location.href='/upload'">
+                <i class="fas fa-cloud-upload-alt"></i> Upload Documents
               </button>
             </div>
             <ul class="sidebar-menu">
@@ -181,7 +181,7 @@
                 <div class="empty-documents" th:if="${myUploads == null || myUploads.isEmpty()}">
                   <i class="fas fa-folder-open empty-icon"></i>
                   <p>You haven't uploaded any documents yet.</p>
-                  <button id="upload-btn-empty" class="btn btn-primary">Upload Document</button>
+                  <button id="upload-btn-empty" class="btn btn-primary" onclick="window.location.href='/upload'">Upload Documents</button>
                 </div>
                 <div class="load-more-container" th:if="${myUploads != null && myUploads.size() > 8}">
                     <button class="btn btn-secondary load-more-my-library">Load more</button>
@@ -276,7 +276,8 @@
         </main>
     </div>
     
-    <!-- Upload Modal -->
+    <!-- XÓA toàn bộ phần Upload Modal bên dưới -->
+    <!--
     <div id="upload-modal" class="modal-overlay">
       <div class="modal-container">
         <div class="modal-header">
@@ -334,6 +335,7 @@
         </div>
       </div>
     </div>
+    -->
     <div th:replace="~{fragments/scripts :: scripts}"></div>
     <link th:href="@{/css/library.css}" rel="stylesheet">
     <link th:href="@{/css/document-save.css}" rel="stylesheet">
