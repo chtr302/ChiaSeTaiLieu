@@ -1,6 +1,7 @@
 package com.chiasetailieu.chiasetailieuhoctapptit.service.BinhLuan;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,5 +20,8 @@ public class BinhLuanService {
 
     public List<BinhLuan> getCommentByDocumentId(long id){
         return binhLuanRepo.findByTaiLieu(id);
+    }
+    public Optional<BinhLuan> getBinhLuanById(int id) {
+        return binhLuanRepo.findById(id);
     }
 }
