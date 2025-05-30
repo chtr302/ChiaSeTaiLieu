@@ -98,8 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (chatbotBtn && chatbotModal) {
     chatbotBtn.addEventListener('click', function() {
       chatbotModal.style.display = 'flex';
-      
-      // Chỉ khởi tạo chatbot khi chưa có session
+
       if (!currentQASessionId) {
         initChatbot();
       }
@@ -145,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Modal sửa thông tin tài liệu
   const editBtn = document.getElementById('edit-document-btn');
   const editModal = document.getElementById('edit-document-modal');
   const closeEditModal = document.getElementById('close-edit-document-modal');
@@ -154,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (editBtn && editModal) {
     editBtn.addEventListener('click', function() {
-      // Chỉ cần mở modal, không set lại giá trị các trường
       editModal.style.display = 'flex';
     });
     if (closeEditModal) closeEditModal.onclick = () => editModal.style.display = 'none';
@@ -164,7 +161,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Xử lý lưu thay đổi tài liệu
   if (saveEditBtn) {
     saveEditBtn.addEventListener('click', function(e) {
       e.preventDefault();
@@ -180,7 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      // CSRF token
       const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
       const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
 
@@ -228,17 +223,14 @@ function initPdfViewer() {
   
   function renderPage(num) {
     pageRendering = true;
-    
-    // Remove any existing pages
+
     const existingPages = pdfContainer.querySelectorAll('.pdf-page');
     existingPages.forEach(page => page.remove());
     
     pdfDoc.getPage(num).then(function(page) {
-      // Get container width to adjust scale for full width
-      const containerWidth = pdfContainer.clientWidth - 40; // Accounting for padding
+      const containerWidth = pdfContainer.clientWidth - 40;
       const viewport = page.getViewport({scale: 1.0});
-      
-      // Adjust scale to fit container width
+
       const containerScale = containerWidth / viewport.width;
       const finalScale = Math.min(scale, containerScale);
       
@@ -265,8 +257,7 @@ function initPdfViewer() {
           renderPage(pageNumPending);
           pageNumPending = null;
         }
-        
-        // Update page number display
+
         document.getElementById('page-num').value = num;
       });
     });
@@ -321,15 +312,13 @@ function initPdfViewer() {
       }
     }
   }
-  
-  // Bind PDF navigation buttons
+
   document.getElementById('prev-page').addEventListener('click', onPrevPage);
   document.getElementById('next-page').addEventListener('click', onNextPage);
   document.getElementById('zoom-in').addEventListener('click', onZoomIn);
   document.getElementById('zoom-out').addEventListener('click', onZoomOut);
   document.getElementById('fullscreen').addEventListener('click', onFullScreen);
-  
-  // Page input navigation
+
   document.getElementById('page-num').addEventListener('change', function() {
     const newPageNum = parseInt(this.value);
     if (newPageNum >= 1 && newPageNum <= pdfDoc.numPages) {
@@ -339,26 +328,21 @@ function initPdfViewer() {
       this.value = pageNum;
     }
   });
-  
-  // Zoom select
+
   document.getElementById('zoom-select').addEventListener('change', function() {
     scale = parseFloat(this.value);
     queueRenderPage(pageNum);
   });
-  
-  // Load PDF
+
   pdfjsLib.getDocument(pdfUrl).promise.then(function(doc) {
     pdfDoc = doc;
-    
-    // Update page count
+
     document.getElementById('page-count').textContent = doc.numPages;
-    
-    // Add window resize listener to rerender when size changes
+
     window.addEventListener('resize', function() {
       queueRenderPage(pageNum);
     });
-    
-    // Initial render
+
     renderPage(pageNum);
   }).catch(function(error) {
     console.error('Error loading PDF:', error);
@@ -383,7 +367,6 @@ function voteDocument(docId, voteType) {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      // Update vote counts in UI
       const upvoteBtn = document.querySelector('.vote-btn.upvote span');
       const downvoteBtn = document.querySelector('.vote-btn.downvote span');
       
@@ -421,7 +404,7 @@ function postComment(commentText) {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
-          [csrfHeader]: csrfToken // Thêm CSRF token
+          [csrfHeader]: csrfToken
       },
       body: JSON.stringify({ content: commentText })
   })
@@ -579,11 +562,9 @@ function initChatbot() {
     })
     .catch(error => {
       console.error('Error checking session:', error);
-      // Session không còn hợp lệ, xóa khỏi localStorage
       currentQASessionId = null;
       localStorage.removeItem('qa_session_id_' + docId);
-      
-      // Xóa thông báo đang tải
+
       chatMessages.removeChild(loadingElement);
     });
   }
@@ -600,23 +581,18 @@ function sendQuestion(question) {
 
   const userAvatar = document.getElementById('current-user-avatar')?.value || '/img/default-avatar.png';
   const userName = document.getElementById('current-user-name')?.value || 'Bạn';
-  
-  // Thêm tin nhắn người dùng vào chat
+
   addMessageToChat('user', question);
-  
-  // Hiển thị trạng thái đang tải
+
   const loadingId = showLoadingMessage();
-  
-  // Xóa input
+
   chatInput.value = '';
-  
-  // Lấy CSRF token và header
+
   const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
   const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-  
-  // Kiểm tra xem đã có sessionId chưa
+
   if (!currentQASessionId) {
-    // Nếu chưa có session, tạo mới
+
     fetch('/ai/create-session', {
       method: 'POST',
       headers: {
@@ -632,27 +608,23 @@ function sendQuestion(question) {
       return response.json();
     })
     .then(data => {
-      // Lưu session ID
+
       currentQASessionId = data.session_id;
       localStorage.setItem('qa_session_id_' + docId, currentQASessionId);
-      
-      // Tiếp tục gửi câu hỏi với session mới
+
       askQuestionWithSession(question, loadingId, csrfToken, csrfHeader);
     })
     .catch(error => {
       console.error('Error creating session:', error);
       hideLoadingMessage(loadingId);
-      
-      // Hiển thị thông báo lỗi
+
       addMessageToChat('system', 'Không thể tạo phiên hỏi đáp. Vui lòng thử lại sau.');
     });
   } else {
-    // Đã có session, gửi câu hỏi ngay
     askQuestionWithSession(question, loadingId, csrfToken, csrfHeader);
   }
 }
 
-// Hàm gửi câu hỏi khi đã có session
 function askQuestionWithSession(question, loadingId, csrfToken, csrfHeader) {
   fetch('/ai/session/ask', {
     method: 'POST',
@@ -667,13 +639,11 @@ function askQuestionWithSession(question, loadingId, csrfToken, csrfHeader) {
   })
   .then(response => {
     if (!response.ok) {
-      // Nếu session không hợp lệ, thử tạo lại session
       if (response.status === 404) {
         currentQASessionId = null;
         const docId = window.location.pathname.split('/').pop();
         localStorage.removeItem('qa_session_id_' + docId);
-        
-        // Gọi lại hàm sendQuestion để tạo session mới
+
         hideLoadingMessage(loadingId);
         addMessageToChat('system', 'Phiên hỏi đáp đã hết hạn. Đang tạo phiên mới...');
         sendQuestion(question);
@@ -684,7 +654,7 @@ function askQuestionWithSession(question, loadingId, csrfToken, csrfHeader) {
     return response.json();
   })
   .then(data => {
-    if (!data) return; // Đã xử lý tạo session mới ở trên
+    if (!data) return;
     
     // Ẩn thông báo đang tải
     hideLoadingMessage(loadingId);
@@ -777,7 +747,6 @@ function showLoadingMessage() {
   return loadingId;
 }
 
-// Ẩn thông báo đang tải
 function hideLoadingMessage(loadingId) {
   if (!loadingId) return;
   
@@ -788,10 +757,8 @@ function hideLoadingMessage(loadingId) {
   }
 }
 
-// Thêm vào phần khởi tạo document onload
 document.addEventListener('DOMContentLoaded', function() {
-  // ...existing code...
-  
+
   const chatbotBtn = document.getElementById('ai-chatbot-btn');
   const chatbotModal = document.getElementById('chatbot-modal');
   const closeChatbotModal = document.getElementById('close-chatbot-modal');
@@ -801,8 +768,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (chatbotBtn && chatbotModal) {
     chatbotBtn.addEventListener('click', function() {
       chatbotModal.style.display = 'flex';
-      
-      // Chỉ khởi tạo chatbot khi chưa có session
+
       if (!currentQASessionId) {
         initChatbot();
       }
@@ -838,8 +804,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   }
-  
-  // ...existing code...
 });
 function showNotification(message, type) {
 

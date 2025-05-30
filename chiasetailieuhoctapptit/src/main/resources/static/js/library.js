@@ -40,6 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Upload document functionality
     initUploadModal();
+    
+    // Initialize filters for My Library section
+    initMyLibraryFilters();
+    
+    // Initialize filters for Saved Documents section
+    initSavedDocumentsFilters();
+    
+    // Initialize upload button in empty state
+    initEmptyStateUploadButton();
 });
 
 // Check if navigation came from profile click
@@ -219,6 +228,73 @@ function initUploadModal() {
     uploadModal.addEventListener('click', (event) => {
         if (event.target === uploadModal) {
             closeModal();
+        }
+    });
+}
+
+// Initialize filters for My Library section
+function initMyLibraryFilters() {
+    const interactionFilter = document.getElementById('my-library-interaction-filter');
+    
+    if (!interactionFilter) return;
+    
+    interactionFilter.addEventListener('change', function() {
+        const sortValue = this.value;
+        window.location.href = `/library?myLibrarySort=${sortValue}`;
+    });
+}
+
+// Initialize filters for Saved Documents section
+function initSavedDocumentsFilters() {
+    const interactionFilter = document.getElementById('saved-documents-interaction-filter');
+    const timeFilter = document.getElementById('saved-documents-time-filter');
+    
+    if (!interactionFilter || !timeFilter) return;
+    
+    // Function to update URL with filter values
+    const applyFilters = () => {
+        // Get current values from URL
+        const searchParams = new URLSearchParams(window.location.search);
+        const myLibrarySort = searchParams.get('myLibrarySort') || 'newest';
+        
+        // Get current filter values
+        const interactionValue = interactionFilter.value;
+        const timeValue = timeFilter.value;
+        
+        // Determine which filter to use (interaction takes precedence)
+        const savedSort = interactionValue !== 'newest' && interactionValue !== 'oldest' ? 
+                          interactionValue : timeValue;
+        
+        // Update URL
+        window.location.href = `/library?myLibrarySort=${myLibrarySort}&savedSort=${savedSort}`;
+    };
+    
+    // Apply filters when changed
+    interactionFilter.addEventListener('change', function() {
+        // If interaction filter is not time-based, use it and reset time filter
+        if (this.value !== 'newest' && this.value !== 'oldest') {
+            applyFilters();
+        }
+    });
+    
+    timeFilter.addEventListener('change', function() {
+        // If interaction filter is time-based or empty, use time filter
+        if (interactionFilter.value === 'newest' || interactionFilter.value === 'oldest') {
+            applyFilters();
+        }
+    });
+}
+
+
+// Initialize the upload button in empty state
+function initEmptyStateUploadButton() {
+    const uploadBtnEmpty = document.getElementById('upload-btn-empty');
+    if (!uploadBtnEmpty) return;
+    
+    uploadBtnEmpty.addEventListener('click', () => {
+        const modalUploadBtn = document.getElementById('upload-btn');
+        if (modalUploadBtn) {
+            modalUploadBtn.click();
         }
     });
 }
