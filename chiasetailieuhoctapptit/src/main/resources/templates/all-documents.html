@@ -18,14 +18,6 @@
           <div class="filter-section">
             <h2 class="page-title">All Documents</h2>
             <div class="filter-container">
-              <!-- <div class="filter-group">
-                <label for="semester-filter">Semester:</label>
-                <select id="semester-filter" class="filter-select">
-                  <option value="">All Semesters</option>
-                  <option value="HK1-2023-2024">HK1 (2023-2024)</option>
-                  <option value="HK2-2023-2024">HK2 (2023-2024)</option>
-                </select>
-              </div> -->
               
               <div class="filter-group">
                 <label for="type-filter">Type:</label>
@@ -219,9 +211,17 @@
     </div>
   </div>
 
+  <!-- back to doc -->
+  <a href="/documents" class="see-more-btn back-to-documents-btn">
+    <i class="fas fa-arrow-left" style="margin-right:8px;"></i> Quay lại
+  </a>
+
   <!-- Scripts -->
   <div th:replace="fragments/scripts :: scripts"></div>
   <link th:href="@{/css/documents.css}" rel="stylesheet">
+  <script th:inline="javascript">
+    window.allDocuments = /*[[${Documents}]]*/ [];
+  </script>
   <script th:src="@{/js/document.js}"></script>
   <script th:src="@{/js/all-documents.js}"></script>
 </body>
