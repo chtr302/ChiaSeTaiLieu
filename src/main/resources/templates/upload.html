@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Upload Document - 3 Steps</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <link rel="stylesheet" th:href="@{/css/upload.css}" href="/css/upload.css">
+  <link rel="stylesheet" th:href="@{/css/documents.css}" href="/css/documents.css">
+</head>
+<body>
+  <div class="upload-steps-container">
+    <div class="steps-indicator">
+      <div class="step active" id="step-1-indicator">1. Chọn file</div>
+      <div class="step" id="step-2-indicator">2. Nhập thông tin</div>
+      <div class="step" id="step-3-indicator">3. Hoàn tất</div>
+    </div>
+    <div class="steps-content">
+      <!-- Bước 1: Chọn file -->
+      <div class="step-content" id="step-1">
+        <h2>Chọn file PDF</h2>
+        <form id="upload-step1-form" enctype="multipart/form-data" onsubmit="return false;">
+          <label for="upload-file" class="custom-file-label">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Chọn file PDF...</span>
+            <input type="file" id="upload-file" name="file" accept=".pdf" multiple required style="display:none;">
+          </label>
+          <div style="font-size:0.95em; color:#6b7280; margin-bottom:8px;">
+            Chọn nhiều file PDF một lần (tối đa 5 file). Sau khi chọn sẽ thêm vào danh sách bên dưới.
+          </div>
+          <div id="file-selected-info"></div>
+          <div id="file-list"></div>
+          <div id="file-limit-msg" style="color:#ef4444; margin-top:8px; display:none;">Tối đa 5 file PDF.</div>
+          <div style="margin-top:18px;">
+            <button type="button" id="to-step-2" class="btn btn-primary" disabled>Tiếp tục</button>
+          </div>
+        </form>
+        <a href="/documents" class="back-home-link styled-back-link">
+          <i class="fas fa-arrow-left"></i> Quay lại trang tài liệu
+        </a>
+      </div>
+      <!-- Bước 2: Nhập thông tin -->
+      <div class="step-content" id="step-2" style="display:none;">
+        <h2>Thông tin từng file</h2>
+        <div class="error-message" id="upload-error-message"></div>
+        <form id="upload-step2-form" onsubmit="return false;">
+          <div id="file-details-container">
+            <!-- JS sẽ render detail cho từng file -->
+          </div>
+          <template id="file-detail-template">
+            <fieldset style="margin-bottom:22px; border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
+              <legend style="font-weight:600; color:#2563eb;">File <span class="file-index"></span>: <span class="file-name"></span></legend>
+              <div class="form-section">
+                <div class="form-group">
+                  <label>Title <span class="required">*</span></label>
+                  <input type="text" class="tieuDe form-control" placeholder="Document title" required>
+                </div>
+                <div class="form-group">
+                  <label>Category <span class="required">*</span></label>
+                  <select class="maLoai form-control" required>
+                    <option value="">Select a category</option>
+                    <option th:each="loaiTaiLieu : ${loaiTaiLieu}"
+                            th:value="${loaiTaiLieu.maLoai}" 
+                            th:text="${loaiTaiLieu.tenLoai}">Category Name</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Course <span class="required">*</span></label>
+                  <select class="maMonHoc form-control" required>
+                    <option value="">Select a course</option>
+                    <option th:each="monHoc : ${danhSachMonHoc}"
+                            th:value="${monHoc.maMon}" 
+                            th:text="${monHoc.tenMon}">Course Name</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Tags</label>
+                  <input type="text" class="tags form-control" placeholder="e.g. python, ai, notes (separated by commas)">
+                </div>
+                <div class="form-group">
+                  <label>Description <span class="required">*</span></label>
+                  <div class="ai-summary-controls" style="margin-bottom:8px;">
+                    <button type="button" id="ai-summarize-btn" class="btn-ai-summarize" disabled>
+                      <i class="fas fa-robot"></i> Tóm tắt với AI
+                    </button>
+                    <div id="ai-summary-loading" class="ai-summary-loading" style="display: none;">
+                      <div class="spinner-border spinner-border-sm" role="status"></div>
+                      <span>Đang tóm tắt...</span>
+                    </div>
+                  </div>
+                  <textarea class="moTa form-control" rows="4" placeholder="Describe your document" required></textarea>
+                </div>
+              </div>
+            </fieldset>
+          </template>
+          <div style="margin-top:18px;">
+            <button type="button" id="back-to-step-1" class="btn">Quay lại</button>
+            <button type="button" id="to-step-3" class="btn btn-primary">Tải lên</button>
+          </div>
+        </form>
+      </div>
+      <!-- Bước 3: Hoàn tất -->
+      <div class="step-content" id="step-3" style="display:none;">
+        <h2>Hoàn tất!</h2>
+        <div id="upload-success-message">
+          <i class="fas fa-check-circle" style="color:green; font-size:48px;"></i>
+          <p>Bạn đã tải lên thành công các tài liệu.</p>
+          <a href="/documents" class="btn btn-primary">Về trang tài liệu</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    // Dữ liệu cho select (render bằng Thymeleaf)
+    window.uploadLoaiTaiLieu = /*[[${loaiTaiLieu}]]*/ [];
+    window.uploadMonHoc = /*[[${danhSachMonHoc}]]*/ [];
+    /*]]>*/
+  </script>
+  <script th:src="@{/js/upload.js}" src="/js/upload.js"></script>
+</body>
+</html>

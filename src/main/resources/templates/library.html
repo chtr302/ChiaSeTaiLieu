@@ -52,42 +52,6 @@
         </div>
 
         <main class="main-content">
-            <!-- Popup Library Info (shown when clicked from profile) -->
-            <div id="library-popup" class="library-popup">
-                <div class="library-popup-content">
-                    <div class="library-popup-header">
-                        <h3>My Library</h3>
-                        <button id="close-library-popup" class="close-library-popup">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="library-popup-body">
-                        <div class="library-stats">
-                            <div class="library-stat-item">
-                                <span class="stat-number" th:text="${uploadCount != null ? uploadCount : '0'}">4</span>
-                                <span class="stat-label">Uploaded</span>
-                            </div>
-                            <div class="library-stat-item">
-                                <span class="stat-number" th:text="${savedCount != null ? savedCount : '0'}">15</span>
-                                <span class="stat-label">Saved</span>
-                            </div>
-                            <div class="library-stat-item">
-                                <span class="stat-number" th:text="${(uploadCount != null ? uploadCount : 0) + (savedCount != null ? savedCount : 0)}">89</span>
-                                <span class="stat-label">Total Documents</span>
-                            </div>
-                        </div>
-                        <div class="library-actions">
-                            <button class="btn-primary">
-                                <i class="fas fa-upload"></i> Upload
-                            </button>
-                            <button class="btn-secondary">
-                                <i class="fas fa-folder"></i> Browse
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <section class="user-header-section">
                 <img th:if="${sinhVien != null && sinhVien.hinhAnh != null}" th:src="${sinhVien.hinhAnh}" th:alt="${sinhVien.hoVaTen}" class="user-avatar-medium">
                 <img th:unless="${sinhVien != null && sinhVien.hinhAnh != null}" src="/img/default-avatar.png" alt="Default avatar" class="user-avatar-medium">
@@ -194,11 +158,7 @@
                       <!-- Stats Row -->
                       <div class="document-stats-row">
                         <!-- Vote Section -->
-                        <div class="vote-oval">
-                          <button class="upvote-btn"><i class="fas fa-thumbs-up"></i></button>
-                          <span class="vote-count" th:text="${doc != null && doc.danhGia != null ? doc.danhGia : '0'}">0</span>
-                          <button class="downvote-btn"><i class="fas fa-thumbs-down"></i></button>
-                        </div>
+                        <div th:replace="fragments/vote-buttons :: vote-buttons(${doc}, null, null)"></div>
                 
                         <!-- Views & Comments -->
                         <div class="view-comment-group">
@@ -282,11 +242,7 @@
                       <!-- Stats Row -->
                       <div class="document-stats-row">
                         <!-- Vote Section -->
-                        <div class="vote-oval">
-                          <button class="upvote-btn"><i class="fas fa-thumbs-up"></i></button>
-                          <span class="vote-count" th:text="${doc != null && doc.danhGia != null ? doc.danhGia : '0'}">0</span>
-                          <button class="downvote-btn"><i class="fas fa-thumbs-down"></i></button>
-                        </div>
+                        <div th:replace="fragments/vote-buttons :: vote-buttons(${doc}, null, null)"></div>
                 
                         <!-- Views & Comments -->
                         <div class="view-comment-group">

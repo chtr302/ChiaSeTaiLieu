@@ -1,0 +1,79 @@
+/* Document Save Button Styling */
+
+/* Save button in normal state */
+.save-btn {
+    background-color: #2e7d32; /* Main green color */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #1b5e20; /* Darker green on hover */
+}
+
+/* Save button in saved state */
+.save-btn.saved {
+    background-color: #868e96; /* Gray color when saved */
+}
+
+.save-btn.saved:hover {
+    background-color: #495057; /* Darker gray on hover */
+}
+
+/* Notification styling */
+#notification-container {
+    position: fixed;
+    top: 80px; /* Position it below navbar */
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none; /* Allows clicking through */
+}
+
+.notification {
+    padding: 14px 20px;
+    border-radius: 6px;
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    max-width: 400px;
+    opacity: 0;
+    border-left: 4px solid transparent;
+    pointer-events: auto; /* Make this element clickable */
+    margin-bottom: 8px;
+    transform: translateX(120%);
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.notification.active {
+    opacity: 0.95;
+    transform: translateX(0);
+}
+
+.notification.success {
+    background-color: #2e7d32; /* Green background for success */
+    border-left-color: #1b5e20;
+}
+
+.notification.error {
+    background-color: #d32f2f; /* Red background for error */
+    border-left-color: #b71c1c;
+}
+
+.notification.info {
+    background-color: #1976d2; /* Blue background for info */
+    border-left-color: #0d47a1;
+}
+
+.notification.fade-out {
+    opacity: 0;
+    transform: translateX(120%);
+    transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+} 

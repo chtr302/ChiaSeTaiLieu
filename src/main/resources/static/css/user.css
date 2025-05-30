@@ -1,0 +1,436 @@
+.user-name-follow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.follow-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.follow-btn.followed {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.follow-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-follow-stats {
+    cursor: pointer;
+}
+
+.user-follow-stats .follow-item:hover {
+    color: #3c8dbc;
+}
+
+.documents-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Tùy chỉnh các trạng thái hover */
+.document-card .upvote-btn.active {
+    color: #28a745;
+}
+
+.document-card .downvote-btn.active {
+    color: #dc3545;
+}
+
+.document-card .save-btn.saved {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+/* Hiệu ứng khi load thêm tài liệu */
+.document-card.new-loaded {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modal cho followers/following */
+.follow-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.follow-modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.follow-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.follow-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.follow-modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+}
+
+.follow-modal-users {
+    padding: 0;
+}
+
+.follow-user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.follow-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.follow-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.follow-user-name {
+    font-weight: 500;
+}
+
+.follow-user-item .follow-btn {
+    padding: 4px 12px;
+    font-size: 12px;
+}
+.follow-btn {
+    margin-left: 10px;
+    font-size: 0.9rem;
+    padding: 5px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.follow-btn.followed:hover {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.user-name-follow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.follow-item.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.follow-item.clickable:hover {
+    color: #007bff;
+    transform: translateY(-2px);
+}
+
+/* Styles cho follow modal */
+.follow-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.follow-list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.follow-list-item a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+}
+
+.follow-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.follow-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.follow-name {
+    font-weight: 500;
+    margin: 0;
+}
+
+.follow-id {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Danh sách follower/following dạng Instagram */
+.user-follow-list-container {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    max-width: 400px;
+    margin: 24px auto 0 auto;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    padding: 0 0 12px 0;
+    position: relative;
+    z-index: 10;
+}
+
+.user-follow-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px 8px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.user-follow-list-header .close-follow-list {
+    font-size: 1rem;
+    color: #007bff;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.user-follow-list-container .follow-list {
+    max-height: 320px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+}
+
+.user-follow-list-container .follow-list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    transition: background 0.2s;
+}
+
+.user-follow-list-container .follow-list-item:last-child {
+    border-bottom: none;
+}
+
+.user-follow-list-container .follow-list-item a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+}
+
+.user-follow-list-container .follow-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+}
+
+.user-follow-list-container .follow-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.user-follow-list-container .follow-name {
+    font-weight: 500;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.user-follow-list-container .follow-id {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0;
+}
+
+.user-follow-list-container .loading-spinner {
+    display: none;
+}
+
+.user-follow-list-container .no-results {
+    display: none;
+}
+
+.user-follow-list-container .no-results:not(.d-none) {
+    display: block;
+}
+
+/* Overlay modal giống Instagram */
+.user-follow-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-follow-modal {
+    background: #fff;
+    border-radius: 24px; /* Bo tròn đều 4 góc */
+    width: 100%;
+    max-width: 400px;
+    max-height: 80vh;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: relative;
+    animation: fadeInModal 0.2s;
+    overflow: hidden; /* Đảm bảo nội dung không tràn góc bo */
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; transform: translateY(40px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+.user-follow-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px 10px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+
+.user-follow-modal-header .close-user-follow-modal {
+    font-size: 1.5rem;
+    color: #888;
+    background: none;
+    border: none;
+    padding: 0 8px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.user-follow-modal .follow-list {
+    max-height: 320px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.user-follow-modal .follow-list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    transition: background 0.2s;
+}
+
+.user-follow-modal .follow-list-item:last-child {
+    border-bottom: none;
+}
+
+.user-follow-modal .follow-list-item a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+}
+
+.user-follow-modal .follow-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+}
+
+.user-follow-modal .follow-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.user-follow-modal .follow-name {
+    font-weight: 500;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.user-follow-modal .follow-id {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0;
+}
+
+.user-follow-modal .loading-spinner {
+    display: none;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.user-follow-modal .no-results {
+    display: none;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.user-follow-modal .no-results:not(.d-none) {
+    display: block;
+}
