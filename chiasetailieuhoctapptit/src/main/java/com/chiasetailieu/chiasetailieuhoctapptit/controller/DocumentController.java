@@ -17,6 +17,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
@@ -45,6 +46,7 @@ import com.chiasetailieu.chiasetailieuhoctapptit.service.File.FileService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.LoaiTaiLieu.LoaiTaiLieuService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.MonHoc.MonHocService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVien.SinhVienService;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu.LuuTaiLieuService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu.TaiLieuService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu.TaiLieuViewService;
 
@@ -67,12 +69,17 @@ public class DocumentController {
     private BinhLuanService binhLuanService;
     @Autowired
     private BinhLuanViewService binhLuanViewService;
+    @Autowired
+    private LuuTaiLieuService luuTaiLieuService;
     
     @Value("${thumbnail.dir:./thumbnails}") // lấy đường dẫn để lưu và lấy thumbnail
     private String thumbnailDir;
 
     @Value("${upload.dir:./uploads}")
     private String uploadDir;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @GetMapping
     public String showDocuments(@AuthenticationPrincipal OidcUser principal, Model model,
@@ -108,11 +115,15 @@ public class DocumentController {
                     .toList();
             }
             model.addAttribute("Documents", allDocuments);
-            
-        } catch (java.lang.NullPointerException e) {
-            System.err.println("Lỗi NullPointer khi tải trang documents: " + e.getMessage());
-        } catch (RuntimeException e) {
-            System.err.println("Lỗi Runtime khi tải trang documents: " + e.getMessage());
+
+            List<TaiLieuView> mostViewedDocuments = allDocuments.stream()
+                .filter(doc -> doc.getLuotXem() > 0)
+                .sorted((doc1, doc2) -> Long.compare(doc2.getLuotXem(), doc1.getLuotXem()))
+                .limit(5)
+                .toList();
+            model.addAttribute("mostViewedDocuments", mostViewedDocuments);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải trang documents: " + e.getMessage());
         }
         
         return "documents";
@@ -280,6 +291,14 @@ public class DocumentController {
             List<BinhLuanView> comments = binhLuanViewService.getCommentByDocumentId(id);
             model.addAttribute("comments", comments);
             
+            String sql = "SELECT tb.MaTraLoi, tb.NoiDung, tb.NgayTraLoi, tb.MaBinhLuan, sv.HoVaTen, sv.HinhAnh " +
+                    "FROM TraLoiBinhLuan tb JOIN SinhVien sv ON tb.MaSinhVien = sv.MaSinhVien " +
+                    "JOIN BinhLuan bl ON tb.MaBinhLuan = bl.MaBinhLuan " +
+                    "WHERE bl.MaTaiLieu = ?";
+
+            List<Map<String, Object>> replies = jdbcTemplate.queryForList(sql, id);
+            model.addAttribute("replies", replies);
+            
             return "documents-detail";
             
         } catch (NullPointerException e) {
@@ -333,7 +352,6 @@ public class DocumentController {
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "course", required = false) String course,
             @RequestParam(value = "semester", required = false) String semester,
-            @RequestParam(value = "q", required = false) String keyword, // thêm tham số q
             Model model) {
         
         if (principal == null) {
@@ -352,20 +370,6 @@ public class DocumentController {
             
             // Get all documents with filters
             List<TaiLieuView> allDocuments = taiLieuViewService.getTaiLieu();
-            
-            // Lọc theo từ khóa nếu có (giống trang documents)
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                String lower = keyword.trim().toLowerCase();
-                String lowerNoAccent = removeVietnameseTones(lower);
-                allDocuments = allDocuments.stream()
-                    .filter(doc -> {
-                        if (doc.getTieuDe() == null) return false;
-                        String title = doc.getTieuDe().toLowerCase();
-                        String titleNoAccent = removeVietnameseTones(title);
-                        return title.contains(lower) || titleNoAccent.contains(lowerNoAccent);
-                    })
-                    .toList();
-            }
             
             // Apply filters
             if (type != null && !type.isEmpty()) {
@@ -417,15 +421,13 @@ public class DocumentController {
             model.addAttribute("selectedType", type);
             model.addAttribute("selectedCourse", course);
             model.addAttribute("selectedSemester", semester);
-            model.addAttribute("keyword", keyword); // truyền lại từ khóa cho view
             
-        } catch (NullPointerException e) {
-            System.err.println("NullPointerException khi tải trang all documents: " + e.getMessage());
-        } catch (RuntimeException e) {
-            System.err.println("RuntimeException khi tải trang all documents: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải trang all documents: " + e.getMessage());
+            
         }
         
-        return "all-documents";
+        return "view-documents/all-documents";
     }
 
     @GetMapping("/courses")
@@ -449,7 +451,7 @@ public class DocumentController {
             
         }
         
-        return "courses";
+        return "see-more-documents/courses";
     }
     
     @GetMapping("/categories")
@@ -473,7 +475,7 @@ public class DocumentController {
             
         }
         
-        return "categories";
+        return "see-more-documents/categories";
     }
     
     @GetMapping("/most-viewed")
@@ -615,7 +617,7 @@ public class DocumentController {
             return "redirect:/documents/courses?error=error_loading_course";
         }
         
-        return "course-documents";
+        return "view-documents/course-documents";
     }
     
     @GetMapping("/category/{categoryId}")
@@ -715,8 +717,6 @@ public class DocumentController {
         return "category-documents";
     }
 
-    // Đảm bảo không có GET mapping cho /edit/{id}
-    // Nếu muốn trả về lỗi rõ ràng khi truy cập GET
     @GetMapping("/edit/{id}")
     @ResponseBody
     public ResponseEntity<?> editDocumentNotAllowed() {
@@ -804,5 +804,319 @@ public class DocumentController {
                 return map;
             })
             .toList();
+    }
+
+    @PostMapping("/reply/{commentId}")
+    @ResponseBody
+    public Map<String, Object> replyToComment(@PathVariable("commentId") int commentId, 
+                                             @AuthenticationPrincipal OidcUser principal, 
+                                             @RequestBody Map<String, String> replyData) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            String email = principal.getEmail();
+            String maSV = email.substring(0, email.indexOf('@'));
+            String content = replyData.get("content");
+            
+            if (content == null || content.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Nội dung trả lời không được để trống");
+                return response;
+            }
+
+            Optional<BinhLuan> binhLuanOpt = binhLuanService.getBinhLuanById(commentId);
+            if (binhLuanOpt.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Bình luận không tồn tại");
+                return response;
+            }
+
+            SinhVien sinhVien = sinhVienService.getSinhVienbyMaSinhVien(maSV);
+
+            try {
+                String insertSql = "INSERT INTO TraLoiBinhLuan (NoiDung, NgayTraLoi, MaSinhVien, MaBinhLuan) VALUES (?, ?, ?, ?)";
+
+                jdbcTemplate.update(insertSql, content, LocalDate.now(), maSV, commentId);
+
+                response.put("success", true);
+                response.put("authorName", sinhVien.getHoVaTen());
+                response.put("hinhAnh", sinhVien.getHinhAnh());
+                response.put("formattedDate", LocalDate.now().toString());
+            } catch (org.springframework.dao.DataAccessException e) {
+                throw new RuntimeException("Không thể lưu trả lời bình luận: " + e.getMessage());
+            } catch (RuntimeException e) {
+                throw new RuntimeException("Không thể lưu trả lời bình luận: " + e.getMessage());
+            }
+            
+            return response;
+        } catch (org.springframework.dao.DataAccessException e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi truy cập dữ liệu khi thêm trả lời: " + e.getMessage());
+            return response;
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi thêm trả lời: " + e.getMessage());
+            return response;
+        }
+    }
+    
+    // Phương thức để báo cáo tài liệu
+    @PostMapping("/report/{documentId}")
+    @ResponseBody
+    public Map<String, Object> reportDocument(@PathVariable("documentId") long documentId, 
+                                             @AuthenticationPrincipal OidcUser principal, 
+                                             @RequestBody Map<String, String> reportData) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            String email = principal.getEmail();
+            String maSV = email.substring(0, email.indexOf('@'));
+            String reason = reportData.get("reason");
+            String description = reportData.get("description");
+            
+            if (description == null || description.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Nội dung báo cáo không được để trống");
+                return response;
+            }
+            
+            // Kiểm tra tài liệu tồn tại
+            TaiLieuView taiLieu = taiLieuViewService.findByMaTaiLieu(documentId);
+            if (taiLieu == null) {
+                response.put("success", false);
+                response.put("message", "Tài liệu không tồn tại");
+                return response;
+            }
+            
+            // Tạo tiêu đề báo cáo
+            String title = "Báo cáo tài liệu: " + reason;
+            
+            try {
+                // Tạo câu lệnh SQL để chèn vào bảng baocao
+                String insertSql = "INSERT INTO baocao (TieuDeBaoCao, NoiDungBaoCao, NgayBaoCao, TrangThai, MaTaiLieu, MaSinhVien) VALUES (?, ?, ?, ?, ?, ?)";
+                
+                // Thực hiện câu lệnh SQL
+                jdbcTemplate.update(insertSql, title, description, LocalDate.now(), false, documentId, maSV);
+                
+                response.put("success", true);
+                response.put("message", "Báo cáo đã được gửi thành công");
+            } catch (RuntimeException e) {
+                throw new RuntimeException("Không thể lưu báo cáo tài liệu: " + e.getMessage());
+            }
+            
+            return response;
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi gửi báo cáo: " + e.getMessage());
+            return response;
+        }
+    }
+    
+    // Phương thức để báo cáo bình luận
+    @PostMapping("/report-comment/{commentId}")
+    @ResponseBody
+    public Map<String, Object> reportComment(@PathVariable("commentId") int commentId, 
+                                            @AuthenticationPrincipal OidcUser principal, 
+                                            @RequestBody Map<String, String> reportData) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            String email = principal.getEmail();
+            String maSV = email.substring(0, email.indexOf('@'));
+            String title = reportData.get("title");
+            String description = reportData.get("description");
+            
+            if (description == null || description.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Nội dung báo cáo không được để trống");
+                return response;
+            }
+            
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Tiêu đề báo cáo không được để trống");
+                return response;
+            }
+            
+            // Kiểm tra bình luận tồn tại
+            Optional<BinhLuan> binhLuanOpt = binhLuanService.getBinhLuanById(commentId);
+            if (binhLuanOpt.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Bình luận không tồn tại");
+                return response;
+            }
+            
+            // Lấy bình luận và tài liệu ID
+            BinhLuan binhLuan = binhLuanOpt.get();
+            long taiLieuId = binhLuan.getTaiLieu();
+            
+            // Tạo nội dung báo cáo
+            String baoCaoContent = "Bình luận ID #" + commentId + ": " + binhLuan.getNoiDung();
+            
+            try {
+                // Tạo câu lệnh SQL để chèn vào bảng baocao
+                String insertSql = "INSERT INTO baocao (TieuDeBaoCao, NoiDungBaoCao, NgayBaoCao, TrangThai, MaTaiLieu, MaSinhVien) VALUES (?, ?, ?, ?, ?, ?)";
+                
+                // Thực hiện câu lệnh SQL
+                jdbcTemplate.update(insertSql, title, baoCaoContent, LocalDate.now(), false, taiLieuId, maSV);
+                
+                response.put("success", true);
+                response.put("message", "Báo cáo bình luận đã được gửi thành công");
+            } catch (org.springframework.dao.DataAccessException e) {
+                throw new RuntimeException("Không thể lưu báo cáo bình luận: " + e.getMessage());
+            } catch (RuntimeException e) {
+                throw new RuntimeException("Không thể lưu báo cáo bình luận: " + e.getMessage());
+            }
+            
+            return response;
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi gửi báo cáo bình luận: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @GetMapping("/download/{id}")
+    @ResponseBody
+    public ResponseEntity<Resource> downloadDocument(@PathVariable("id") long id){
+        try {
+            TaiLieuView taiLieuView = taiLieuViewService.findByMaTaiLieu(id);
+            if (taiLieuView == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Path filePath = Paths.get(uploadDir).resolve(taiLieuView.getDuongDanFile()).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            
+            if(!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Tạo tên file tải xuống phù hợp, loại bỏ ký tự đặc biệt
+            String originalFilename = taiLieuView.getDuongDanFile();
+            String fileExtension = "";
+            if (originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            
+            String downloadFilename = removeVietnameseTones(taiLieuView.getTieuDe()) + fileExtension;
+            
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFilename + "\"")
+                    .body(resource);
+        } catch (java.io.IOException e) {
+            System.err.println("Lỗi truy cập tệp khi tải xuống: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        } catch (java.nio.file.InvalidPathException e) {
+            System.err.println("Đường dẫn tệp không hợp lệ khi tải xuống: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Toggle lưu hoặc hủy lưu tài liệu
+     * @param id ID của tài liệu
+     * @param principal Thông tin người dùng
+     * @return Kết quả lưu/hủy lưu
+     */
+    @PostMapping("/save/{id}")
+    @ResponseBody
+    public Map<String, Object> toggleSaveDocument(@PathVariable("id") Integer id, @AuthenticationPrincipal OidcUser principal) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            if (principal == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để thực hiện chức năng này");
+                return response;
+            }
+            
+            String email = principal.getEmail();
+            String maSV = email.substring(0, email.indexOf('@'));
+            
+            boolean isSaved = luuTaiLieuService.toggleSaveDocument(id, maSV);
+            
+            response.put("success", true);
+            response.put("saved", isSaved);
+            response.put("message", isSaved ? "Đã lưu tài liệu thành công" : "Đã hủy lưu tài liệu");
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi: " + e.getMessage());
+        }
+        
+        return response;
+    }
+    
+    /**
+     * Kiểm tra trạng thái lưu của tài liệu
+     * @param id ID của tài liệu
+     * @param principal Thông tin người dùng
+     * @return Trạng thái lưu
+     */
+    @GetMapping("/check-saved/{id}")
+    @ResponseBody
+    public Map<String, Object> checkSavedStatus(@PathVariable("id") Integer id, @AuthenticationPrincipal OidcUser principal) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            if (principal == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để thực hiện chức năng này");
+                return response;
+            }
+            
+            String email = principal.getEmail();
+            String maSV = email.substring(0, email.indexOf('@'));
+            
+            boolean isSaved = luuTaiLieuService.isDocumentSaved(id, maSV);
+            
+            response.put("success", true);
+            response.put("saved", isSaved);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi: " + e.getMessage());
+        }
+        
+        return response;
+    }
+    
+    /**
+     * Kiểm tra trạng thái lưu của nhiều tài liệu
+     * @param ids Danh sách ID của tài liệu
+     * @param principal Thông tin người dùng
+     * @return Trạng thái lưu của từng tài liệu
+     */
+    @PostMapping("/check-saved-batch")
+    @ResponseBody
+    public Map<String, Object> checkSavedStatusBatch(@RequestBody List<Integer> ids, @AuthenticationPrincipal OidcUser principal) {
+        Map<String, Object> response = new HashMap<>();
+        Map<Integer, Boolean> savedStatuses = new HashMap<>();
+        
+        try {
+            if (principal == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để thực hiện chức năng này");
+                return response;
+            }
+            
+            String email = principal.getEmail();
+            String maSV = email.substring(0, email.indexOf('@'));
+            
+            for (Integer id : ids) {
+                boolean isSaved = luuTaiLieuService.isDocumentSaved(id, maSV);
+                savedStatuses.put(id, isSaved);
+            }
+            
+            response.put("success", true);
+            response.put("savedStatuses", savedStatuses);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi: " + e.getMessage());
+        }
+        
+        return response;
     }
 }
