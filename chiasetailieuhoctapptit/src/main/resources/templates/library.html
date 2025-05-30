@@ -169,10 +169,10 @@
                 
                       <!-- Action Buttons -->
                       <div class="document-buttons">
-                        <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
-                        <a th:if="${doc == null || doc.maTaiLieu == null}" href="#" class="view-btn">Xem</a>
+                        <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">View</a>
+                        <a th:if="${doc == null || doc.maTaiLieu == null}" href="#" class="view-btn">View</a>
                         <button th:if="${sinhVien != null && doc != null && sinhVien.maSV.toLowerCase().equals(doc.maSinhVien.toLowerCase())}"
-                        class="btn-edit">Sửa tài liệu</button>
+                        class="btn-edit">Repair</button>
                       </div>
                     </div>
                   </div>
@@ -253,12 +253,12 @@
                 
                       <!-- Action Buttons -->
                       <div class="document-buttons">
-                        <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
-                        <a th:if="${doc == null || doc.maTaiLieu == null}" href="#" class="view-btn">Xem</a>
+                        <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">View</a>
+                        <a th:if="${doc == null || doc.maTaiLieu == null}" href="#" class="view-btn">View</a>
 
                         <button th:if="${sinhVien == null || doc == null || sinhVien.maSV != doc.maSinhVien}" 
                                 th:attr="data-id=${doc != null ? doc.maTaiLieu : ''}" 
-                                class="save-btn">Lưu</button>
+                                class="save-btn">Save</button>
                       </div>
                     </div>
                   </div>

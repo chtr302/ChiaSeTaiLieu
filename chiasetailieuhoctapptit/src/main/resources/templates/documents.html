@@ -116,8 +116,8 @@
             
                   <!-- Action Buttons -->
                   <div class="document-buttons">
-                    <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
-                    <button th:if="${doc != null && doc.maTaiLieu != null}" th:data-id="${doc.maTaiLieu}" class="save-btn">Lưu</button>
+                    <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">View</a>
+                    <button th:if="${doc != null && doc.maTaiLieu != null}" th:data-id="${doc.maTaiLieu}" class="save-btn">Save</button>
                   </div>
                 </div>
               </div>
@@ -138,7 +138,7 @@
                   <h3 class="course-name" th:text="${course != null && course.tenMon != null ? course.tenMon : 'Course Name'}">Course Name</h3>
                   <p class="course-doc-count" th:text="${course != null && course.taiLieu != null ? (course.taiLieu + ' documents') : '0 documents'}">0 documents</p>
                   <div class="course-actions-row">
-                    <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
+                    <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View</a>
                     <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
                     <!-- Nút Follow/Following luôn có đủ 2 nút, JS sẽ tự động xử lý trạng thái -->
                     <button type="button" class="follow-btn" th:attr="data-course-id=${course != null ? course.maMon : ''}" style="display:none;">
@@ -167,8 +167,8 @@
                     <i class="fas fa-folder"></i>
                   </div>
                   <h3 class="category-name" th:text="${category != null && category.tenLoai != null ? category.tenLoai : 'Category Name'}">Category Name</h3>
-                  <a th:if="${category != null && category.maLoai != null}" th:href="@{'/documents/category/' + ${category.maLoai}}" class="category-link">View Documents</a>
-                  <a th:if="${category == null || category.maLoai == null}" href="#" class="category-link">View Documents</a>
+                  <a th:if="${category != null && category.maLoai != null}" th:href="@{'/documents/category/' + ${category.maLoai}}" class="category-link">View</a>
+                  <a th:if="${category == null || category.maLoai == null}" href="#" class="category-link">View</a>
                 </div>
               </div>
             </div>
@@ -222,8 +222,8 @@
             
                   <!-- Action Buttons -->
                   <div class="document-buttons">
-                    <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
-                    <button th:if="${doc != null && doc.maTaiLieu != null}" th:data-id="${doc.maTaiLieu}" class="save-btn">Lưu </button>
+                    <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">View</a>
+                    <button th:if="${doc != null && doc.maTaiLieu != null}" th:data-id="${doc.maTaiLieu}" class="save-btn">Save</button>
                   </div>
                 </div>
               </div>

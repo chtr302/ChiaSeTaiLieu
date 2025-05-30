@@ -26,43 +26,43 @@
                 </div>
               </div>
             </div>
-            <h2 class="sidebar-title">Về tài liệu này</h2>
+            <h2 class="sidebar-title">About Document</h2>
             <div class="document-info-sidebar">
               <div class="info-item">
-                <span class="info-label">Môn học:</span>
+                <span class="info-label">Course:</span>
                 <span class="info-value" th:text="${taiLieu.tenMon}">Tên môn học</span>
               </div>
               <div class="info-item">
-                <span class="info-label">Loại:</span>
+                <span class="info-label">Category:</span>
                 <span class="info-value" th:text="${taiLieu.tenLoai}">Loại tài liệu</span>
               </div>
               <div class="info-item">
-                <span class="info-label">Lượt xem:</span>
+                <span class="info-label">View:</span>
                 <span class="info-value" th:text="${taiLieu.luotXem}">0</span>
               </div>
               <div class="info-item">
-                <span class="info-label">Đánh giá:</span>
+                <span class="info-label">Vote:</span>
                 <span class="info-value" th:text="${taiLieu.danhGia}">0</span>
               </div>
               <div class="info-item">
-                <span class="info-label">Bình luận:</span>
+                <span class="info-label">Comment:</span>
                 <span class="info-value" th:text="${taiLieu.soLuongBL}">0</span>
               </div>
             </div>
             
             <div class="sidebar-actions">
               <a th:href="@{'/documents/download/' + ${taiLieu.maTaiLieu}}" class="action-button download-btn">
-                <i class="fas fa-download"></i> Tải xuống
+                <i class="fas fa-download"></i> Download
               </a>
               <button class="action-button report-btn" id="report-document">
-                <i class="fas fa-flag"></i> Báo cáo
+                <i class="fas fa-flag"></i> Report
               </button>
               <button class="action-button" id="ai-chatbot-btn">
-                <i class="fas fa-robot"></i> Hỏi AI về tài liệu
+                <i class="fas fa-robot"></i> Ask AI
               </button>
               <!-- Nút sửa thông tin tài liệu -->
               <button type="button" class="action-button" id="edit-document-btn" style="background-color:#fbbf24; color:#1f2937;">
-                <i class="fas fa-edit"></i> Sửa thông tin
+                <i class="fas fa-edit"></i> Repair
               </button>
             </div>
             
@@ -75,7 +75,7 @@
           </div>
           <div class="sidebar-footer">
             <a th:href="@{/documents}" class="back-button">
-              <i class="fas fa-arrow-left"></i> Quay lại
+              <i class="fas fa-arrow-left"></i> Back
             </a>
           </div>
         </div>
@@ -119,7 +119,7 @@
                   <i class="fas fa-chevron-left"></i>
                 </button>
                 <div class="page-navigation">
-                  <span>Trang <input type="number" id="page-num" value="1" min="1"> / <span id="page-count">1</span></span>
+                  <span>Page <input type="number" id="page-num" value="1" min="1"> / <span id="page-count">1</span></span>
                 </div>
                 <button id="next-page" class="toolbar-btn" title="Trang sau">
                   <i class="fas fa-chevron-right"></i>
@@ -154,7 +154,7 @@
           
           <!-- Description Section -->
           <div class="document-section">
-            <h2 class="section-title">Mô tả</h2>
+            <h2 class="section-title">Describe</h2>
             <div class="document-description" th:text="${taiLieu.moTa}">
               Mô tả tài liệu sẽ hiển thị ở đây. Nội dung mô tả chi tiết về tài liệu giúp người đọc hiểu rõ hơn về nội dung.
             </div>
@@ -162,13 +162,13 @@
           
           <!-- Comment Section -->
           <div class="document-section">
-            <h2 class="section-title">Bình luận <span class="comment-count">(<span th:text="${taiLieu.soLuongBL}">0</span>)</span></h2>
+            <h2 class="section-title">Comment <span class="comment-count">(<span th:text="${taiLieu.soLuongBL}">0</span>)</span></h2>
             <div class="comment-form">
               <img class="comment-avatar" th:src="${sinhVien.hinhAnh}" 
                    onerror="this.src='/img/default-avatar.png'" alt="Your Avatar">
               <div class="comment-input-container">
-                <textarea id="comment-input" placeholder="Viết bình luận..."></textarea>
-                <button id="post-comment" class="comment-button" th:data-document-id="${taiLieu.maTaiLieu}">Đăng</button>
+                <textarea id="comment-input" placeholder="Write comment....."></textarea>
+                <button id="post-comment" class="comment-button" th:data-document-id="${taiLieu.maTaiLieu}">Post</button>
               </div>
             </div>
             
@@ -185,16 +185,16 @@
                     Nội dung bình luận sẽ hiển thị ở đây.
                   </div>
                   <div class="comment-actions">
-                    <button class="comment-reply-btn" th:data-comment-id="${comment.maBinhLuan}">Trả lời</button>
-                    <button class="comment-report-btn" th:data-comment-id="${comment.maBinhLuan}">Báo cáo</button>
+                    <button class="comment-reply-btn" th:data-comment-id="${comment.maBinhLuan}">Reply</button>
+                    <button class="comment-report-btn" th:data-comment-id="${comment.maBinhLuan}">Report</button>
                   </div>
                   
                   <!-- Reply Form (hidden by default) -->
                   <div class="reply-form" th:id="'reply-form-' + ${comment.maBinhLuan}" style="display: none;">
                     <div class="reply-input-container">
-                      <textarea class="reply-input" th:id="'reply-input-' + ${comment.maBinhLuan}" placeholder="Viết trả lời..."></textarea>
-                      <button class="reply-submit-btn" th:data-comment-id="${comment.maBinhLuan}">Đăng</button>
-                      <button class="reply-cancel-btn" th:data-comment-id="${comment.maBinhLuan}">Hủy</button>
+                      <textarea class="reply-input" th:id="'reply-input-' + ${comment.maBinhLuan}" placeholder="Reply..."></textarea>
+                      <button class="reply-submit-btn" th:data-comment-id="${comment.maBinhLuan}">Post</button>
+                      <button class="reply-cancel-btn" th:data-comment-id="${comment.maBinhLuan}">Cancel</button>
                     </div>
                   </div>
                   
