@@ -3,6 +3,7 @@ package com.chiasetailieu.chiasetailieuhoctapptit.service.VoteService;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,10 +108,10 @@ public class VoteService {
     
     // Class để trả về thông tin vote
     public static class VoteInfo {
-        private int displayScore;
-        private int upvoteCount;
-        private int downvoteCount;
-        private int userVote; // 1: upvote, -1: downvote, 0: chưa vote
+        private final int displayScore;
+        private final int upvoteCount;
+        private final int downvoteCount;
+        private final int userVote;
         
         public VoteInfo(int displayScore, int upvoteCount, int downvoteCount, int userVote) {
             this.displayScore = displayScore;
@@ -124,5 +125,8 @@ public class VoteService {
         public int getUpvoteCount() { return upvoteCount; }
         public int getDownvoteCount() { return downvoteCount; }
         public int getUserVote() { return userVote; }
+    }
+    public long countUpvotesOfSinhVien(@Param("maSinhVien") String maSV){
+        return  voteRepository.countUpvotesOfSinhVien(maSV);
     }
 } 
