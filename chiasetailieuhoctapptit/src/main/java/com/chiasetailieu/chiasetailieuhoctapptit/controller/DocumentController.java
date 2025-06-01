@@ -714,7 +714,7 @@ public class DocumentController {
             return "redirect:/documents/categories?error=error_loading_category";
         }
         
-        return "category-documents";
+        return "view-documents/category-documents";
     }
 
     @GetMapping("/edit/{id}")
