@@ -83,11 +83,11 @@
                                 <span class="stat-label">Uploads</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">0</span>
+                                <span class="stat-number" th:text="${voteCount != null ? voteCount : '0'}">0</span>
                                 <span class="stat-label">Upvotes</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">0</span>
+                                <span class="stat-number" th:text="${binhLuanCount != null ? binhLuanCount : '0'}">0</span>
                                 <span class="stat-label">Comments</span>
                             </div>
                         </div>
