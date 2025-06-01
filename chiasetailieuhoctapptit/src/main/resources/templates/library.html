@@ -279,19 +279,27 @@
                 <div class="library-header">
                     <h2 class="library-title">Courses Following <span class="library-count" th:text="${followedCourses != null ? '(' + followedCourses.size() + ' courses)' : '(0 courses)'}">(0 courses)</span></h2>
                 </div>
-                <div id="courses-following" class="document-grid">
-                    <div class="document-card" th:each="course : ${followedCourses != null ? followedCourses : {}}">
-                        <div class="course-content" th:data-course-id="${course != null ? course.maMon : ''}">
+                <!-- Nút Browse Courses căn giữa -->
+                <div style="margin-bottom: 18px; display: flex; justify-content: center;">
+                    <a href="/documents" class="btn btn-primary" style="background-color:#2e7d32;border-color:#2e7d32;color:#fff;min-width:180px;font-size:16px;font-weight:600;display:inline-block;text-align:center;">
+                        Browse Courses
+                    </a>
+                </div>
+                <div id="courses-following" class="courses-grid">
+                    <div class="course-item" th:each="course : ${followedCourses != null ? followedCourses : {}}" th:data-course-id="${course != null ? course.maMon : ''}">
+                        <div class="course-content">
                             <div class="course-icon">
                                 <i class="fas fa-book"></i>
                             </div>
                             <h3 class="course-name" th:text="${course != null && course.tenMon != null ? course.tenMon : 'Course Name'}">Course Name</h3>
                             <p class="course-doc-count" th:text="${course != null && course.taiLieu != null ? (course.taiLieu + ' documents') : '0 documents'}">0 documents</p>
-                            <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
-                            <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
-                            <button type="button" class="following-btn" th:attr="data-course-id=${course != null ? course.maMon : ''}">
-                                <i class="fas fa-check"></i> <span class="btn-text">Following</span>
-                            </button>
+                            <div class="course-actions-row">
+                                <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
+                                <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
+                                <button type="button" class="following-btn" th:attr="data-course-id=${course != null ? course.maMon : ''}">
+                                    <i class="fas fa-check"></i> <span class="btn-text">Following</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

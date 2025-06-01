@@ -1331,3 +1331,111 @@ color: #6b7280;
 .following-btn:hover {
     background-color: #dbeafe;
 }
+
+/* Courses grid */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.course-item {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.course-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.course-content {
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.course-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #e0f2fe;
+  color: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  font-size: 24px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.course-item:hover .course-icon {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.course-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px;
+}
+
+.course-doc-count {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 15px;
+}
+
+.course-actions-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.course-link {
+  padding: 6px 18px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #2563eb;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+.course-link:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+.following-btn {
+  margin: 0;
+  padding: 6px 18px;
+  border: none;
+  border-radius: 20px;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e0f2fe;
+  color: #2563eb;
+  transition: background 0.2s, color 0.2s;
+}
+.following-btn.unfollow-hover {
+  background-color: #ef4444;
+  color: #fff;
+}

@@ -615,3 +615,64 @@ color: #6b7280;
     border-radius: 50%;
     object-fit: cover;
 }
+.avatar-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 40px;
+    margin-bottom: 8px;
+}
+.avatar-wrapper .user-profile-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    height: 40px;
+}
+.avatar-wrapper .student-info-tooltip {
+    position: absolute;
+    left: 110%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-10px);
+    background: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 10;
+    min-width: 120px;
+    max-width: 220px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.avatar-wrapper .user-profile-link:hover .student-info-tooltip,
+.avatar-wrapper .user-profile-link:focus .student-info-tooltip {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    pointer-events: auto;
+}
+.avatar-wrapper .user-profile-link .username {
+    display: none !important;
+}
+.stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+.stat-card.impact-card,
+.impact-card,
+.stat-card-values.impact-values {
+    display: none !important;
+}

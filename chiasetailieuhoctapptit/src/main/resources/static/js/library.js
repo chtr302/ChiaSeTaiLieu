@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize filters for Saved Documents section
     initSavedDocumentsFilters();
-    
+
+    // Thay thế initFollowCourseButtons bằng logic giống document.js
+    initLibraryCourseFollowButtons();
 });
 
 // Check if navigation came from profile click
@@ -260,4 +262,82 @@ function initEmptyStateUploadButton() {
             modalUploadBtn.click();
         }
     });
+}
+
+// Nút follow/unfollow cho Library page
+function initLibraryCourseFollowButtons() {
+    // By Course section: follow -> ẩn course-item
+    document.querySelectorAll('.courses-grid .course-item').forEach(function(courseItem) {
+        const courseId = courseItem.getAttribute('data-course-id');
+        const followBtn = courseItem.querySelector('.follow-btn');
+        if (!courseId || !followBtn) return;
+
+        // Kiểm tra trạng thái theo dõi (ẩn nút nếu đã theo dõi)
+        fetch('/api/follow-course/is-following?maMon=' + encodeURIComponent(courseId))
+            .then(res => res.json())
+            .then(data => {
+                if (data.following) {
+                    courseItem.style.display = 'none';
+                } else {
+                    followBtn.style.display = '';
+                }
+            });
+
+        followBtn.onclick = function(e) {
+            e.stopPropagation();
+            fetch('/api/follow-course/follow?maMon=' + encodeURIComponent(courseId), {
+                method: 'POST',
+                headers: getCsrfHeaders()
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    courseItem.style.display = 'none';
+                    showNotification('Đã theo dõi môn học!', 'success');
+                } else {
+                    showNotification('Bạn đã theo dõi môn học này!', 'info');
+                }
+            });
+        };
+    });
+
+    // Courses Following section: unfollow -> ẩn course-item
+    document.querySelectorAll('#courses-following .course-item .following-btn').forEach(function(followingBtn) {
+        const courseItem = followingBtn.closest('.course-item');
+        const courseId = courseItem ? courseItem.getAttribute('data-course-id') : null;
+        if (!courseId) return;
+
+        followingBtn.addEventListener('mouseenter', function() {
+            this.querySelector('.btn-text').textContent = 'Unfollow';
+            this.classList.add('unfollow-hover');
+        });
+        followingBtn.addEventListener('mouseleave', function() {
+            this.querySelector('.btn-text').textContent = 'Following';
+            this.classList.remove('unfollow-hover');
+        });
+
+        followingBtn.onclick = function(e) {
+            e.stopPropagation();
+            fetch('/api/follow-course/unfollow?maMon=' + encodeURIComponent(courseId), {
+                method: 'POST',
+                headers: getCsrfHeaders()
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    courseItem.style.display = 'none';
+                    showNotification('Đã bỏ theo dõi môn học.', 'info');
+                }
+            });
+        };
+    });
+}
+
+function getCsrfHeaders() {
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+    if (csrfToken && csrfHeader) {
+        return { [csrfHeader]: csrfToken };
+    }
+    return {};
 }

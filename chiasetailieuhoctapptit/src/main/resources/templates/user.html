@@ -112,18 +112,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="stat-card impact-card">
-                        <div class="stat-card-header">
-                            <i class="fas fa-heart icon-impact"></i>
-                            <h3>Impact</h3>
-                        </div>
-                        <div class="stat-card-values impact-values">
-                            <div class="stat-item">
-                                <span class="stat-number" th:text="${studentsHelped}">0</span>
-                                <span class="stat-label">Students Helped</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
@@ -153,17 +141,37 @@
                 <div id="my-library-documents" class="document-grid">
                   <div class="document-card" th:each="doc : ${myUploads != null ? myUploads : {}}">
                     
-                    <!-- Student Avatar and Name -->
-                    <div th:if="${doc != null}" class="avatar-wrapper">
-                      <a th:if="${doc.maSinhVien != null}" th:href="@{'/library/' + ${doc.maSinhVien}}">
-                        <img th:if="${doc.hinhAnhSV != null}" th:src="${doc.hinhAnhSV}" alt="Student Avatar" class="student-avatar">
-                        <img th:if="${doc.hinhAnhSV == null}" src="/img/default-avatar.png" alt="Student Avatar" class="student-avatar">
-                        <div class="student-info-tooltip">
+                    <div th:if="${doc != null}" class="avatar-wrapper" style="position: relative;">
+                      <a th:if="${doc.maSinhVien != null}" th:href="@{'/user/' + ${doc.maSinhVien}}" class="user-profile-link" style="display: flex; align-items: center;">
+                        <img th:if="${doc.hinhAnhSV != null}" th:src="${doc.hinhAnhSV}" alt="Student Avatar" class="student-avatar avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                        <img th:if="${doc.hinhAnhSV == null}" src="/img/default-avatar.png" alt="Student Avatar" class="student-avatar avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                        <div class="student-info-tooltip" style="position:absolute;left:110%;top:50%;transform:translateY(-50%) translateX(-10px);background:#fff;padding:8px 16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.12);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s;">
                           <span th:text="${doc.tenSinhVien != null ? doc.tenSinhVien : 'Unknown Student'}">Student Name</span>
                         </div>
                       </a>
                     </div>
-                    
+                    <script th:inline="javascript">
+                      /*<![CDATA[*/
+                      document.addEventListener('DOMContentLoaded', function() {
+                        document.querySelectorAll('.avatar-wrapper .user-profile-link').forEach(function(link) {
+                          const tooltip = link.querySelector('.student-info-tooltip');
+                          if (!tooltip) return;
+                          function showTooltip() {
+                            tooltip.style.opacity = '1';
+                            tooltip.style.transform = 'translateY(-50%) translateX(0)';
+                          }
+                          function hideTooltip() {
+                            tooltip.style.opacity = '0';
+                            tooltip.style.transform = 'translateY(-50%) translateX(-10px)';
+                          }
+                          link.addEventListener('mouseenter', showTooltip);
+                          link.addEventListener('mouseleave', hideTooltip);
+                          link.addEventListener('focus', showTooltip);
+                          link.addEventListener('blur', hideTooltip);
+                        });
+                      });
+                      /*]]>*/
+                    </script>
                     <!-- Thumbnail -->
                     <img th:if="${doc != null && doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
                          alt="Document Preview" class="document-image">
