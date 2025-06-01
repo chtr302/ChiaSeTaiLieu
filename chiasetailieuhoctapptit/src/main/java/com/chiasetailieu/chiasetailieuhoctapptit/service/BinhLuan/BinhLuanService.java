@@ -24,4 +24,8 @@ public class BinhLuanService {
     public Optional<BinhLuan> getBinhLuanById(int id) {
         return binhLuanRepo.findById(id);
     }
+
+    public long countCommentsOfSinhVien(String maSV){
+        return  binhLuanRepo.countCommentsOfSinhVien(maSV);
+    }
 }
