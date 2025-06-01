@@ -14,19 +14,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.chiasetailieu.chiasetailieuhoctapptit.model.MonHocModel.FollowCourse;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.LoaiTaiLieuModel.LoaiTaiLieu;
+import com.chiasetailieu.chiasetailieuhoctapptit.model.MonHocModel.FollowCourse;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.MonHocModel.MonHoc;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel.SinhVien;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.TaiLieuModel.TaiLieuView;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.TheoDoi.Follow_VW;
-import com.chiasetailieu.chiasetailieuhoctapptit.service.MonHoc.FollowCourseService;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.BinhLuan.BinhLuanService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.LoaiTaiLieu.LoaiTaiLieuService;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.MonHoc.FollowCourseService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.MonHoc.MonHocService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVien.SinhVienService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu.LuuTaiLieuService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu.TaiLieuViewService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TheoDoi.Follow_vw_Service;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.VoteService.VoteService;
 
 @Controller
 @RequestMapping("/library")
@@ -46,6 +48,10 @@ public class LibraryController {
     private MonHocService monHocService;
     @Autowired
     private LoaiTaiLieuService loaiTaiLieuService;
+    @Autowired
+    private VoteService voteService;
+    @Autowired
+    private BinhLuanService binhLuanService;
 
     @GetMapping
     public String library(@AuthenticationPrincipal OidcUser principal, 
@@ -73,6 +79,11 @@ public class LibraryController {
             List<TaiLieuView> myUploads = taiLieuViewService.findByMaSinhVien(sinhVien.getMaSV());
             model.addAttribute("myUploads", myUploads);
             model.addAttribute("uploadCount", myUploads.size());
+
+            long voteCount = voteService.countUpvotesOfSinhVien(sinhVien.getMaSV());
+            model.addAttribute("voteCount", voteCount);
+            long binhLuanCount = binhLuanService.countCommentsOfSinhVien(sinhVien.getMaSV());
+            model.addAttribute("binhLuanCount", binhLuanCount);
             
             // Lấy danh sách môn học và loại tài liệu
             List<MonHoc> danhSachMonHoc = monHocService.getAllMonHoc();

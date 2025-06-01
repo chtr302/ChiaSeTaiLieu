@@ -19,11 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel.SinhVien;
+import com.chiasetailieu.chiasetailieuhoctapptit.model.TaiLieuModel.TaiLieuView;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.TheoDoi.Follow_VW;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.BinhLuan.BinhLuanService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVien.SinhVienService;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.TaiLieu.TaiLieuViewService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TheoDoi.FollowViewService;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TheoDoi.Follow_vw_Service;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.TheoDoi.TheoDoiService;
+import com.chiasetailieu.chiasetailieuhoctapptit.service.VoteService.VoteService;
 
 @Controller
 @RequestMapping("/user")
@@ -36,6 +40,12 @@ public class UserController {
     private TheoDoiService theoDoiService;
     @Autowired
     private FollowViewService followViewService;
+    @Autowired
+    private VoteService voteService;
+    @Autowired
+    private BinhLuanService binhLuanService;
+    @Autowired
+    private TaiLieuViewService taiLieuViewService;
 
     @GetMapping("/{id}")
     public String user(@PathVariable("id") String userId, Model model, @AuthenticationPrincipal OidcUser principal){
@@ -49,7 +59,6 @@ public class UserController {
 
             SinhVien profileSinhVien = sinhVienService.getSinhVienbyMaSinhVien(userId);
             model.addAttribute("profileUser", profileSinhVien);
-            System.out.println(profileSinhVien.getHinhAnh());
 
             boolean isFollowing = theoDoiService.isFollowings(maSV, userId);
             model.addAttribute("isFollowing", isFollowing);
@@ -59,6 +68,14 @@ public class UserController {
                 model.addAttribute("followerCount", follow_Stats.getFollower());
                 model.addAttribute("followingCount", follow_Stats.getFollowing());
             }
+            List<TaiLieuView> myUploads = taiLieuViewService.findByMaSinhVien(userId);
+            model.addAttribute("myUploads", myUploads);
+            model.addAttribute("uploadCount", myUploads.size());
+
+            long voteCount = voteService.countUpvotesOfSinhVien(userId);
+            model.addAttribute("voteCount", voteCount);
+            long binhLuanCount = binhLuanService.countCommentsOfSinhVien(userId);
+            model.addAttribute("binhLuanCount", binhLuanCount);
 
         } catch (Exception e){
             System.out.println("Co loi roi: " + e);
