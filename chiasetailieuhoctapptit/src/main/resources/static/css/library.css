@@ -655,11 +655,6 @@ nav {
 }
 
 
-/* === Documents Section === */
-.documents-section {
-    /* Inherits .card and .tab-content styles */
-}
-
 .library-header {
     margin-bottom: 1.5rem;
     display: flex;
@@ -757,7 +752,6 @@ margin: 0 0 8px 0;
 line-height: 1.3;
 height: 42px;
 display: -webkit-box;
--webkit-line-clamp: 2;
 -webkit-box-orient: vertical;
 overflow: hidden;
 text-overflow: ellipsis;
