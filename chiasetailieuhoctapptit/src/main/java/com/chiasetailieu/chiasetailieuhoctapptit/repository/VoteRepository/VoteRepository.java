@@ -25,4 +25,7 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     
     // Xóa vote của user cho tài liệu
     void deleteByMaTaiLieuAndMaSinhVien(Long maTaiLieu, String maSinhVien);
+
+    @Query("SELECT COUNT(v) FROM Vote v WHERE v.maSinhVien = :maSinhVien AND v.loaiVote = 1")
+    long countUpvotesOfSinhVien(@Param("maSinhVien") String maSV);
 } 
