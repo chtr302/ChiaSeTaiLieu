@@ -23,15 +23,6 @@
           <div class="filter-section">
             <h2 class="page-title">All Documents</h2>
             <div class="filter-container">
-              <!-- <div class="filter-group">
-                <label for="semester-filter">Semester:</label>
-                <select id="semester-filter" class="filter-select">
-                  <option value="">All Semesters</option>
-                  <option value="HK1-2023-2024">HK1 (2023-2024)</option>
-                  <option value="HK2-2023-2024">HK2 (2023-2024)</option>
-                </select>
-              </div> -->
-              
               <div class="filter-group">
                 <label for="type-filter">Type:</label>
                 <select id="type-filter" class="filter-select">
@@ -105,8 +96,6 @@
                       </p>
                     </div>
                     
-                    
-              
                     <!-- Stats Row -->
                     <div class="document-stats-row">
                       <!-- Vote Section -->
@@ -121,8 +110,8 @@
               
                     <!-- Action Buttons -->
                     <div class="document-buttons">
-                      <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">Xem</a>
-                      <button th:if="${doc != null && doc.maTaiLieu != null}" th:data-id="${doc.maTaiLieu}" class="save-btn">Lưu</button>
+                      <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">View</a>
+                      <button th:if="${doc != null && doc.maTaiLieu != null}" th:data-id="${doc.maTaiLieu}" class="save-btn">Save</button>
                     </div>
                 </div>
               </div>
