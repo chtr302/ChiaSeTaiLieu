@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head('Studucu - Documents')"></head>
-<meta name="_csrf" th:content="${_csrf.token}"/>
-<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<head th:replace="~{fragments/head :: head('Studucu - Documents')}"></head>
 <body class="documents-page">
   <!-- Thêm div hiển thị thông báo từ server -->
   <div th:if="${successMessage != null}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
@@ -12,52 +10,7 @@
     <section class="documents-section">
       <div class="documents-container">
         <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-          <div class="sidebar-padding"></div>
-          <div class="sidebar-content">
-            <div class="sidebar-header">
-              <div class="user-profile" id="user-profile">
-                <a th:href="@{/library}" class="user-profile-link">
-                  <img class="avatar" th:src="${sinhVien != null ? sinhVien.hinhAnh : ''}" th:alt="${sinhVien != null ? sinhVien.hoVaTen : 'User'}" 
-                       onerror="this.src='/img/default-avatar.png'">
-                  <div class="user-info">
-                    <p class="username" th:text="${sinhVien != null ? sinhVien.hoVaTen : 'User'}">Username</p>
-                  </div>
-                </a>
-              </div>
-
-              <a href="/upload" id="upload-link" class="btn btn-primary" style="padding:8px 18px; border-radius:6px; background:#2563eb; color:#fff; text-decoration:none; font-weight:600; margin-top:12px; display:block; text-align:center;">
-                <i class="fas fa-upload"></i> Upload Documents
-              </a>
-            </div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-item" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() == '/index' ? 'active' : ''}">
-                <a th:href="@{/index}">
-                    <i class="fas fa-home"></i> Home
-                </a>
-              </li>
-              <li class="sidebar-item active" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() != null && #httpServletRequest.getRequestURI().contains('/documents') ? 'active' : ''}">
-                <a th:href="@{/documents}">
-                  <i class="fas fa-book"></i> Documents
-                </a>
-              </li>
-              <li class="sidebar-item" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() != null && #httpServletRequest.getRequestURI().contains('/library') ? 'active' : ''}">
-                <a th:href="@{/library}">
-                  <i class="fas fa-folder-open"></i> Library
-                </a>
-              </li>
-              <li class="sidebar-item dropdown" id="recents-dropdown">
-                <a href="javascript:void(0);">
-                  <i class="fas fa-clock"></i> Recents
-                  <i class="fas fa-chevron-down dropdown-icon"></i>
-                </a>
-                <div class="dropdown-content" id="recents-dropdown-content">
-                  <!-- Will be populated with JavaScript -->
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <div th:replace="~{fragments/sidebar :: sidebar(${sinhVien}, 'documents')}"></div>
       
         <!-- Main Content -->
         <div class="main-content">
@@ -239,7 +192,9 @@
   <link th:href="@{/css/documents.css}" rel="stylesheet">
   <link th:href="@{/css/document-save.css}" rel="stylesheet">
   <link th:href="@{/css/avatar-tooltip.css}" rel="stylesheet">
+  <link th:href="@{/css/recents-history.css}" rel="stylesheet">
   <script th:src="@{/js/document.js}"></script>
   <script th:src="@{/js/document-save.js}"></script>
-</body></body>
+  <script th:src="@{/js/recents-history.js}"></script>
+</body>
 </html>

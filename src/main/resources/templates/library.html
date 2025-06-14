@@ -5,51 +5,7 @@
     <div class="nav" th:replace="~{fragments/navbar :: navbar(sinhVien=${sinhVien != null ? sinhVien : null})}"></div>
     <div class="main">
         <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-          <div class="sidebar-padding"></div>
-          <div class="sidebar-content">
-            <div class="sidebar-header">
-              <div class="user-profile" id="user-profile">
-                <a th:href="@{/library}" class="user-profile-link">
-                  <img class="avatar" th:src="${sinhVien != null ? sinhVien.hinhAnh : ''}" th:alt="${sinhVien != null ? sinhVien.hoVaTen : 'User'}" 
-                       onerror="this.src='/img/default-avatar.png'">
-                  <div class="user-info">
-                    <p class="username" th:text="${sinhVien != null ? sinhVien.hoVaTen : 'User'}">Username</p>
-                  </div>
-                </a>
-              </div>
-              <button id="upload-btn" class="upload-button" onclick="window.location.href='/upload'">
-                <i class="fas fa-cloud-upload-alt"></i> Upload Documents
-              </button>
-            </div>
-            <ul class="sidebar-menu">
-              <li class="sidebar-item" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() == '/index' ? 'active' : ''}">
-                <a th:href="@{/index}">
-                    <i class="fas fa-home"></i> Home
-                </a>
-              </li>
-              <li class="sidebar-item" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() != null && #httpServletRequest.getRequestURI().contains('/courses') ? 'active' : ''}">
-                <a th:href="@{/documents}">
-                  <i class="fas fa-book"></i> Documents
-                </a>
-              </li>
-              <li class="sidebar-item active" th:classappend="${#httpServletRequest != null && #httpServletRequest.getRequestURI() != null && #httpServletRequest.getRequestURI().contains('/library') ? 'active' : ''}">
-                <a th:href="@{/library}">
-                  <i class="fas fa-folder-open"></i> Library
-                </a>
-              </li>
-              <li class="sidebar-item dropdown" id="recents-dropdown">
-                <a href="javascript:void(0);">
-                  <i class="fas fa-clock"></i> Recents
-                  <i class="fas fa-chevron-down dropdown-icon"></i>
-                </a>
-                <div class="dropdown-content" id="recents-dropdown-content">
-                  <!-- Will be populated with JavaScript -->
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <div th:replace="~{fragments/sidebar :: sidebar(${sinhVien}, 'library')}"></div>
 
         <main class="main-content">
             <section class="user-header-section">
@@ -83,11 +39,11 @@
                                 <span class="stat-label">Uploads</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">0</span>
+                                <span class="stat-number" th:text="${voteCount != null ? voteCount : '0'}">0</span>
                                 <span class="stat-label">Upvotes</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-number">0</span>
+                                <span class="stat-number" th:text="${binhLuanCount != null ? binhLuanCount : '0'}">0</span>
                                 <span class="stat-label">Comments</span>
                             </div>
                         </div>
@@ -183,8 +139,37 @@
                   <p>You haven't uploaded any documents yet.</p>
                   <button id="upload-btn-empty" class="btn btn-primary" onclick="window.location.href='/upload'">Upload Documents</button>
                 </div>
-                <div class="load-more-container" th:if="${myUploads != null && myUploads.size() > 8}">
-                    <button class="btn btn-secondary load-more-my-library">Load more</button>
+                
+                <!-- Pagination for My Library -->
+                <div class="pagination" th:if="${myLibraryTotalPages != null && myLibraryTotalPages > 1}">
+                  <a th:if="${myLibraryCurrentPage > 1}" 
+                     th:href="@{/library(myLibrarySort=${myLibrarySort}, myLibraryPage=${myLibraryCurrentPage - 1}, savedSort=${savedSort})}" 
+                     class="page-btn prev">
+                    <i class="fas fa-chevron-left"></i>
+                  </a>
+                  <span th:unless="${myLibraryCurrentPage > 1}" class="page-btn prev disabled">
+                    <i class="fas fa-chevron-left"></i>
+                  </span>
+                  
+                  <div class="page-numbers">
+                    <!-- Simplified pagination -->
+                    <span th:each="pageNumber : ${#numbers.sequence(1, myLibraryTotalPages)}">
+                      <a th:if="${pageNumber != myLibraryCurrentPage}"
+                         th:href="@{/library(myLibrarySort=${myLibrarySort}, myLibraryPage=${pageNumber}, savedSort=${savedSort})}" 
+                         class="page-number" th:text="${pageNumber}"></a>
+                      <span th:if="${pageNumber == myLibraryCurrentPage}" 
+                            class="page-number active" th:text="${pageNumber}"></span>
+                    </span>
+                  </div>
+                  
+                  <a th:if="${myLibraryCurrentPage < myLibraryTotalPages}" 
+                     th:href="@{/library(myLibrarySort=${myLibrarySort}, myLibraryPage=${myLibraryCurrentPage + 1}, savedSort=${savedSort})}" 
+                     class="page-btn next">
+                    <i class="fas fa-chevron-right"></i>
+                  </a>
+                  <span th:unless="${myLibraryCurrentPage < myLibraryTotalPages}" class="page-btn next disabled">
+                    <i class="fas fa-chevron-right"></i>
+                  </span>
                 </div>
             </section>
             
@@ -256,7 +241,13 @@
                         <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">View</a>
                         <a th:if="${doc == null || doc.maTaiLieu == null}" href="#" class="view-btn">View</a>
 
-                        <button th:if="${sinhVien == null || doc == null || sinhVien.maSV != doc.maSinhVien}" 
+                        <!-- Show Repair button if document belongs to current user -->
+                        <button th:if="${sinhVien != null && doc != null && sinhVien.maSV.toLowerCase().equals(doc.maSinhVien.toLowerCase())}"
+                                th:attr="data-id=${doc.maTaiLieu}" 
+                                class="btn-edit repair-btn">Repair</button>
+                        
+                        <!-- Show Save button if document doesn't belong to current user -->
+                        <button th:if="${sinhVien != null && doc != null && !sinhVien.maSV.toLowerCase().equals(doc.maSinhVien.toLowerCase())}" 
                                 th:attr="data-id=${doc != null ? doc.maTaiLieu : ''}" 
                                 class="save-btn">Save</button>
                       </div>
@@ -279,19 +270,27 @@
                 <div class="library-header">
                     <h2 class="library-title">Courses Following <span class="library-count" th:text="${followedCourses != null ? '(' + followedCourses.size() + ' courses)' : '(0 courses)'}">(0 courses)</span></h2>
                 </div>
-                <div id="courses-following" class="document-grid">
-                    <div class="document-card" th:each="course : ${followedCourses != null ? followedCourses : {}}">
-                        <div class="course-content" th:data-course-id="${course != null ? course.maMon : ''}">
+                <!-- Nút Browse Courses căn giữa -->
+                <div style="margin-bottom: 18px; display: flex; justify-content: center;">
+                    <a href="/documents" class="btn btn-primary" style="background-color:#2e7d32;border-color:#2e7d32;color:#fff;min-width:180px;font-size:16px;font-weight:600;display:inline-block;text-align:center;">
+                        Browse Courses
+                    </a>
+                </div>
+                <div id="courses-following" class="courses-grid">
+                    <div class="course-item" th:each="course : ${followedCourses != null ? followedCourses : {}}" th:data-course-id="${course != null ? course.maMon : ''}">
+                        <div class="course-content">
                             <div class="course-icon">
                                 <i class="fas fa-book"></i>
                             </div>
                             <h3 class="course-name" th:text="${course != null && course.tenMon != null ? course.tenMon : 'Course Name'}">Course Name</h3>
                             <p class="course-doc-count" th:text="${course != null && course.taiLieu != null ? (course.taiLieu + ' documents') : '0 documents'}">0 documents</p>
-                            <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
-                            <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
-                            <button type="button" class="following-btn" th:attr="data-course-id=${course != null ? course.maMon : ''}">
-                                <i class="fas fa-check"></i> <span class="btn-text">Following</span>
-                            </button>
+                            <div class="course-actions-row">
+                                <a th:if="${course != null && course.maMon != null}" th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
+                                <a th:if="${course == null || course.maMon == null}" href="#" class="course-link">View Documents</a>
+                                <button type="button" class="following-btn" th:attr="data-course-id=${course != null ? course.maMon : ''}">
+                                    <i class="fas fa-check"></i> <span class="btn-text">Following</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -304,11 +303,60 @@
         </main>
     </div>
     
+    <!-- Modal Sửa Thông Tin Tài Liệu -->
+    <div id="edit-document-modal" class="modal-overlay">
+        <div class="modal-container" style="max-width:600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Sửa thông tin tài liệu</h3>
+                <button id="close-edit-document-modal" class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-document-form" onsubmit="return false;">
+                    <fieldset style="margin-bottom:22px; border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
+                        <legend style="font-weight:600; color:#2563eb;">Thông tin tài liệu</legend>
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label>Title <span class="required">*</span></label>
+                                <input type="text" id="edit-tieuDe" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Category <span class="required">*</span></label>
+                                <select id="edit-maLoai" class="form-control" required>
+                                    <option value="">Select a category</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Course <span class="required">*</span></label>
+                                <select id="edit-maMonHoc" class="form-control" required>
+                                    <option value="">Select a course</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Description <span class="required">*</span></label>
+                                <textarea id="edit-moTa" class="form-control" rows="4" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Tags</label>
+                                <input type="text" id="edit-tags" class="form-control" placeholder="Nhập các tag, cách nhau bởi dấu phẩy">
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" id="cancel-edit-document">Hủy</button>
+                        <button type="submit" class="btn-report" id="save-edit-document"><i class="fas fa-save"></i> Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
     <div th:replace="~{fragments/scripts :: scripts}"></div>
     <link th:href="@{/css/library.css}" rel="stylesheet">
     <link th:href="@{/css/document-save.css}" rel="stylesheet">
     <link th:href="@{/css/avatar-tooltip.css}" rel="stylesheet">
+    <link th:href="@{/css/recents-history.css}" rel="stylesheet">
     <script th:src="@{/js/library.js}"></script>
     <script th:src="@{/js/document-save.js}"></script>
+    <script th:src="@{/js/recents-history.js}"></script>
 </body>
 </html>
