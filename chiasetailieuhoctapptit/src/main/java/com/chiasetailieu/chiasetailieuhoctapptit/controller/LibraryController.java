@@ -99,8 +99,6 @@ public class LibraryController {
             // Ghi nhớ tùy chọn sắp xếp
             model.addAttribute("myLibrarySort", myLibrarySort);
             model.addAttribute("savedSort", savedSort);
-            
-            // Get followed courses
             List<FollowCourse> follows = followCourseService.getFollowedCourses(sinhVien.getMaSV());
             List<MonHoc> followedCourses = follows.stream()
                 .map((FollowCourse f) -> {
@@ -118,12 +116,6 @@ public class LibraryController {
         return "library";
     }
     
-    /**
-     * Lấy danh sách tài liệu đã lưu theo tiêu chí sắp xếp
-     * @param maSinhVien
-     * @param sortOption
-     * @return
-     */
     private List<TaiLieuView> getSavedDocumentsSorted(String maSinhVien, String sortOption) {
         switch (sortOption) {
             case "most-viewed":
@@ -139,10 +131,7 @@ public class LibraryController {
                 return luuTaiLieuService.getSavedDocumentsByUserOrderByNewest(maSinhVien);
         }
     }
-    
-    /**
-     * API để lấy danh sách tài liệu đã đăng theo tiêu chí sắp xếp
-     */
+
     @GetMapping("/my-uploads")
     @ResponseBody
     public List<TaiLieuView> getMyUploads(@AuthenticationPrincipal OidcUser principal,
