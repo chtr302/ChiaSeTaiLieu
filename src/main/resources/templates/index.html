@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head('Document sharing platform of the Posts and Telecommunications Institute of Technology - Home')"></head>
+<link th:href="@{/css/index.css}" rel="stylesheet">
+<link th:href="@{/css/chatbot.css}" rel="stylesheet">
+
+<body class="index-page">
+  <div th:replace="fragments/navbar-index :: navbar-index(sinhVien=${sinhVien})"></div>
+
+  <main class="main">
+    <section class="gradient-bg">
+      <div class="hero-container">
+        <h2 class="hero-title">Document sharing platform of the<br>Posts and Telecommunications Institute of Technology</h2>
+        <div th:if="${sinhVien != null}" class="welcome-message">
+          <p>Xin chào <span th:text="${sinhVien.hoVaTen}">Guest</span>!</p>
+        </div>
+        <div class="search-container">
+          <input type="text" placeholder="Tìm tài liệu..." class="search-input" id="searchInput" autocomplete="off">
+          <button class="search-button">
+            <i class="fas fa-search"></i>
+          </button>
+          <div id="suggestionBox" class="suggestion-box" style="display:none;"></div>
+        </div>
+
+        <div class="categories-container">
+          <!-- Hiển thị top 5 môn học có nhiều tài liệu nhất -->
+          <th:block th:if="${Top5MonHoc != null and !Top5MonHoc.isEmpty()}">
+            <a th:each="monhoc, iterStat : ${Top5MonHoc}" 
+               th:href="@{'/documents/course/' + ${monhoc.maMon}}" 
+               th:text="${monhoc.tenMon}"
+               th:title="${monhoc.tenMon} + ' - ' + ${monhoc.taiLieu} + ' tài liệu'"
+               th:classappend="${iterStat.index == 0} ? 'category-blue' : (${iterStat.index == 1} ? 'category-green' : (${iterStat.index == 2} ? 'category-purple' : (${iterStat.index == 3} ? 'category-yellow' : 'category-red')))"
+               class="category-tag">
+            </a>
+          </th:block>
+          
+          <!-- Fallback nếu không có dữ liệu -->
+          <th:block th:if="${Top5MonHoc == null or Top5MonHoc.isEmpty()}">
+            <a href="#" class="category-tag category-blue">Lập trình web</a>
+            <a href="#" class="category-tag category-green">Hệ quản trị</a>
+            <a href="#" class="category-tag category-purple">Cơ sở dữ liệu</a>
+            <a href="#" class="category-tag category-yellow">Triết học Mác-Lê nin</a>
+            <a href="#" class="category-tag category-red">Toán rời rạc</a>
+          </th:block>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <script th:inline="javascript">
+    window.allDocuments = /*[[${Documents}]]*/ [];
+
+    window.chatbotConfig = {
+        userId: /*[[${sinhVien?.maSV}]]*/ null,
+        userName: /*[[${sinhVien?.hoVaTen}]]*/ null,
+        userAvatar: /*[[${sinhVien?.hinhAnh}]]*/ null,
+        isLoggedIn: /*[[${sinhVien != null}]]*/ false
+    };
+  </script>
+  <script th:src="@{/js/index.js}" th:inline="javascript"></script>
+  <div th:replace="~{fragments/chatbot :: chatbot(
+    chatType='search', 
+    documentText='', 
+    documentTitle=''
+  )}"></div>
+
+</body>
+</html>

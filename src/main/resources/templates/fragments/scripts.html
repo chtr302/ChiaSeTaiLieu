@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="scripts">
+        <script th:src="@{/js/main.js}"></script>
+        <script th:src="@{/js/chatbot.js}"></script>
+        <script th:src="@{/js/vote-system.js}"></script>
+        <link th:href="@{/css/main.css}" rel="stylesheet">
+        <link th:href="@{/css/vote-system.css}" rel="stylesheet">
+    </div>
+</body>
+</html>

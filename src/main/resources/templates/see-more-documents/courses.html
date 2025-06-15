@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('Studucu - Courses')"></head>
+<body class="documents-page page-courses">
+  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
+  <main class="main">
+    <section class="documents-section">
+      <div class="documents-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar(${sinhVien}, 'courses')}"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-header courses-header">
+            <!-- Header with title and filter -->
+            <div class="header-container">
+              <h2 class="page-title">All Courses</h2>
+              <!-- Filter Section -->
+              <div class="filter-section">
+                <div class="filter-group">
+                  <label for="sort-filter">Sort By:</label>
+                  <select id="sort-filter" class="filter-select">
+                    <option value="documents" th:selected="${selectedSort == 'documents'}">Most Documents</option>
+                    <option value="documents-asc" th:selected="${selectedSort == 'documents-asc'}">Fewest Documents</option>
+                    <option value="latest" th:selected="${selectedSort == 'latest'}">Latest Documents</option>
+                    <option value="oldest" th:selected="${selectedSort == 'oldest'}">Oldest Documents</option>
+                    <option value="name" th:selected="${selectedSort == 'name'}">Name A-Z</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Container -->
+          <div class="content-container-courses">
+            <div class="courses-grid-full">
+              <div th:each="course : ${danhSachMonHoc}" class="course-item" th:data-course-id="${course.maMon}">
+                <div class="course-content">
+                  <div class="course-icon">
+                    <i class="fas fa-book"></i>
+                  </div>
+                  <h3 class="course-name" th:text="${course.tenMon}">Course Name</h3>
+                  <p class="course-doc-count" th:text="${course.taiLieu} + ' documents'">10 documents</p>
+                  <a th:href="@{'/documents/course/' + ${course.maMon}}" class="course-link">View Documents</a>
+                  <!-- Follow/Following buttons -->
+                  <button type="button" class="follow-btn" style="display:none;">
+                    <i class="fas fa-plus"></i>
+                    <span class="btn-text">Follow</span>
+                  </button>
+                  <button type="button" class="following-btn" style="display:none;">
+                    <i class="fas fa-check"></i>
+                    <span class="btn-text">Following</span>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Empty state -->
+              <div th:if="${#lists.isEmpty(danhSachMonHoc)}" class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-book"></i>
+                </div>
+                <h3 class="empty-title">No courses found</h3>
+                <p class="empty-message">There are no courses available yet.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <link th:href="@{/css/documents.css}" rel="stylesheet">
+  <link th:href="@{/css/recents-history.css}" rel="stylesheet">
+  <script th:src="@{/js/document.js}"></script>
+  <script th:src="@{/js/recents-history.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Apply filter on select change (auto-apply)
+      const sortSelect = document.getElementById('sort-filter');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+          const sortFilter = this.value;
+          
+          let newUrl = '/documents/courses';
+          if (sortFilter && sortFilter !== 'documents') {
+            newUrl += `?sort=${encodeURIComponent(sortFilter)}`;
+          }
+          
+          window.location.href = newUrl;
+        });
+      }
+    });
+  </script>
+</body>
+</html>

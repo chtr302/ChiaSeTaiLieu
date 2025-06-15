@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('Studucu - Course Documents')"></head>
+<body class="documents-page page-course-documents">
+  <!-- Thêm div hiển thị thông báo từ server -->
+  <div th:if="${successMessage}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>  
+  <div th:replace="fragments/navbar :: navbar(sinhVien=${sinhVien})"></div>
+  <main class="main">
+    <section class="documents-section">
+      <div class="documents-container">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar(${sinhVien}, 'course-documents')}"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-header">
+            <div class="search-area">
+              <button id="menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Course Header Section -->
+          <div class="course-header-section">
+            <div class="breadcrumb">
+              <a th:href="@{/documents}">Documents</a> &gt; 
+              <a th:href="@{/documents/courses}">Courses</a> &gt; 
+              <span th:text="${course.tenMon}">Cơ Sở Dữ Liệu</span>
+            </div>
+            <div class="course-header-content">
+              <div class="course-icon large">
+                <i class="fas fa-book"></i>
+              </div>
+              <div class="course-info">
+                <h1 class="course-title" th:text="${course.tenMon}">Cơ Sở Dữ Liệu</h1>
+                <div class="course-details">
+                  <span class="document-count">
+                    <i class="fas fa-file-alt"></i> <span th:text="${course.taiLieu + ' documents'}">278 documents</span>
+                  </span>
+                </div>
+              </div>
+              <div class="course-actions">
+                <div class="course-follow-wrapper" th:data-course-id="${course.maMon}">
+                  <button class="follow-btn" th:style="${isFollowing ? 'display: none;' : 'display: flex;'}">
+                    <i class="fas fa-plus"></i> <span class="btn-text">Follow</span>
+                  </button>
+                  <button class="following-btn" th:style="${isFollowing ? 'display: flex;' : 'display: none;'}">
+                    <i class="fas fa-check"></i> <span class="btn-text">Following</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Filter Section -->
+          <div class="filter-section">
+            <div class="filter-container">
+              <div class="filter-group">
+                <label for="type-filter">Type:</label>
+                <select id="type-filter" class="filter-select">
+                  <option value="">All Types</option>
+                  <option th:each="loai : ${loaiTaiLieu}" 
+                          th:value="${loai.tenLoai}" 
+                          th:text="${loai.tenLoai}">Document Type</option>
+                </select>
+              </div>
+              
+              <div class="filter-group">
+                <label for="sort-filter">Sort By:</label>
+                <select id="sort-filter" class="filter-select">
+                  <option value="newest">Newest</option>
+                  <option value="views">Most Viewed</option>
+                  <option value="rating">Highest Rated</option>
+                </select>
+              </div>
+              
+              <div class="filter-actions">
+                <button id="reset-filter" class="reset-filter-btn">Reset</button>
+                <button id="apply-filter" class="apply-filter-btn">Apply</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Content Container -->
+          <div class="content-container">
+            <!-- No Documents Message -->
+            <div th:if="${Documents != null && #lists.isEmpty(Documents)}" class="no-documents">
+              <i class="fas fa-file-alt"></i>
+              <p>No documents found for this course</p>
+            </div>
+              <!-- Document Card -->
+              <div class="document-grid">
+                <div class="document-card" th:each="doc, docStat : ${Documents}" th:if="${docStat.index < 16}">
+                  
+                  <!-- Student Avatar and Name -->
+                  <div th:if="${doc != null}" class="avatar-wrapper">
+                    <a th:if="${doc.maSinhVien != null}" th:href="@{'/library/' + ${doc.maSinhVien}}">
+                      <img th:if="${doc.hinhAnhSV != null}" th:src="${doc.hinhAnhSV}" alt="Student Avatar" class="student-avatar">
+                      <img th:if="${doc.hinhAnhSV == null}" src="/img/default-avatar.png" alt="Student Avatar" class="student-avatar">
+                      <div class="student-info-tooltip">
+                        <span th:text="${doc.tenSinhVien != null ? doc.tenSinhVien : 'Unknown Student'}">Student Name</span>
+                      </div>
+                    </a>
+                  </div>
+                  
+                  <!-- Thumbnail -->
+                  <img th:if="${doc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${doc.thumbnail}}" 
+                       alt="Document Preview" class="document-image">
+                  <img th:if="${doc.thumbnail == null}" src="/img/default-document.png" 
+                       alt="Document Preview" class="document-image">
+              
+                  <!-- Details -->
+                  <div class="document-details">
+                    <p class="document-title" th:text="${doc.tieuDe}">Document Title</p>
+                    <div class="document-category">
+                      <p>
+                        <i class="fas fa-book"></i>
+                        <span th:text="${doc.tenMon}">Course</span>
+                      </p>
+                      <p>
+                        <i class="fas fa-folder"></i>
+                        <span th:text="${doc.tenLoai}">Category</span>
+                      </p>
+                    </div>
+                    
+                    
+              
+                    <!-- Stats Row -->
+                    <div class="document-stats-row">
+                      <!-- Vote Section -->
+                      <div class="vote-oval">
+                        <button class="upvote-btn"><i class="fas fa-thumbs-up"></i></button>
+                        <span class="vote-count" th:text="${doc != null && doc.danhGia != null ? doc.danhGia : '0'}">0</span>
+                        <button class="downvote-btn"><i class="fas fa-thumbs-down"></i></button>
+                      </div>
+              
+                      <!-- Views & Comments -->
+                      <div class="view-comment-group">
+                        <span class="views"><i class="fas fa-eye"></i> <span th:text="${doc != null && doc.luotXem != null ? doc.luotXem : '0'}">0</span></span>
+                        <span class="comments"><i class="fas fa-comment"></i> <span th:text="${doc != null && doc.soLuongBL != null ? doc.soLuongBL : '0'}">0</span></span>
+                      </div>
+                    </div>
+              
+                  <!-- Action Buttons -->
+                  <div class="document-buttons">
+                    <a th:if="${doc != null && doc.maTaiLieu != null}" th:href="@{'/documents/detail/' + ${doc.maTaiLieu}}" class="view-btn">View</a>
+                    <button th:if="${doc != null && doc.maTaiLieu != null}" th:data-id="${doc.maTaiLieu}" class="save-btn">Save</button>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" th:if="${totalPages != null && totalPages > 0}">
+              <a th:if="${currentPage > 1}" 
+                 th:href="@{/documents/course/{courseId}(courseId=${course.maMon}, page=${currentPage - 1})}" 
+                 class="page-btn prev">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+              <span th:unless="${currentPage > 1}" class="page-btn prev disabled">
+                <i class="fas fa-chevron-left"></i>
+              </span>
+              
+              <div class="page-numbers">
+                <!-- Simplified pagination -->
+                <span th:each="pageNumber : ${#numbers.sequence(1, totalPages)}">
+                  <a th:if="${pageNumber != currentPage}"
+                     th:href="@{/documents/course/{courseId}(courseId=${course.maMon}, page=${pageNumber})}" 
+                     class="page-number" th:text="${pageNumber}"></a>
+                  <span th:if="${pageNumber == currentPage}" 
+                        class="page-number active" th:text="${pageNumber}"></span>
+                </span>
+              </div>
+              
+              <a th:if="${currentPage < totalPages}" 
+                 th:href="@{/documents/course/{courseId}(courseId=${course.maMon}, page=${currentPage + 1})}" 
+                 class="page-btn next">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+              <span th:unless="${currentPage < totalPages}" class="page-btn next disabled">
+                <i class="fas fa-chevron-right"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <link th:href="@{/css/documents.css}" rel="stylesheet">
+  <link th:href="@{/css/document-save.css}" rel="stylesheet">
+  <link th:href="@{/css/avatar-tooltip.css}" rel="stylesheet">
+  <link th:href="@{/css/recents-history.css}" rel="stylesheet">
+  <script th:src="@{/js/document.js}"></script>
+  <script th:src="@{/js/document-save.js}"></script>
+  <script th:src="@{/js/recents-history.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize follow functionality for course header
+      initCourseFollowForHeader();
+      
+      // Filter functionality
+      const applyFilterBtn = document.getElementById('apply-filter');
+      if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', function() {
+          const typeFilter = document.getElementById('type-filter').value;
+          const sortFilter = document.getElementById('sort-filter').value;
+          
+          const currentUrl = new URL(window.location.href);
+          const courseId = currentUrl.pathname.split('/').pop();
+          
+          let newUrl = `/documents/course/${courseId}?page=1`;
+          
+          if (typeFilter) {
+            newUrl += `&type=${encodeURIComponent(typeFilter)}`;
+          }
+          
+          if (sortFilter) {
+            newUrl += `&sort=${encodeURIComponent(sortFilter)}`;
+          }
+          
+          window.location.href = newUrl;
+        });
+      }
+      
+      // Reset filter
+      const resetFilterBtn = document.getElementById('reset-filter');
+      if (resetFilterBtn) {
+        resetFilterBtn.addEventListener('click', function() {
+          const currentUrl = new URL(window.location.href);
+          const courseId = currentUrl.pathname.split('/').pop();
+          window.location.href = `/documents/course/${courseId}`;
+        });
+      }
+    });
+
+    // Initialize follow functionality for course header
+    function initCourseFollowForHeader() {
+      const courseWrapper = document.querySelector('.course-follow-wrapper');
+      if (!courseWrapper) return;
+      
+      const courseId = courseWrapper.getAttribute('data-course-id');
+      const followBtn = courseWrapper.querySelector('.follow-btn');
+      const followingBtn = courseWrapper.querySelector('.following-btn');
+      
+      if (!courseId || !followBtn || !followingBtn) return;
+
+      console.log('Setting up follow functionality for course:', courseId);
+
+      // Set up event handlers
+      setFollowBtnBehavior(followBtn, followingBtn, courseId);
+      setFollowingBtnBehavior(followBtn, followingBtn, courseId);
+    }
+
+    // Helper: set behavior for follow button
+    function setFollowBtnBehavior(followBtn, followingBtn, courseId) {
+      followBtn.onclick = function(e) {
+        e.stopPropagation();
+        // Create and submit form for following course
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/follow-course/follow';
+        form.style.display = 'none';
+        
+        const maMon = document.createElement('input');
+        maMon.type = 'hidden';
+        maMon.name = 'maMon';
+        maMon.value = courseId;
+        form.appendChild(maMon);
+        
+        const returnUrl = document.createElement('input');
+        returnUrl.type = 'hidden';
+        returnUrl.name = 'returnUrl';
+        returnUrl.value = window.location.href;
+        form.appendChild(returnUrl);
+        
+        // Add CSRF token if available
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+        if (csrfToken && csrfHeader) {
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = '_csrf';
+          csrfInput.value = csrfToken;
+          form.appendChild(csrfInput);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+      };
+    }
+
+    // Helper: set behavior for following button (hover to unfollow)
+    function setFollowingBtnBehavior(followBtn, followingBtn, courseId) {
+      followingBtn.onmouseenter = function() {
+        this.querySelector('.btn-text').textContent = 'Unfollow';
+        this.classList.add('unfollow-hover');
+      };
+      followingBtn.onmouseleave = function() {
+        this.querySelector('.btn-text').textContent = 'Following';
+        this.classList.remove('unfollow-hover');
+      };
+      followingBtn.onclick = function(e) {
+        e.stopPropagation();
+        // Only unfollow if currently showing "Unfollow"
+        if (this.classList.contains('unfollow-hover')) {
+          // Create and submit form for unfollowing course
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/follow-course/unfollow';
+          form.style.display = 'none';
+          
+          const maMon = document.createElement('input');
+          maMon.type = 'hidden';
+          maMon.name = 'maMon';
+          maMon.value = courseId;
+          form.appendChild(maMon);
+          
+          const returnUrl = document.createElement('input');
+          returnUrl.type = 'hidden';
+          returnUrl.name = 'returnUrl';
+          returnUrl.value = window.location.href;
+          form.appendChild(returnUrl);
+          
+          // Add CSRF token if available
+          const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+          const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+          if (csrfToken && csrfHeader) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_csrf';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+          }
+          
+          document.body.appendChild(form);
+          form.submit();
+        }
+      };
+    }
+
+
+
+    // Reuse showNotification function from document.js if available, otherwise define it
+    function showNotification(message, type = 'info') {
+      // Check if the function exists in document.js scope
+      if (typeof window.showNotification === 'function') {
+        window.showNotification(message, type);
+        return;
+      }
+      
+      // Fallback implementation
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const iconClass = type === 'success' ? 'fa-check-circle' : 
+                       type === 'error' ? 'fa-exclamation-circle' : 
+                       'fa-info-circle';
+      
+      notification.innerHTML = `
+        <span class="notification-icon">
+          <i class="fas ${iconClass}"></i>
+        </span>
+        <span class="notification-message">${message}</span>
+        <button class="notification-close" aria-label="Đóng">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+
+      document.body.appendChild(notification);
+
+      // Show notification with animation
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 10);
+
+      // Auto-hide notification after 3 seconds
+      const hideTimeout = setTimeout(() => {
+        notification.classList.remove('show');
+        notification.classList.add('hide');
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      }, 3000);
+
+      // Add close button functionality
+      notification.querySelector('.notification-close').addEventListener('click', () => {
+        clearTimeout(hideTimeout);
+        notification.classList.remove('show');
+        notification.classList.add('hide');
+        setTimeout(() => {
+          notification.remove();
+        }, 300);
+      });
+    }
+  </script>
+</body>
+</html> 

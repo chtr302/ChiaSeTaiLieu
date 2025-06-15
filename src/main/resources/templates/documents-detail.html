@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('Studucu - Document Detail')">
+  <!-- CSRF tokens for AJAX calls -->
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+<body class="document-detail-page">
+  <!-- Thông báo -->
+  <div th:if="${successMessage}" id="successMessage" style="display: none;" th:text="${successMessage}"></div>
+  <div th:if="${errorMessage}" id="errorMessage" style="display: none;" th:text="${errorMessage}"></div>
+  <div class="nav"th:replace="~{fragments/navbar :: navbar(sinhVien=${sinhVien != null ? sinhVien : null})}"></div>
+
+  <main class="main">
+    <section class="document-detail-section">
+      <div class="document-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+          <div class="sidebar-padding"></div>
+          <div class="sidebar-content">
+            <div class="sidebar-header">
+              <div class="user-profile">
+                <img class="avatar" th:src="${sinhVien.hinhAnh}" th:alt="${sinhVien.hoVaTen}" 
+                     onerror="this.src='/img/default-avatar.png'">
+                <div class="user-info">
+                  <p class="username" th:text="${sinhVien.hoVaTen}">Username</p>
+                </div>
+              </div>
+            </div>
+            <h2 class="sidebar-title">About Document</h2>
+            <div class="document-info-sidebar">
+              <div class="info-item">
+                <span class="info-label">Course:</span>
+                <span class="info-value" th:text="${taiLieu.tenMon}">Tên môn học</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Category:</span>
+                <span class="info-value" th:text="${taiLieu.tenLoai}">Loại tài liệu</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">View:</span>
+                <span class="info-value" th:text="${taiLieu.luotXem}">0</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Vote:</span>
+                <span class="info-value" th:text="${taiLieu.danhGia}">0</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Comment:</span>
+                <span class="info-value" th:text="${taiLieu.soLuongBL}">0</span>
+              </div>
+            </div>
+            
+            <div class="sidebar-actions">
+              <a th:href="@{'/documents/download/' + ${taiLieu.maTaiLieu}}" class="action-button download-btn">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <button class="action-button report-btn" id="report-document">
+                <i class="fas fa-flag"></i> Report
+              </button>
+              <button class="action-button" id="ai-chatbot-btn">
+                <i class="fas fa-robot"></i> Ask AI
+              </button>
+              <!-- Nút sửa thông tin tài liệu -->
+              <button type="button" class="action-button" id="edit-document-btn" style="background-color:#fbbf24; color:#1f2937;">
+                <i class="fas fa-edit"></i> Repair
+              </button>
+            </div>
+            
+            <!-- <div class="document-tags">
+              <h3>Tags</h3>
+              <div class="tags-container">
+                <span class="tag" th:each="tag : ${tags}" th:text="${tag}">Tag</span>
+              </div>
+            </div> -->
+          </div>
+          <div class="sidebar-footer">
+            <a th:href="@{/documents}" class="back-button">
+              <i class="fas fa-arrow-left"></i> Back
+            </a>
+          </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="content-header">
+            <div class="search-area">
+              <button id="menu-toggle" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+              </button>
+              <h1 class="document-title" th:text="${taiLieu.tieuDe}">Tiêu đề tài liệu</h1>
+            </div>
+            <div class="document-actions">
+              <div class="document-stats-row">
+                <!-- Vote Section -->
+                <div class="vote-oval">
+                  <button class="upvote-btn" th:data-id="${taiLieu.maTaiLieu}">
+                    <i class="fas fa-thumbs-up"></i>
+                  </button>
+                  <span class="vote-count" th:text="${taiLieu.danhGia}">0</span>
+                  <button class="downvote-btn" th:data-id="${taiLieu.maTaiLieu}">
+                    <i class="fas fa-thumbs-down"></i>
+                  </button>
+                </div>
+        
+                <!-- Views & Comments -->
+                <div class="view-comment-group">
+                  <span class="views"><i class="fas fa-eye"></i> <span th:text="${taiLieu.luotXem}">0</span></span>
+                  <span class="comments"><i class="fas fa-comment"></i> <span th:text="${taiLieu.soLuongBL}">0</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- PDF Viewer -->
+          <div class="pdf-container">
+            <div class="pdf-toolbar">
+              <div class="toolbar-left">
+                <button id="prev-page" class="toolbar-btn" title="Trang trước">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="page-navigation">
+                  <span>Page <input type="number" id="page-num" value="1" min="1"> / <span id="page-count">1</span></span>
+                </div>
+                <button id="next-page" class="toolbar-btn" title="Trang sau">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div class="toolbar-right">
+                <button id="zoom-out" class="toolbar-btn" title="Thu nhỏ">
+                  <i class="fas fa-search-minus"></i>
+                </button>
+                <select id="zoom-select">
+                  <option value="0.5">50%</option>
+                  <option value="0.75">75%</option>
+                  <option value="1" selected>100%</option>
+                  <option value="1.25">125%</option>
+                  <option value="1.5">150%</option>
+                  <option value="2">200%</option>
+                </select>
+                <button id="zoom-in" class="toolbar-btn" title="Phóng to">
+                  <i class="fas fa-search-plus"></i>
+                </button>
+                <button id="fullscreen" class="toolbar-btn" title="Toàn màn hình">
+                  <i class="fas fa-expand"></i>
+                </button>
+              </div>
+            </div>
+            <div id="pdf-viewer" class="pdf-view-container"
+                 th:data-pdf-url="@{'/documents/view/' + ${taiLieu.maTaiLieu}}"
+                 th:data-filename="${taiLieu.duongDanFile}"
+                 th:data-document-title="${taiLieu.tieuDe}">
+            </div>
+          </div>
+          
+          <!-- Description Section -->
+          <div class="document-section">
+            <h2 class="section-title">Describe</h2>
+            <div class="document-description" th:text="${taiLieu.moTa}">
+              Mô tả tài liệu sẽ hiển thị ở đây. Nội dung mô tả chi tiết về tài liệu giúp người đọc hiểu rõ hơn về nội dung.
+            </div>
+          </div>
+          
+          <!-- Comment Section -->
+          <div class="document-section">
+            <h2 class="section-title">Comment <span class="comment-count">(<span th:text="${taiLieu.soLuongBL}">0</span>)</span></h2>
+            <div class="comment-form">
+              <img class="comment-avatar" th:src="${sinhVien.hinhAnh}" 
+                   onerror="this.src='/img/default-avatar.png'" alt="Your Avatar">
+              <div class="comment-input-container">
+                <textarea id="comment-input" placeholder="Write comment....."></textarea>
+                <button id="post-comment" class="comment-button" th:data-document-id="${taiLieu.maTaiLieu}">Post</button>
+              </div>
+            </div>
+            
+                        <div class="comments-list">
+              <div class="comment-item" th:each="comment : ${comments}">
+                <img class="comment-avatar" th:src="${comment.hinhAnh}" 
+                     onerror="this.src='/img/default-avatar.png'" th:alt="${comment.hoVaTen}">
+                <div class="comment-content">
+                  <div class="comment-header">
+                    <span class="comment-author" th:text="${comment.hoVaTen}">Tên người dùng</span>
+                    <span class="comment-time" th:text="${comment.ngayBinhLuan}">01/01/2023 12:30</span>
+                  </div>
+                  <div class="comment-text" th:text="${comment.noiDung}">
+                    Nội dung bình luận sẽ hiển thị ở đây.
+                  </div>
+                  <div class="comment-actions">
+                    <button class="comment-reply-btn" th:data-comment-id="${comment.maBinhLuan}">Reply</button>
+                    <button class="comment-report-btn" th:data-comment-id="${comment.maBinhLuan}">Report</button>
+                  </div>
+                  
+                  <!-- Reply Form (hidden by default) -->
+                  <div class="reply-form" th:id="'reply-form-' + ${comment.maBinhLuan}" style="display: none;">
+                    <div class="reply-input-container">
+                      <textarea class="reply-input" th:id="'reply-input-' + ${comment.maBinhLuan}" placeholder="Reply..."></textarea>
+                      <button class="reply-submit-btn" th:data-comment-id="${comment.maBinhLuan}">Post</button>
+                      <button class="reply-cancel-btn" th:data-comment-id="${comment.maBinhLuan}">Cancel</button>
+                    </div>
+                  </div>
+                  
+                  <!-- Replies List -->
+                  <div class="replies-list" th:id="'replies-' + ${comment.maBinhLuan}">
+                    <div class="reply-item" th:each="reply : ${replies}" th:if="${reply.MaBinhLuan == comment.maBinhLuan}">
+                      <img class="reply-avatar" th:src="${reply.HinhAnh}" 
+                           onerror="this.src='/img/default-avatar.png'" th:alt="${reply.HoVaTen}">
+                      <div class="reply-content">
+                        <div class="reply-header">
+                          <span class="reply-author" th:text="${reply.HoVaTen}">Tên người trả lời</span>
+                          <span class="reply-time" th:text="${reply.NgayTraLoi}">01/01/2023 12:30</span>
+                        </div>
+                        <div class="reply-text" th:text="${reply.NoiDung}">
+                          Nội dung trả lời sẽ hiển thị ở đây.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Empty comment state -->
+              <div class="empty-comments" th:if="${#lists.isEmpty(comments)}">
+                <i class="far fa-comments empty-icon"></i>
+                <p>Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Related Documents -->
+          <!-- <div class="document-section">
+            <h2 class="section-title">Tài liệu liên quan</h2>
+            <div class="related-documents">
+              <div class="related-document" th:each="relDoc : ${relatedDocuments}">
+                <div class="related-img-container">
+                  <img th:if="${relDoc.thumbnail != null}" th:src="@{'/documents/thumbnails/' + ${relDoc.thumbnail}}" 
+                       alt="Document Preview">
+                  <img th:if="${relDoc.thumbnail == null}" src="/img/default-document.png" 
+                       alt="Document Preview">
+                </div>
+                <div class="related-info">
+                  <h3 class="related-title">
+                    <a th:href="@{'/documents/detail/' + ${relDoc.maTaiLieu}}" th:text="${relDoc.tieuDe}">Tên tài liệu liên quan</a>
+                  </h3>
+                  <div class="related-meta">
+                    <span class="related-category" th:text="${relDoc.tenLoai}">Loại tài liệu</span>
+                    <span class="related-views"><i class="fas fa-eye"></i> <span th:text="${relDoc.luotXem}">123</span></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="empty-related" th:if="${#lists.isEmpty(relatedDocuments)}">
+                <i class="far fa-file-alt empty-icon"></i>
+                <p>Không tìm thấy tài liệu liên quan.</p>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Report Modal -->
+  <div id="report-modal" class="modal-overlay">
+    <div class="modal-container report-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Báo cáo tài liệu</h3>
+        <button id="close-report-modal" class="modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="report-form">
+          <div class="form-group">
+            <label for="report-reason" class="form-label">Lý do báo cáo <span class="required">*</span></label>
+            <select id="report-reason" name="reason" class="form-control" required>
+              <option value="">Chọn lý do</option>
+              <option value="copyright">Vi phạm bản quyền</option>
+              <option value="inappropriate">Nội dung không phù hợp</option>
+              <option value="spam">Spam hoặc quảng cáo</option>
+              <option value="wrong_category">Sai môn học/chủ đề</option>
+              <option value="other">Lý do khác</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="report-description" class="form-label">Mô tả chi tiết <span class="required">*</span></label>
+            <textarea id="report-description" name="description" rows="4" class="form-control" 
+                      placeholder="Vui lòng mô tả chi tiết vấn đề bạn gặp phải với tài liệu này" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="cancel-report">Hủy</button>
+            <button type="submit" class="btn-report"><i class="fas fa-flag"></i> Báo cáo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Sửa Thông Tin Tài Liệu -->
+  <div id="edit-document-modal" class="modal-overlay">
+    <div class="modal-container" style="max-width:600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Sửa thông tin tài liệu</h3>
+        <button id="close-edit-document-modal" class="modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-document-form" onsubmit="return false;">
+          <fieldset style="margin-bottom:22px; border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
+            <legend style="font-weight:600; color:#2563eb;">Thông tin tài liệu</legend>
+            <div class="form-section">
+              <div class="form-group">
+                <label>Title <span class="required">*</span></label>
+                <input type="text" id="edit-tieuDe" class="form-control" required
+                       th:value="${taiLieu.tieuDe}">
+              </div>
+              <div class="form-group">
+                <label>Category <span class="required">*</span></label>
+                <select id="edit-maLoai" class="form-control" required>
+                  <option value="">Select a category</option>
+                  <option th:each="loai : ${loaiTaiLieu}"
+                          th:value="${loai.maLoai}"
+                          th:text="${loai.tenLoai}"
+                          th:selected="${taiLieu.tenLoai == loai.tenLoai}">
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Course <span class="required">*</span></label>
+                <select id="edit-maMonHoc" class="form-control" required>
+                  <option value="">Select a course</option>
+                  <option th:each="mon : ${danhSachMonHoc}"
+                          th:value="${mon.maMon}"
+                          th:text="${mon.tenMon}"
+                          th:selected="${taiLieu.tenMon == mon.tenMon}">
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Description <span class="required">*</span></label>
+                <textarea id="edit-moTa" class="form-control" rows="4" required
+                          th:text="${taiLieu.moTa}"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Tags</label>
+                <input type="text" id="edit-tags" class="form-control"
+                       placeholder="Nhập các tag, cách nhau bởi dấu phẩy"
+                       th:value="${taiLieu.tags}">
+              </div>
+            </div>
+          </fieldset>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="cancel-edit-document">Hủy</button>
+            <button type="submit" class="btn-report" id="save-edit-document"><i class="fas fa-save"></i> Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div id="chatbot-modal" class="modal-overlay">
+    <div class="modal-container chatbot-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Hỏi AI về tài liệu</h3>
+        <button id="close-chatbot-modal" class="modal-close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="chatbot-container">
+          <div class="chatbot-messages" id="chatbot-messages">
+            <div class="chat-message bot-message">
+              <div class="message-avatar">
+                <img src="/img/gemma.png" alt="Gemma">
+              </div>
+              <div class="message-content">
+                <p>Xin chào! Tôi có thể giúp bạn trả lời các câu hỏi về tài liệu này, cơ bản. Nếu bạn muốn nghiên cứu sâu hơn, tôi khuyên bạn nên sử dụng Notebooklm của Google sẽ giúp bạn nghiên cứu sâu hơn</p>
+              </div>
+            </div>
+          </div>
+          <div class="chatbot-input">
+            <textarea id="chatbot-input" placeholder="Nhập câu hỏi của bạn..."></textarea>
+            <button id="send-question" class="chat-send-btn">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input type="hidden" id="current-user-avatar" th:value="${sinhVien.hinhAnh}">
+  <input type="hidden" id="current-user-name" th:value="${sinhVien.hoVaTen}">
+
+  <!-- Scripts -->
+  <div th:replace="fragments/scripts :: scripts"></div>
+  <link th:href="@{/css/document-detail.css}" rel="stylesheet">
+  <link th:href="@{/css/document-save.css}" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script th:src="@{/js/document-detail.js}"></script>
+  <script th:src="@{/js/document-save.js}"></script>
+  <script th:src="@{/js/comment.js}"></script>
+</body>
+</html>
