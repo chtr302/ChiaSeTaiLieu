@@ -1,4 +1,7 @@
 package com.chiasetailieu.chiasetailieuhoctapptit.controller;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -7,8 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import java.util.stream.Collectors;
-import java.util.List;
+
 import com.chiasetailieu.chiasetailieuhoctapptit.model.SinhVienModel.SinhVien;
 import com.chiasetailieu.chiasetailieuhoctapptit.model.TaiLieuModel.TaiLieuView;
 import com.chiasetailieu.chiasetailieuhoctapptit.service.SinhVien.SinhVienService;
@@ -39,7 +41,6 @@ public class HomeController {
         try {
             SinhVien sinhVien = sinhVienService.saveOrUpdateSinhVien(principal);
             model.addAttribute("sinhVien", sinhVien);
-            // Thêm dòng này để truyền danh sách tài liệu cho index.html
             List<TaiLieuView> allDocs = taiLieuViewService.getTaiLieu();
             model.addAttribute("Documents", allDocs);
         } catch (Exception e) {
@@ -53,7 +54,6 @@ public class HomeController {
         return "auth-error";
     }
 
-    // API trả về danh sách tiêu đề tài liệu liên quan đến từ khóa
     @GetMapping("/api/search-documents")
     @ResponseBody
     public List<String> searchDocuments(@RequestParam("q") String keyword) {
