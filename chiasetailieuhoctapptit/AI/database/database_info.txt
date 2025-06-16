@@ -1,0 +1,144 @@
+=== DATABASE ===
+
+Database: ChiaSeTaiLieu (Hệ thống chia sẻ tài liệu học tập)
+MySQL Version: 8.0.42
+Charset: utf8mb4
+
+=== TABLES ===
+
+📚 TaiLieu (Bảng tài liệu chính)
+- MaTaiLieu (int, AUTO_INCREMENT, PRIMARY KEY) - ID tài liệu
+- TieuDe (varchar(255)) - Tiêu đề tài liệu
+- MoTa (text) - Mô tả chi tiết tài liệu
+- LuotXem (int, DEFAULT 0) - Số lượt xem
+- NgayDang (date) - Ngày đăng tài liệu
+- UpVote (int, DEFAULT 0) - Số lượt thích
+- DownVote (int, DEFAULT 0) - Số lượt không thích
+- Tags (varchar(100)) - Thẻ tag của tài liệu
+- MonHoc (varchar(15)) - Mã môn học (FK)
+- MaLoai (varchar(10)) - Mã loại tài liệu (FK)
+- MaSinhVien (varchar(10)) - Mã sinh viên upload (FK)
+- MaFile (int) - Mã file đính kèm (FK)
+- SoLuongTai (int) - Số lượt tải xuống
+
+👥 SinhVien (Bảng sinh viên)
+- MaSinhVien (varchar(10), PRIMARY KEY) - Mã sinh viên
+- HoVaTen (varchar(255)) - Họ và tên
+- Email (varchar(255), UNIQUE) - Email
+- HinhAnh (varchar(255)) - Đường dẫn hình đại diện
+- NgayTao (date) - Ngày tạo tài khoản
+- LastLogin (date) - Lần đăng nhập cuối
+
+📁 File (Bảng quản lý file)
+- MaFile (int, AUTO_INCREMENT, PRIMARY KEY) - ID file
+- TenFile (varchar(255)) - Tên file gốc
+- DuongDanFile (varchar(255)) - Đường dẫn lưu trữ
+- DinhDang (varchar(255)) - Định dạng file (pdf, doc, ppt)
+- KichThuoc (bigint) - Kích thước file (bytes)
+- NgayTaiLen (date) - Ngày tải lên
+- Thumbnail (varchar(255)) - Đường dẫn thumbnail
+
+📖 MonHoc (Bảng môn học)
+- MaMon (varchar(15), PRIMARY KEY) - Mã môn học
+- TenMon (varchar(45)) - Tên môn học
+
+🏷️ LoaiTaiLieu (Bảng loại tài liệu)
+- MaLoai (varchar(10), PRIMARY KEY) - Mã loại
+- TenLoai (varchar(255)) - Tên loại (Bài giảng, Đề thi, Bài tập...)
+
+💬 BinhLuan (Bảng bình luận)
+- MaBinhLuan (bigint, AUTO_INCREMENT, PRIMARY KEY) - ID bình luận
+- NoiDung (varchar(255)) - Nội dung bình luận
+- NgayBinhLuan (date) - Ngày bình luận
+- MaTaiLieu (int) - Tài liệu được bình luận (FK)
+- MaSinhVien (varchar(10)) - Sinh viên bình luận (FK)
+
+🏷️ TuKhoa (Bảng từ khóa)
+- MaTuKhoa (int, AUTO_INCREMENT, PRIMARY KEY) - ID từ khóa
+- NoiDung (varchar(100)) - Nội dung từ khóa
+
+=== RELATIONSHIP TABLES ===
+
+📝 TaiLieu_TuKhoa (Many-to-Many: Tài liệu - Từ khóa)
+- MaTaiLieu (int, FK) - ID tài liệu
+- MaTuKhoa (int, FK) - ID từ khóa
+
+💾 LuuTaiLieu (Sinh viên lưu tài liệu)
+- MaTaiLieu (int, FK) - ID tài liệu
+- MaSinhVien (varchar(10), FK) - Mã sinh viên
+- TrangThaiLuu (bit(1)) - Trạng thái lưu
+
+👥 TheoDoi (Sinh viên theo dõi nhau)
+- MaTD (int, AUTO_INCREMENT, PRIMARY KEY) - ID theo dõi
+- NguoiDung (varchar(10), FK) - Người theo dõi
+- DangTheoDoi (varchar(10), FK) - Người được theo dõi
+- TrangThai (bit(1)) - Trạng thái theo dõi
+
+📢 BaoCao (Báo cáo vi phạm)
+- MaBaoCao (int, AUTO_INCREMENT, PRIMARY KEY) - ID báo cáo
+- NoiDungBaoCao (varchar(45)) - Nội dung báo cáo
+- NgayBaoCao (date) - Ngày báo cáo
+- TrangThai (bit(1)) - Trạng thái xử lý
+- MaTaiLieu (int, FK) - Tài liệu bị báo cáo
+- MaSinhVien (varchar(10), FK) - Người báo cáo
+
+💬 TraLoiBinhLuan (Trả lời bình luận)
+- MaTraLoi (int, AUTO_INCREMENT, PRIMARY KEY) - ID trả lời
+- NoiDung (text) - Nội dung trả lời
+- NgayTraLoi (date) - Ngày trả lời
+- MaSinhVien (varchar(10), FK) - Sinh viên trả lời
+- MaBinhLuan (bigint, FK) - Bình luận được trả lời
+
+=== COMMON QUERIES FOR AI ===
+
+-- Tài liệu phổ biến nhất
+SELECT t.TieuDe, s.HoVaTen, t.LuotXem, t.UpVote 
+FROM TaiLieu t 
+JOIN SinhVien s ON t.MaSinhVien = s.MaSinhVien 
+ORDER BY t.LuotXem DESC 
+LIMIT 10;
+
+-- Tìm kiếm tài liệu theo từ khóa
+SELECT t.TieuDe, t.MoTa, s.HoVaTen, m.TenMon 
+FROM TaiLieu t 
+JOIN SinhVien s ON t.MaSinhVien = s.MaSinhVien 
+JOIN MonHoc m ON t.MonHoc = m.MaMon 
+WHERE t.TieuDe LIKE '%java%' OR t.MoTa LIKE '%java%' OR t.Tags LIKE '%java%';
+
+-- Thống kê theo môn học
+SELECT m.TenMon, COUNT(*) as SoLuongTaiLieu, AVG(t.LuotXem) as TrungBinhLuotXem 
+FROM TaiLieu t 
+JOIN MonHoc m ON t.MonHoc = m.MaMon 
+GROUP BY m.MaMon, m.TenMon 
+ORDER BY SoLuongTaiLieu DESC;
+
+-- Tài liệu mới nhất
+SELECT t.TieuDe, s.HoVaTen, t.NgayDang, l.TenLoai 
+FROM TaiLieu t 
+JOIN SinhVien s ON t.MaSinhVien = s.MaSinhVien 
+JOIN LoaiTaiLieu l ON t.MaLoai = l.MaLoai 
+ORDER BY t.NgayDang DESC 
+LIMIT 10;
+
+-- Top tác giả nhiều tài liệu nhất
+SELECT s.HoVaTen, COUNT(*) as SoLuongTaiLieu, SUM(t.LuotXem) as TongLuotXem 
+FROM SinhVien s 
+JOIN TaiLieu t ON s.MaSinhVien = t.MaSinhVien 
+GROUP BY s.MaSinhVien, s.HoVaTen 
+ORDER BY SoLuongTaiLieu DESC 
+LIMIT 10;
+
+-- Tài liệu được tải nhiều nhất
+SELECT t.TieuDe, t.SoLuongTai, f.DinhDang, m.TenMon 
+FROM TaiLieu t 
+JOIN File f ON t.MaFile = f.MaFile 
+JOIN MonHoc m ON t.MonHoc = m.MaMon 
+ORDER BY t.SoLuongTai DESC 
+LIMIT 10;
+
+=== NOTES ===
+- Tất cả ngày sử dụng kiểu DATE
+- Kích thước file tính bằng bytes (BIGINT)
+- Các trường bit(1) dùng cho boolean (0/1)
+- Charset utf8mb4 hỗ trợ emoji và ký tự đặc biệt
+- Foreign key constraints đã được thiết lập đầy đủ
