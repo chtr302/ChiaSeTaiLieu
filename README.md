@@ -142,7 +142,7 @@ mkdir thumbnails
 chmod 755 uploads thumbnails
 ```
 
-### 5. Build và Run
+### 4. Build và Run
 
 ```bash
 # Build project
@@ -162,7 +162,7 @@ mvn clean package
 java -jar target/chiasetailieuhoctapptit-0.0.1-SNAPSHOT.jar
 ```
 
-### 6. Truy cập ứng dụng
+### 5. Truy cập ứng dụng
 
 Mở trình duyệt và truy cập: `http://localhost:8080`
 

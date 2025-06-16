@@ -40,11 +40,7 @@ cd ChiaSeTaiLieu
 
 ### 2. Thiết lập môi trường phát triển
 ```bash
-# Chạy script setup
-chmod +x setup.sh
-./setup.sh
-
-# Hoặc setup thủ công
+# Setup thủ công
 cd chiasetailieuhoctapptit
 mvn clean install
 ```

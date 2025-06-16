@@ -60,37 +60,31 @@ A document sharing platform specifically designed for PTIT students, enabling se
    cd ChiaSeTaiLieu
    ```
 
-2. **Run setup script** (Linux/Mac)
-   ```bash
-   chmod +x setup.sh
-   ./setup.sh
-   ```
-
-3. **Configure database**
+2. **Configure database**
    ```sql
    CREATE DATABASE chiase_tailieu;
    CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'your_password';
    GRANT ALL PRIVILEGES ON chiase_tailieu.* TO 'app_user'@'localhost';
    ```
 
-4. **Configure Google OAuth2**
+3. **Configure Google OAuth2**
    - Create project in Google Cloud Console
    - Enable Google+ API
    - Create OAuth2 credentials
    - Add redirect URI: `http://localhost:8080/login/oauth2/code/google`
 
-5. **Set up configuration**
+4. **Set up configuration**
    ```bash
    cp src/main/resources/application-secret.properties.example src/main/resources/application-secret.properties
    ```
    Edit the file with your actual credentials.
 
-6. **Run the application**
+5. **Run the application**
    ```bash
    mvn spring-boot:run
    ```
 
-7. **Access the application**
+6. **Access the application**
    Open http://localhost:8080 in your browser
 
 ## 📚 Usage Guide
