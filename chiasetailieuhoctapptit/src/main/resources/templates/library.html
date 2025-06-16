@@ -126,7 +126,7 @@
                     
                     <!-- Student Avatar and Name -->
                     <div th:if="${doc != null}" class="avatar-wrapper">
-                      <a th:if="${doc.maSinhVien != null}" th:href="@{'/library/' + ${doc.maSinhVien}}">
+                      <a th:if="${doc.maSinhVien != null}">
                         <img th:if="${doc.hinhAnhSV != null}" th:src="${doc.hinhAnhSV}" alt="Student Avatar" class="student-avatar">
                         <img th:if="${doc.hinhAnhSV == null}" src="/img/default-avatar.png" alt="Student Avatar" class="student-avatar">
                         <div class="student-info-tooltip">
@@ -210,7 +210,7 @@
                     
                     <!-- Student Avatar and Name -->
                     <div th:if="${doc != null}" class="avatar-wrapper">
-                      <a th:if="${doc.maSinhVien != null}" th:href="@{'/library/' + ${doc.maSinhVien}}">
+                      <a th:if="${doc.maSinhVien != null}" th:href="@{'/user/' + ${doc.maSinhVien}}">
                         <img th:if="${doc.hinhAnhSV != null}" th:src="${doc.hinhAnhSV}" alt="Student Avatar" class="student-avatar">
                         <img th:if="${doc.hinhAnhSV == null}" src="/img/default-avatar.png" alt="Student Avatar" class="student-avatar">
                         <div class="student-info-tooltip">
