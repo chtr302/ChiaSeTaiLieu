@@ -18,7 +18,7 @@
 - 💬 **Bình luận & Thảo luận** - Comment và reply cho tài liệu
 - 🚩 **Báo cáo vi phạm** - Report tài liệu hoặc bình luận không phù hợp
 - 📊 **Thống kê chi tiết** - Lượt xem, lượt tải, đánh giá
-- 🤖 **Tích hợp AI** - Phân tích và xử lý tài liệu thông minh
+- 🤖 **Tích hợp AI** - Chatbot thông minh, tóm tắt tài liệu và Q&A tự động
 - 📱 **Giao diện responsive** - Tương thích mobile và desktop
 - 🗂️ **Phân loại theo môn học** - Tổ chức tài liệu theo chuyên ngành
 
@@ -39,6 +39,12 @@
 - **JavaScript** - Tương tác client-side
 - **Bootstrap/FontAwesome** - UI components
 
+### AI & Machine Learning
+- **Gemma AI Model** - Large Language Model để tóm tắt và Q&A
+- **AI Chatbot** - Hỗ trợ tìm kiếm và trả lời câu hỏi
+- **Document Summarization** - Tóm tắt tài liệu tự động
+- **Q&A System** - Hỏi đáp về nội dung tài liệu
+
 ### Tools & Utilities
 - **Maven** - Dependency management
 - **CSRF Protection** - Bảo mật web
@@ -58,8 +64,8 @@
 - **Maven 3.6+**
 - **Git**
 
-### Tùy chọn
-- **AI Service** - External AI API (port 8000)
+### Tùy chọn (Đã triển khai)
+- **AI Service** - External AI API (port 8000) - Đã tích hợp với Gemma AI
 - **Google OAuth2** - Credentials for authentication
 
 ## 🚀 Cài đặt và Triển khai
@@ -125,8 +131,9 @@ spring.security.oauth2.client.registration.google.redirect-uri=http://localhost:
 upload.dir=./uploads
 thumbnail.dir=./thumbnails
 
-# AI Service Configuration (Optional)
+# AI Service Configuration - Tích hợp Gemma AI
 ai.service.serviceUrl=http://localhost:8000
+ai.service.enabled=true
 ```
 
 ⚠️ **LƯU Ý QUAN TRỌNG**: 
@@ -183,9 +190,10 @@ Mở trình duyệt và truy cập: `http://localhost:8080`
 6. Click "Upload"
 
 ### 🔍 Tìm kiếm tài liệu
-1. Sử dụng thanh search trên navbar
-2. Nhập từ khóa (hỗ trợ tiếng Việt có dấu)
-3. Hoặc browse theo:
+1. **Tìm kiếm thường:** Sử dụng thanh search trên navbar
+2. **Tìm kiếm AI:** Sử dụng chatbot AI để tìm tài liệu thông minh
+3. Nhập từ khóa (hỗ trợ tiếng Việt có dấu)
+4. Hoặc browse theo:
    - **Môn học** - Xem tài liệu theo từng môn
    - **Loại tài liệu** - Bài giảng, đề thi, bài tập...
    - **Most viewed** - Tài liệu được xem nhiều nhất
@@ -195,6 +203,12 @@ Mở trình duyệt và truy cập: `http://localhost:8080`
 2. Click nút **👍 Upvote** nếu hữu ích
 3. Click nút **👎 Downvote** nếu không phù hợp
 4. Click lại để bỏ đánh giá
+
+### 🤖 Sử dụng AI Features
+1. **Tóm tắt tài liệu tự động:** Khi upload tài liệu, AI sẽ tự động tạo tóm tắt
+2. **Chatbot tìm kiếm:** Click vào icon chatbot để tìm kiếm tài liệu bằng AI
+3. **Q&A tài liệu:** Trong trang chi tiết tài liệu, click "Hỏi AI" để đặt câu hỏi về nội dung
+4. **Chat sessions:** AI sẽ nhớ ngữ cảnh cuộc trò chuyện để trả lời chính xác hơn
 
 ### 💬 Bình luận và thảo luận
 1. Trong trang chi tiết, scroll xuống phần Comment
@@ -279,6 +293,17 @@ chiasetailieuhoctapptit/
 ### Reports
 - `POST /documents/report/{documentId}` - Báo cáo tài liệu
 - `POST /documents/report-comment/{commentId}` - Báo cáo bình luận
+
+### AI Integration
+- `GET /ai/health` - Kiểm tra trạng thái AI service
+- `POST /ai/summarize-upload` - Tóm tắt tài liệu upload
+- `POST /ai/create-session` - Tạo Q&A session cho tài liệu
+- `POST /ai/session/ask` - Đặt câu hỏi trong session
+- `GET /ai/session/history` - Lấy lịch sử chat session
+- `POST /ai/ask-question` - Hỏi trực tiếp về tài liệu
+- `POST /ai/chatbot/session` - Tạo chatbot session
+- `POST /ai/chatbot/chat` - Chat với AI assistant
+- `POST /ai/chatbot/auto` - Auto chat với context
 
 ### Library
 - `POST /documents/save/{id}` - Lưu/Bỏ lưu tài liệu
@@ -416,7 +441,7 @@ Nếu gặp vấn đề hoặc có câu hỏi:
 
 ### Version 3.0
 - [ ] Mobile app (Android/iOS)
-- [ ] Advanced AI features
+- [x] Advanced AI features - Đã hoàn thành: Chatbot, Q&A, Document Summarization
 - [ ] Document collaboration
 - [ ] Integration with LMS systems
 

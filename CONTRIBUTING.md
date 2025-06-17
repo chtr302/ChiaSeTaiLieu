@@ -439,7 +439,7 @@ Nếu bạn cần hỗ trợ:
 
 ### 🏆 Core Contributors:
 - **Vũ Phạm Minh Thức** *(Nhóm trưởng)* - Thiết kế UI/UX, phát triển frontend, xây dựng chức năng lưu/tải về/bình luận/báo cáo
-- **Trần Công Hậu** - Kiến trúc dự án, thiết kế hệ thống, phát triển tính năng AI và xác thực Google OAuth2
+- **Trần Công Hậu** - Kiến trúc dự án, thiết kế hệ thống, xác thực Google OAuth2, phát triển tính năng AI (Gemma AI integration, chatbot thông minh, tóm tắt tài liệu tự động, Q&A system, AI-powered search)
 - **Nguyễn Minh Quân** - Thiết kế cơ sở dữ liệu, phát triển chức năng upload, tìm kiếm và quản lý thư viện
 
 ### 📝 Contribution Recognition:

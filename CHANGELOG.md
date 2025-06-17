@@ -16,6 +16,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [ ] Email notifications
 - [ ] Dark mode theme
 
+## [1.1.0] - 2024-01-25 🤖 AI Integration Release
+
+### ✨ Added - AI & Machine Learning Features
+- **Gemma AI Integration**
+  - Complete AI service architecture with WebClient
+  - External AI API integration (port 8000)
+  - Reactive HTTP communication for AI services
+
+- **Document Summarization**
+  - Automatic AI-generated summaries for uploaded documents
+  - Asynchronous processing with polling mechanism
+  - Support for multiple document formats
+  - Summary result caching and retrieval
+
+- **AI-Powered Q&A System**
+  - Interactive document question-answering
+  - Context-aware responses based on document content
+  - Session-based conversation management
+  - Chat history tracking and retrieval
+
+- **Smart Chatbot Assistant**
+  - General platform guidance and help
+  - Document search assistance with AI recommendations
+  - Context-aware conversations with memory
+  - Multiple chat types (general, search, document-specific)
+
+- **AI Search Enhancement**
+  - Intelligent document discovery
+  - Content-based recommendations
+  - Semantic search capabilities
+  - User query understanding and processing
+
+### 🔧 Technical Implementation
+- **New Controllers & Services**
+  - `AIController` - AI API endpoints management
+  - `AIService` - Business logic for AI operations
+  - WebClient configuration for external AI service
+
+- **API Endpoints Added**
+  - `GET /ai/health` - AI service health check
+  - `POST /ai/summarize-upload` - Document summarization
+  - `POST /ai/create-session` - Q&A session creation
+  - `POST /ai/session/ask` - Question in session
+  - `GET /ai/session/history` - Chat history
+  - `POST /ai/ask-question` - Direct document questioning
+  - `POST /ai/chatbot/session` - Chatbot session management
+  - `POST /ai/chatbot/chat` - AI assistant communication
+  - `POST /ai/chatbot/auto` - Auto chat with context
+
+- **Frontend Integration**
+  - AI chatbot UI components with Gemma branding
+  - Document Q&A interface in detail pages
+  - Real-time chat interface with typing indicators
+  - Session management for continuous conversations
+
+### 🔧 Configuration Updates
+- AI service URL configuration
+- External service timeout and retry logic
+- Error handling for AI service unavailability
+- Performance optimization for AI calls
+
+### 👨‍💻 Developer Credits
+- **Trần Công Hậu** - Complete AI system architecture and implementation, Gemma AI integration, chatbot development, document summarization, Q&A system, and AI-powered search functionality
+
 ## [1.0.0] - 2024-01-15
 
 ### ✨ Added
